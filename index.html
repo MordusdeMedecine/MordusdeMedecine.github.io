@@ -819,7 +819,7 @@
                     <div id="av-grid" class="flex flex-wrap gap-2"></div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-teal-50/60 p-4 rounded-xl border border-teal-100">
+                    <div id="dash-codebox" class="bg-teal-50/60 p-4 rounded-xl border border-teal-100">
                         <span class="text-xs font-bold text-teal-800 uppercase tracking-wider block mb-1">Numéro de dossier :</span>
                         <span class="text-xl font-mono font-extrabold text-teal-900" id="dash-usercode">---</span>
                     </div>
@@ -837,7 +837,7 @@
                 <div class="dossier-sheet space-y-4" style="padding:.9rem">
                 <div id="notif-box"></div>
 
-                <details class="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+                <details id="dash-profile" class="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
                     <summary class="cursor-pointer text-sm font-bold text-slate-800">✏️ Modifier mon profil</summary>
                     <div class="mt-4 space-y-5">
                         <div class="space-y-2">
@@ -876,7 +876,7 @@
 
                 <div class="dossier-sheet space-y-4" style="padding:.9rem">
                 <!-- FORMULAIRE DE SOUMISSION DU REÇU TAKEAPP -->
-                <div class="bg-amber-50/70 border border-amber-200 p-5 rounded-2xl space-y-3">
+                <div id="dash-rcpt" class="bg-amber-50/70 border border-amber-200 p-5 rounded-2xl space-y-3">
                     <h3 class="text-sm font-bold text-amber-900 flex items-center gap-2">
                         <span data-ico="clipboard" data-ico-class="w-5 h-5"></span> Déposer mon ordonnance (reçu TakeApp)
                     </h3>
@@ -910,7 +910,7 @@
 
                 </div>
 
-                <div class="dossier-sheet space-y-3" style="padding:.9rem">
+                <div id="dash-units" class="dossier-sheet space-y-3" style="padding:.9rem">
                     <h3 class="text-sm font-bold text-slate-800"><span data-ico="book" data-ico-class="w-5 h-5 text-teal-700 mr-1 align-middle"></span>Mes traitements en cours (numéros déverrouillés) :</h3>
                     <div id="dash-unlocked-list" class="space-y-2"></div>
                 </div>
@@ -1331,7 +1331,7 @@
                             <div id="ed-rich-preview" class="hidden mt-2 p-3 rounded-xl bg-white text-slate-800 text-sm max-h-72 overflow-y-auto"></div>
                             <div id="ed-code-preview" class="hidden mt-2"></div>
                             </div>
-                            <p class="text-[10px] text-slate-500 mt-1">Version du site : 172</p>
+                            <p class="text-[10px] text-slate-500 mt-1">Version du site : 174</p>
                         </div>
                         <div id="ed-img-wrap">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Illustration de la page (facultatif)</label>
@@ -1714,7 +1714,10 @@
         // ====== CONFIG SUPABASE : remplace par les valeurs de ton projet ======
         const SUPABASE_URL = 'https://qjrdhdwazoteemhgpclb.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6ShoQb2xn_yOlvwsU-gmVw__YzvbYOV';
+        const MM_RECOVERY = /type=recovery/.test(String(location.hash) + String(location.search));
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        function showRecovery() { const m = document.getElementById('recovery-modal'); if (m) m.classList.remove('hidden'); }
+        sb.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY') showRecovery(); });
 
         let usersDB = [];      // rempli uniquement pour un admin
         let currentUser = null;
@@ -3227,9 +3230,10 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
         function chtDemoMaybe() {
             if (chtIsOpen || !chtOnChatPage()) return;
             const isAdm = !!(currentUser && currentUser.role === 'admin');
-            let seen = false; try { seen = localStorage.getItem('mm_chat_seen') === '1'; } catch (e) {}
+            let seen = false; const ck = 'mm_chat_seen' + (currentUser && currentUser.isNew ? '_' + currentUser.id : '');
+            try { seen = localStorage.getItem(ck) === '1'; } catch (e) {}
             if (seen && !isAdm) return;
-            try { localStorage.setItem('mm_chat_seen', '1'); } catch (e) {}
+            try { localStorage.setItem(ck, '1'); } catch (e) {}
             chtArrowShow();
         }
         function chtFabSync() {
@@ -3473,9 +3477,10 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
         }
         function helpDemoMaybe() {
             const isAdm = !!(currentUser && currentUser.role === 'admin');
-            let seen = false; try { seen = localStorage.getItem('mm_help_seen') === '1'; } catch (e) {}
+            let seen = false; const hk = 'mm_help_seen' + (currentUser && currentUser.isNew ? '_' + currentUser.id : '');
+            try { seen = localStorage.getItem(hk) === '1'; } catch (e) {}
             if (seen && !isAdm) return;
-            try { localStorage.setItem('mm_help_seen', '1'); } catch (e) {}
+            try { localStorage.setItem(hk, '1'); } catch (e) {}
             helpArrowShow();
         }
         function helpFabSync() {
@@ -4629,7 +4634,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             currentUser = {
                 id: uid, username: p.data.username, firstName: p.data.first_name || '', email: p.data.email, userCode: p.data.user_code,
                 avatar: p.data.avatar || '', proStatus: p.data.pro_status || '', cardReady: 'pro_status' in p.data,
-                role: p.data.role, suspended: !!p.data.suspended, lastLogin: fmtDate(p.data.last_login),
+                role: p.data.role, isNew: (Date.now() - new Date(session.user.created_at || 0).getTime()) < 3 * 86400000, suspended: !!p.data.suspended, lastLogin: fmtDate(p.data.last_login),
                 unlockedIssues: (u.data || []).map(x => x.issue_id),
                 submittedReceipts: (r.data || []).map(x => ({ receipt: x.receipt, date: fmtDate(x.created_at), status: x.status, proof: !!x.proof_path })),
                 messages: (m.data || []).map(x => ({ id: x.id, kind: x.kind, body: x.body, date: fmtDate(x.created_at), read: !!x.read_at }))
@@ -7612,6 +7617,7 @@ show();
             renderIssues();
             await loadCurrentUser();
             refreshUI();
+            if (MM_RECOVERY) showRecovery();
             sb.auth.onAuthStateChange(ev => {
                 if (ev === 'SIGNED_OUT') { currentUser = null; refreshUI(); }
                 if (ev === 'PASSWORD_RECOVERY') document.getElementById('recovery-modal').classList.remove('hidden');
@@ -7621,7 +7627,7 @@ show();
             ['ed-intro', 'sp-body', 'fr-body', 'of-desc', 'ed-heading'].forEach(i => vzSet(i, true)); vzSet('ed-body', richActive());
             loadCase(); loadReviewWall(); ensureVisitor(); trkStart(); buildHlBar(); buildSpBar(); buildFrBar(); buildIntroBar(); loadSitePages().then(renderAdminPages); mkFt('cv', 'ed-body', onEdBodyInput); mkFt('of', 'of-desc'); mkFt('toc', 'toc-t-0', function () { const e = document.getElementById(FT.toc.id); if (e) e.dispatchEvent(new Event('input')); }); buildFtBar('toc', 'toc-bar'); buildFtBar('cv', 'ed-cv-bar'); buildFtBar('of', 'of-bar'); loadOffers();
             { const y = document.getElementById('foot-year'); if (y) y.textContent = new Date().getFullYear(); }
-            { const rf = window.refreshUI; window.refreshUI = function () { const r = rf.apply(this, arguments); try { loadNotifs(); } catch (e) {} return r; }; loadNotifs(); setInterval(() => { if (currentUser) loadNotifs(); }, 60000); }
+            { const rf = window.refreshUI; window.refreshUI = function () { const r = rf.apply(this, arguments); try { loadNotifs(); } catch (e) {} try { if (document.readyState === 'complete') setTimeout(dossierTourMaybe, 1500); } catch (e) {} return r; }; loadNotifs(); setInterval(() => { if (currentUser) loadNotifs(); }, 60000); }
             setTimeout(function anecPopup() {
                 const busy = !document.getElementById('reader-view').classList.contains('hidden') || !document.getElementById('auth-modal').classList.contains('hidden') || document.getElementById('mm-popup');
                 if (busy) { setTimeout(anecPopup, 30000); return; }
@@ -7725,15 +7731,23 @@ show();
             { tab: 'appreciation', el: 'btn-appreciation', t: '🌡️ La prise de température', p: "Tu as débloqué et lu un numéro ? Donne ton avis ici : note-le et laisse un petit mot. Seuls les numéros débloqués et lus peuvent être évalués, pour que chaque avis soit un vrai diagnostic !" },
             { tab: 'accueil', el: 'cht-fab', t: '💬 Rejoins le Chat !', p: "Cette bulle, c'est la machine à café du site : viens papoter avec les autres ou me glisser un petit mot. À tout de suite !" }
         ];
+        const VT_DOSSIER = [
+            { tab: 'dashboard', el: 'dash-avatar', t: '🩺 Ton dossier est ouvert !', p: "Bienvenue dans ton Dossier patient. Voici ta fiche : touche « Changer d'avatar » pour choisir la photo qui te ressemble (ou presque)." },
+            { tab: 'dashboard', el: 'dash-codebox', t: '🔢 Ton numéro de dossier', p: "C'est ton identifiant personnel au service. Ici aussi : la date de ta dernière consultation." },
+            { tab: 'dashboard', el: 'dash-profile', t: '✏️ Modifier mon profil', p: "Prénom, statut, nom d'utilisateur, adresse e-mail, mot de passe : tout se règle ici, quand tu veux." },
+            { tab: 'dashboard', el: 'dash-rcpt', t: '🧾 Déposer mon ordonnance', p: "Tu as acheté un numéro ? Entre ici le numéro de ton reçu : une fois vérifié, ton numéro est déverrouillé. Pas de panique, c'est vite fait !" },
+            { tab: 'dashboard', el: 'dash-units', t: '📚 Mes traitements en cours', p: "Tes numéros déverrouillés apparaissent ici, prêts à lire. Bonne lecture, et bonne garde ! 💜" }
+        ];
+        let VT_CUR = VT_STEPS;
         let vtI = 0;
         function vtPaint() {
-            const st = VT_STEPS[vtI];
+            const st = VT_CUR[vtI];
             try { switchTab(st.tab); } catch (e) {}
             document.getElementById('mm-vt-t').textContent = st.t;
             document.getElementById('mm-vt-p').textContent = st.p;
-            document.getElementById('mm-vt-dots').innerHTML = VT_STEPS.map((x, i) => '<i class="' + (i === vtI ? 'on' : '') + '"></i>').join('');
+            document.getElementById('mm-vt-dots').innerHTML = VT_CUR.map((x, i) => '<i class="' + (i === vtI ? 'on' : '') + '"></i>').join('');
             document.getElementById('mm-vt-av').innerHTML = typeof RAAMYAH_SVG === 'string' ? RAAMYAH_SVG : '';
-            document.getElementById('mm-vt-next').textContent = vtI === VT_STEPS.length - 1 ? "C'est parti ! 🎉" : 'Suivant ➜';
+            document.getElementById('mm-vt-next').textContent = vtI === VT_CUR.length - 1 ? "C'est parti ! 🎉" : 'Suivant ➜';
             const cd = document.getElementById('mm-vt-card'); cd.style.animation = 'none'; void cd.offsetWidth; cd.style.animation = '';
             setTimeout(() => {
                 const el = document.getElementById(st.el), h = document.getElementById('mm-vt-hole'), c = document.getElementById('mm-vt-card');
@@ -7745,10 +7759,10 @@ show();
                 c.style.top = below ? (r.bottom + 18) + 'px' : 'auto'; c.style.bottom = below ? 'auto' : (window.innerHeight - r.top + 18) + 'px';
             }, 120);
         }
-        function vtStart() { vtI = 0; document.getElementById('mm-vt').classList.add('on'); vtPaint(); }
-        function vtNext() { if (vtI >= VT_STEPS.length - 1) return vtEnd(); vtI++; vtPaint(); }
+        function vtStart(steps) { VT_CUR = Array.isArray(steps) ? steps : VT_STEPS; vtI = 0; document.getElementById('mm-vt').classList.add('on'); vtPaint(); }
+        function vtNext() { if (vtI >= VT_CUR.length - 1) return vtEnd(); vtI++; vtPaint(); }
         function vtConfetti() { const em = ['🎉', '💜', '✨', '🩺', '💊', '⭐', '😄']; for (let i = 0; i < 26; i++) { const e = document.createElement('div'); e.className = 'vt-conf'; e.textContent = em[i % em.length]; e.style.left = (Math.random() * 96) + 'vw'; e.style.animationDelay = (Math.random() * .8) + 's'; document.body.appendChild(e); setTimeout(() => e.remove(), 3400); } }
-        function vtEnd() { if (vtI >= VT_STEPS.length - 1 && document.getElementById('mm-vt').classList.contains('on')) { try { vtConfetti(); } catch (e) {} } document.getElementById('mm-vt').classList.remove('on'); try { switchTab('accueil'); window.scrollTo(0, 0); } catch (e) {} }
+        function vtEnd() { const stay = VT_CUR === VT_DOSSIER; if (vtI >= VT_CUR.length - 1 && document.getElementById('mm-vt').classList.contains('on')) { try { vtConfetti(); } catch (e) {} } document.getElementById('mm-vt').classList.remove('on'); try { if (!stay) switchTab('accueil'); window.scrollTo(0, 0); } catch (e) {} }
         function vtMaybe() {
             try {
                 if (localStorage.getItem('mm_visit_tour') === '1' || new URLSearchParams(location.search).get('tab')) return;
@@ -7760,6 +7774,19 @@ show();
             vtStart();
         }
         window.addEventListener('load', () => setTimeout(() => { if (/[?&]visite\b/.test(location.search)) vtStart(); else vtMaybe(); }, 2500));
+        function dossierTourMaybe() {
+            try {
+                const u = currentUser; if (!u || !u.isNew || u.role === 'admin') return;
+                const k = 'mm_dossier_tour_' + u.id;
+                if (localStorage.getItem(k) === '1') return;
+                const busy = id => { const e = document.getElementById(id); return e && !e.classList.contains('hidden'); };
+                if (busy('mm-vt') || document.getElementById('mm-vt').classList.contains('on') || busy('auth-modal') || busy('recovery-modal') || busy('reader-view')) return;
+                localStorage.setItem(k, '1');
+            } catch (e) { return; }
+            try { switchTab('dashboard'); } catch (e) {}
+            setTimeout(() => vtStart(VT_DOSSIER), 700);
+        }
+        window.addEventListener('load', () => setTimeout(dossierTourMaybe, 3200));
 
         // ====== Notifications push ======
         const PUSH_PUBLIC_KEY = 'BDAsHdicaCo6uWx0klPvMpfCB2QZEs-hu00On2ZX0bcIDFsyNohqYuBOS8gxdGY7wso9MxDPCqJfYnyMOyRDA3c';
