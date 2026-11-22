@@ -34,6 +34,15 @@ h1{font-size:1.35rem;margin:8px 0 6px}
 .foot{margin-top:14px;font-size:.72rem;color:#64748b}
 @media (prefers-reduced-motion:reduce){.ecg .line{animation:none;stroke-dashoffset:0}.ecg .flat{animation:none;opacity:1}.ecg .lbl{animation:none}}
 </style>
+<script>try{if(localStorage.getItem("mm_skin")==="lav")document.documentElement.setAttribute("data-skin","lav")}catch(e){}</script>
+<style>
+html[data-skin="lav"]{--ink:#2B2640;--paper:#FBF8F1;--purple:#6A5CA3;--fuchsia:#2F7F58;--teal:#2F7F58}
+html[data-skin="lav"] body{background:radial-gradient(circle at 20% 0%,#DDD8EC 0,transparent 50%),radial-gradient(circle at 90% 100%,#F6EFDC 0,transparent 50%),#EDEAF3}
+html[data-skin="lav"] .brand,html[data-skin="lav"] .sub{font-family:'Share Tech Mono','Courier New',monospace!important}
+html[data-skin="lav"] .ecg .line,html[data-skin="lav"] .ecg .flat{stroke:#5BE49B;filter:drop-shadow(0 0 4px #5BE49B)}
+html[data-skin="lav"] .ecg .lbl{color:#5BE49B}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
 <main class="wrap">
