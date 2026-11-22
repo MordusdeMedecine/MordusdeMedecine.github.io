@@ -1331,7 +1331,7 @@
                             <div id="ed-rich-preview" class="hidden mt-2 p-3 rounded-xl bg-white text-slate-800 text-sm max-h-72 overflow-y-auto"></div>
                             <div id="ed-code-preview" class="hidden mt-2"></div>
                             </div>
-                            <p class="text-[10px] text-slate-500 mt-1">Version du site : 175</p>
+                            <p class="text-[10px] text-slate-500 mt-1">Version du site : 176</p>
                         </div>
                         <div id="ed-img-wrap">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Illustration de la page (facultatif)</label>
@@ -7789,13 +7789,16 @@ show();
                 const k = 'mm_dossier_tour_' + u.id;
                 if (localStorage.getItem(k) === '1') return;
                 const busy = id => { const e = document.getElementById(id); return e && !e.classList.contains('hidden'); };
-                if (busy('mm-vt') || document.getElementById('mm-vt').classList.contains('on') || busy('auth-modal') || busy('recovery-modal') || busy('reader-view')) return;
+                if (document.getElementById('mm-vt').classList.contains('on') || busy('auth-modal') || busy('recovery-modal') || busy('reader-view')) return;
                 localStorage.setItem(k, '1');
             } catch (e) { return; }
             try { switchTab('dashboard'); } catch (e) {}
             setTimeout(() => vtStart(VT_DOSSIER), 700);
         }
-        window.addEventListener('load', () => setTimeout(dossierTourMaybe, 3200));
+        window.addEventListener('load', () => setTimeout(() => {
+            if (/[?&]dossier\b/.test(location.search) && currentUser) { try { switchTab('dashboard'); } catch (e) {} setTimeout(() => vtStart(VT_DOSSIER), 700); }
+            else dossierTourMaybe();
+        }, 3200));
 
         // ====== Notifications push ======
         const PUSH_PUBLIC_KEY = 'BDAsHdicaCo6uWx0klPvMpfCB2QZEs-hu00On2ZX0bcIDFsyNohqYuBOS8gxdGY7wso9MxDPCqJfYnyMOyRDA3c';
