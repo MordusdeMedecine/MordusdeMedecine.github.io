@@ -855,6 +855,15 @@
         html[data-skin="lav"] .mm-legal-head h3{color:#2F7F58!important}
         html[data-skin="lav"] .mm-legal-head button{background:#F6EFDC!important;color:#2B2640!important}
         html[data-skin="lav"] .mm-legal-body h4,html[data-skin="lav"] .mm-legal-body a{color:#2F7F58!important}
+        html[data-skin="lav"] #mm-push{background:rgba(43,38,64,.7)}
+        html[data-skin="lav"] #mm-push .pp{background:#FBF8F1!important;border:2px solid #5BE49B!important;box-shadow:0 0 14px rgba(91,228,155,.55),0 10px 40px rgba(43,38,64,.4)!important;color:#2B2640!important}
+        html[data-skin="lav"] #mm-push h3{color:#2F7F58!important;font-family:'Share Tech Mono','Courier New',monospace;font-weight:700}
+        html[data-skin="lav"] #mm-push label.pc{border-bottom-color:#E6D9B4!important}
+        html[data-skin="lav"] #mm-push label.pc small,html[data-skin="lav"] #mm-push p{color:#5E597A!important}
+        html[data-skin="lav"] #mm-push input[type=checkbox]{accent-color:#2F7F58}
+        html[data-skin="lav"] #pp-save{background:#34B777!important;color:#0F2A1B!important;box-shadow:0 0 10px rgba(91,228,155,.55)!important}
+        html[data-skin="lav"] #pp-off{background:#F6EFDC!important;color:#2B2640!important}
+        html[data-skin="lav"] #pp-close{color:#5E597A!important}
         #skin-btn{display:inline-flex;align-items:center;cursor:pointer}
 </style>
 </head>
@@ -7924,7 +7933,7 @@ show();
             { tab: 'gratuit', el: 'btn-gratuit', t: '🎁 Le contenu gratuit', p: "Devinettes, jeux et surprises offerts. Tourne la roue : avec un peu de chance, tu repars avec un cadeau !" },
             { tab: 'garde', el: 'btn-garde', t: '🗣️ Le mur des anecdotes', p: "La salle de garde : les histoires les plus drôles (et les plus gênantes) de la communauté. Lis, réagis, et ose raconter la tienne !" },
             { tab: 'appreciation', el: 'btn-appreciation', t: '🌡️ La prise de température', p: "Tu as débloqué et lu un numéro ? Donne ton avis ici : note-le et laisse un petit mot. Seuls les numéros débloqués et lus peuvent être évalués, pour que chaque avis soit un vrai diagnostic !" },
-            { tab: 'accueil', el: 'skin-btn', t: '🎨 La palette', p: "Le rose ne te va pas au teint ? Touche cette palette : deux boules, deux ambiances (rose Raamyah ou gris lavande). Ton choix est gardé sur cet appareil." },
+            { tab: 'accueil', el: 'skin-btn', t: '🎨 La palette', get p() { return skinGet() === 'lav' ? "Tu es en gris lavande, bon choix ! Touche cette palette pour ajouter plus de couleur à ta garde : deux boules, deux ambiances (gris lavande ou rose Raamyah). Ton choix est gardé sur cet appareil." : "Le rose ne te va pas au teint ? Touche cette palette : deux boules, deux ambiances (rose Raamyah ou gris lavande). Ton choix est gardé sur cet appareil."; } },
             { tab: 'accueil', el: 'cht-fab', t: '💬 Rejoins le Chat !', p: "Cette bulle, c'est la machine à café du site : viens papoter avec les autres ou me glisser un petit mot. À tout de suite !" }
         ];
         const VT_DOSSIER = [
