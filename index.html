@@ -4896,7 +4896,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const { data, error } = await sb.from('carousel_slides').select('*').eq('visible', true).order('sort').order('id');
             if (!error) {
                 carouselSlides = (data || []).map(r => ({ badge: r.badge || '', title: r.title || '', description: r.description || '', image: r.image || '', ctaText: r.cta_text || '', ctaTarget: r.cta_target || 'numeros' }));
-            } else { carouselSlides = defaultSlides.slice(); }
+            } else { carouselSlides = []; if (!loadSlides._retry) { loadSlides._retry = 1; setTimeout(loadSlides, 3000); } }
             if (currentSlide >= carouselSlides.length) currentSlide = 0;
             renderCarousel();
         }
