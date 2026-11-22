@@ -1331,7 +1331,7 @@
                             <div id="ed-rich-preview" class="hidden mt-2 p-3 rounded-xl bg-white text-slate-800 text-sm max-h-72 overflow-y-auto"></div>
                             <div id="ed-code-preview" class="hidden mt-2"></div>
                             </div>
-                            <p class="text-[10px] text-slate-500 mt-1">Version du site : 178</p>
+                            <p class="text-[10px] text-slate-500 mt-1">Version du site : 179</p>
                         </div>
                         <div id="ed-img-wrap">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Illustration de la page (facultatif)</label>
@@ -7764,26 +7764,33 @@ show();
             setTimeout(() => {
                 const el = document.getElementById(st.el), h = document.getElementById('mm-vt-hole'), c = document.getElementById('mm-vt-card');
                 if (!el) return;
-                const VH = window.innerHeight;
-                try { el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'instant' }); } catch (e) {}
+                const VH = window.innerHeight, de = document.documentElement, bsb = de.style.scrollBehavior;
+                const my = vtI;
+                de.style.scrollBehavior = 'auto';
+                try { el.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {}
                 let r = el.getBoundingClientRect();
                 const tall = r.height > VH * 0.38;
-                if (r.top < VH * 0.1 || r.bottom > VH * 0.62 || tall) {
-                    try { window.scrollTo({ top: Math.max(0, r.top + window.scrollY - VH * 0.1), behavior: 'instant' }); } catch (e) {}
-                }
-                setTimeout(() => {
+                if (r.top < VH * 0.1 || r.bottom > VH * 0.62 || tall) { try { window.scrollTo(0, Math.max(0, r.top + window.scrollY - VH * 0.1)); } catch (e) {} }
+                let last = -9999, same = 0, n = 0;
+                const place = () => {
+                    if (my !== vtI) { de.style.scrollBehavior = bsb; return; }
                     r = el.getBoundingClientRect();
+                    if (Math.abs(r.top - last) < 1) same++; else same = 0;
+                    last = r.top;
+                    if (same < 3 && ++n < 25) { setTimeout(place, 60); return; }
+                    de.style.scrollBehavior = bsb;
                     const hh = Math.min(r.height + 12, VH * 0.5);
                     h.style.left = (r.left - 6) + 'px'; h.style.top = (r.top - 6) + 'px'; h.style.width = (r.width + 12) + 'px'; h.style.height = hh + 'px';
                     c.style.top = 'auto'; c.style.bottom = 'auto';
                     const ch = c.offsetHeight || 180;
                     let top;
-                    if (tall || r.height > VH * 0.38) top = VH - ch - 14;
+                    if (tall) top = VH - ch - 14;
                     else if (r.top < VH / 2) top = r.bottom + 18;
                     else top = r.top - ch - 18;
                     top = Math.max(8, Math.min(top, VH - ch - 8));
                     c.style.top = top + 'px';
-                }, 80);
+                };
+                place();
             }, 120);
         }
         function vtStart(steps) { VT_CUR = Array.isArray(steps) ? steps : VT_STEPS; vtI = 0; document.getElementById('mm-vt').classList.add('on'); vtPaint(); }
