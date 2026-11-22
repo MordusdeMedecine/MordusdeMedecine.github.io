@@ -1331,7 +1331,7 @@
                             <div id="ed-rich-preview" class="hidden mt-2 p-3 rounded-xl bg-white text-slate-800 text-sm max-h-72 overflow-y-auto"></div>
                             <div id="ed-code-preview" class="hidden mt-2"></div>
                             </div>
-                            <p class="text-[10px] text-slate-500 mt-1">Version du site : 179</p>
+                            <p class="text-[10px] text-slate-500 mt-1">Version du site : 181</p>
                         </div>
                         <div id="ed-img-wrap">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Illustration de la page (facultatif)</label>
@@ -1624,6 +1624,7 @@
                 <span class="font-cursive text-base font-bold text-slate-700">Mordus de Médecine <span class="font-normal text-slate-500">· Mon cahier de garde</span></span>
                 <span id="live-counter" class="font-semibold text-slate-700"></span>
             </div>
+            <button type="button" id="pwa-install" onclick="pwaInstall()" class="hidden mx-auto items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-white shadow-md" style="background:linear-gradient(90deg,#0d9488,#c026d3)">📲 Installer l'application</button>
             <nav class="flex flex-wrap justify-center gap-x-5 gap-y-1.5 font-semibold" aria-label="Informations du site">
                 <button type="button" onclick="openLegal('faq')" class="text-teal-700 hover:underline">FAQ</button>
                 <button type="button" onclick="openLegal('apropos')" class="text-teal-700 hover:underline">À propos / Histoire</button>
@@ -7769,8 +7770,11 @@ show();
                 de.style.scrollBehavior = 'auto';
                 try { el.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {}
                 let r = el.getBoundingClientRect();
-                const tall = r.height > VH * 0.38;
-                if (r.top < VH * 0.1 || r.bottom > VH * 0.62 || tall) { try { window.scrollTo(0, Math.max(0, r.top + window.scrollY - VH * 0.1)); } catch (e) {} }
+                const hd = document.querySelector('header'), nv = document.querySelector('nav.sticky');
+                const safe = Math.max(hd ? hd.getBoundingClientRect().bottom : 0, nv ? nv.getBoundingClientRect().bottom : 0, 0);
+                const fixedEl = !!el.closest('header, nav.sticky');
+                const tall = r.height > (VH - safe) * 0.5;
+                if (!fixedEl && (r.top < safe + 8 || r.bottom > VH * 0.62 || tall)) { try { window.scrollTo(0, Math.max(0, r.top + window.scrollY - safe - 14)); } catch (e) {} }
                 let last = -9999, same = 0, n = 0;
                 const place = () => {
                     if (my !== vtI) { de.style.scrollBehavior = bsb; return; }
@@ -7787,7 +7791,7 @@ show();
                     if (tall) top = VH - ch - 14;
                     else if (r.top < VH / 2) top = r.bottom + 18;
                     else top = r.top - ch - 18;
-                    top = Math.max(8, Math.min(top, VH - ch - 8));
+                    top = Math.max(safe + 8, Math.min(top, VH - ch - 8));
                     c.style.top = top + 'px';
                 };
                 place();
@@ -7824,6 +7828,25 @@ show();
             if (/[?&]dossier\b/.test(location.search) && currentUser) { try { switchTab('dashboard'); } catch (e) {} setTimeout(() => vtStart(VT_DOSSIER), 700); }
             else dossierTourMaybe();
         }, 3200));
+
+        // ====== Installation de l'application (PWA) ======
+        let pwaEv = null;
+        function pwaStandalone() { try { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; } catch (e) { return false; } }
+        function pwaIos() { return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
+        function pwaSync() {
+            const b = document.getElementById('pwa-install'); if (!b) return;
+            const show = !pwaStandalone() && (!!pwaEv || pwaIos());
+            b.classList.toggle('hidden', !show); b.classList.toggle('inline-flex', show);
+        }
+        window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pwaEv = e; pwaSync(); });
+        window.addEventListener('appinstalled', () => { pwaEv = null; pwaSync(); try { toast("Application installée. À bientôt sur ton écran d'accueil !", 'success'); } catch (e) {} });
+        async function pwaInstall() {
+            if (pwaEv) { const e = pwaEv; pwaEv = null; try { e.prompt(); await e.userChoice; } catch (x) {} pwaSync(); return; }
+            if (pwaIos()) {
+                mmPopup({ emoji: '📲', title: "Installer l'application", html: "Sur iPhone et iPad : touche le bouton <b>Partager</b> (le carré avec une flèche vers le haut) dans Safari, puis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.", ok: 'Compris', cancel: 'Fermer' });
+            }
+        }
+        window.addEventListener('load', () => setTimeout(pwaSync, 800));
 
         // ====== Notifications push ======
         const PUSH_PUBLIC_KEY = 'BDAsHdicaCo6uWx0klPvMpfCB2QZEs-hu00On2ZX0bcIDFsyNohqYuBOS8gxdGY7wso9MxDPCqJfYnyMOyRDA3c';
