@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>404 – Dossier introuvable | Mordus de Médecine</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0f172a;--paper:#fbf8f1;--purple:#7e22ce;--fuchsia:#c026d3;--teal:#0d9488;--red:#dc2626}
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:radial-gradient(circle at 20% 0%,#f3e8ff 0,transparent 45%),radial-gradient(circle at 90% 100%,#ccfbf1 0,transparent 45%),var(--paper);display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.wrap{width:100%;max-width:440px;text-align:center}
+.brand{font:700 1.5rem 'Dancing Script',cursive,serif;color:var(--purple);margin-bottom:14px}
+.card{position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 10px 30px rgba(15,23,42,.12);padding:28px 22px 24px;transform:rotate(-.6deg)}
+.tab{position:absolute;left:18px;top:-13px;background:var(--purple);color:#fff;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:8px 8px 0 0}
+.code{font-weight:900;font-size:5.2rem;line-height:1;letter-spacing:.04em;background:linear-gradient(90deg,var(--purple),var(--fuchsia));-webkit-background-clip:text;background-clip:text;color:transparent}
+h1{font-size:1.35rem;margin:8px 0 6px}
+.sub{font:600 1.25rem 'Dancing Script',cursive,serif;color:#475569;margin-bottom:16px}
+.ecg{height:70px;margin:6px -6px 14px;background:#0f172a;border-radius:12px;position:relative;overflow:hidden}
+.ecg svg{position:absolute;inset:0;width:100%;height:100%}
+.ecg .line{fill:none;stroke:#22d3ee;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px #22d3ee);stroke-dasharray:900;stroke-dashoffset:900;animation:draw 2.6s ease-out forwards}
+.ecg .flat{fill:none;stroke:#22d3ee;stroke-width:2.2;stroke-linecap:round;filter:drop-shadow(0 0 4px #22d3ee);opacity:0;animation:fadein .4s 2.4s forwards}
+.ecg .lbl{position:absolute;right:10px;bottom:6px;font:700 10px ui-monospace,monospace;color:#22d3ee;letter-spacing:.1em;animation:blink 1s 2.6s infinite}
+@keyframes draw{to{stroke-dashoffset:0}}@keyframes fadein{to{opacity:1}}@keyframes blink{50%{opacity:.25}}
+.rx{text-align:left;background:#faf5ff;border:1px dashed #c4b5fd;border-radius:12px;padding:12px 14px;font-size:.85rem;color:#334155;line-height:1.5;margin-bottom:18px}
+.rx b{color:var(--purple)}
+.rx ul{padding-left:18px;margin-top:4px}
+.btn{display:block;width:100%;padding:13px 16px;border-radius:999px;font-weight:800;font-size:.9rem;text-decoration:none;margin-top:8px}
+.btn.main{background:linear-gradient(90deg,var(--purple),var(--fuchsia));color:#fff;box-shadow:0 4px 14px rgba(126,34,206,.4)}
+.btn.alt{background:#f1f5f9;color:var(--ink);border:1px solid #cbd5e1}
+.stamp{position:absolute;right:14px;top:22px;border:3px solid var(--red);color:var(--red);font-weight:900;font-size:.72rem;letter-spacing:.1em;padding:3px 8px;border-radius:6px;transform:rotate(12deg);opacity:.8}
+.foot{margin-top:14px;font-size:.72rem;color:#64748b}
+@media (prefers-reduced-motion:reduce){.ecg .line{animation:none;stroke-dashoffset:0}.ecg .flat{animation:none;opacity:1}.ecg .lbl{animation:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="brand">Mordus de Médecine</div>
+  <section class="card">
+    <div class="tab">Dossier N° 404</div>
+    <div class="stamp">INTROUVABLE</div>
+    <div class="code">404</div>
+    <h1>Patient introuvable</h1>
+    <p class="sub">Cette page a quitté le service sans autorisation et sans laisser d'adresse.</p>
+    <div class="ecg" aria-hidden="true">
+      <svg viewBox="0 0 400 70" preserveAspectRatio="none">
+        <path class="line" d="M0 38 L60 38 L72 38 L80 20 L88 56 L96 8 L106 38 L170 38 L180 38 L188 24 L196 50 L204 14 L214 38 L262 38"/>
+        <path class="flat" d="M262 38 L400 38"/>
+      </svg>
+      <span class="lbl">SIGNAL PERDU</span>
+    </div>
+    <div class="rx">
+      <b>Ordonnance du Dr Mordus :</b>
+      <ul>
+        <li>Vérifier l'adresse saisie (une faute de frappe, ça arrive aux meilleurs).</li>
+        <li>Retourner à l'accueil et reprendre le parcours de soins.</li>
+        <li>En cas de récidive, nous écrire via le chat du site.</li>
+      </ul>
+    </div>
+    <a class="btn main" href="./">🏥 Retour à l'accueil</a>
+    <a class="btn alt" href="./#numeros">📚 Voir les numéros</a>
+  </section>
+  <p class="foot">Aucun patient n'a été maltraité pendant la rédaction de cette page.</p>
+</main>
+</body>
+</html>
