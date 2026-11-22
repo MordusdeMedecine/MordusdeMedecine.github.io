@@ -34,13 +34,26 @@ h1{font-size:1.35rem;margin:8px 0 6px}
 .foot{margin-top:14px;font-size:.72rem;color:#64748b}
 @media (prefers-reduced-motion:reduce){.ecg .line{animation:none;stroke-dashoffset:0}.ecg .flat{animation:none;opacity:1}.ecg .lbl{animation:none}}
 </style>
-<script>try{if(localStorage.getItem("mm_skin")==="lav")document.documentElement.setAttribute("data-skin","lav")}catch(e){}</script>
+<script>try{var _s=localStorage.getItem("mm_skin"),_a=localStorage.getItem("mm_skin_auto")==="1",_h=new Date().getHours();if(_a&&(_h>=19||_h<5))_s="soir";if(_s==="lav"||_s==="soir")document.documentElement.setAttribute("data-skin",_s)}catch(e){}</script>
 <style>
 html[data-skin="lav"]{--ink:#2B2640;--paper:#FBF8F1;--purple:#6A5CA3;--fuchsia:#2F7F58;--teal:#2F7F58}
 html[data-skin="lav"] body{background:radial-gradient(circle at 20% 0%,#DDD8EC 0,transparent 50%),radial-gradient(circle at 90% 100%,#F6EFDC 0,transparent 50%),#EDEAF3}
 html[data-skin="lav"] .brand,html[data-skin="lav"] .sub{font-family:'Share Tech Mono','Courier New',monospace!important}
 html[data-skin="lav"] .ecg .line,html[data-skin="lav"] .ecg .flat{stroke:#5BE49B;filter:drop-shadow(0 0 4px #5BE49B)}
 html[data-skin="lav"] .ecg .lbl{color:#5BE49B}
+html[data-skin="soir"] body{background:linear-gradient(#14213D,#0F1A31)!important}
+html[data-skin="soir"]{--ink:#F2EDE4;--purple:#C9D1DC;--fuchsia:#B08D6E;--teal:#C9D1DC}
+html[data-skin="soir"] .card{background:#1E2F52!important;border-color:#3A4F7E!important;box-shadow:0 10px 30px rgba(0,0,0,.5)!important}
+html[data-skin="soir"] .tab{color:#14213D!important}
+html[data-skin="soir"] .code{background:linear-gradient(90deg,#C9D1DC,#B08D6E)!important;-webkit-background-clip:text!important;background-clip:text!important}
+html[data-skin="soir"] .brand,html[data-skin="soir"] .sub{font-family:'Comic Sans MS','Comic Neue','Comic Relief',cursive!important;color:#C9D1DC!important}
+html[data-skin="soir"] h1{color:#F2EDE4}
+html[data-skin="soir"] .rx{background:#14213D!important;border-color:#8E99AB!important;color:#E3E8F0!important}
+html[data-skin="soir"] .btn.main{background:#C9D1DC!important;color:#14213D!important;box-shadow:0 0 10px rgba(201,209,220,.55)!important}
+html[data-skin="soir"] .btn.alt{background:#25396A!important;color:#F2EDE4!important;border-color:#8E99AB!important}
+html[data-skin="soir"] .foot{color:#A9B4C8!important}
+html[data-skin="soir"] .ecg .line,html[data-skin="soir"] .ecg .flat{stroke:#E6ECF5;filter:drop-shadow(0 0 4px #E6ECF5)}
+html[data-skin="soir"] .ecg .lbl{color:#E6ECF5}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
