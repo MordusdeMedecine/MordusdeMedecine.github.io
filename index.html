@@ -1331,7 +1331,7 @@
                             <div id="ed-rich-preview" class="hidden mt-2 p-3 rounded-xl bg-white text-slate-800 text-sm max-h-72 overflow-y-auto"></div>
                             <div id="ed-code-preview" class="hidden mt-2"></div>
                             </div>
-                            <p class="text-[10px] text-slate-500 mt-1">Version du site : 171</p>
+                            <p class="text-[10px] text-slate-500 mt-1">Version du site : 172</p>
                         </div>
                         <div id="ed-img-wrap">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Illustration de la page (facultatif)</label>
@@ -4677,7 +4677,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                 ctaTarget: "numeros"
             }
         ];
-        let carouselSlides = defaultSlides.slice();
+        let carouselSlides = [];
 
         let currentSlide = 0;
 
@@ -4690,7 +4690,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const { data, error } = await sb.from('carousel_slides').select('*').eq('visible', true).order('sort').order('id');
             if (!error) {
                 carouselSlides = (data || []).map(r => ({ badge: r.badge || '', title: r.title || '', description: r.description || '', image: r.image || '', ctaText: r.cta_text || '', ctaTarget: r.cta_target || 'numeros' }));
-            }
+            } else { carouselSlides = defaultSlides.slice(); }
             if (currentSlide >= carouselSlides.length) currentSlide = 0;
             renderCarousel();
         }
@@ -6839,6 +6839,12 @@ show();
                 ? await sb.rpc('get_preview_pages', { p_issue: iss.id })
                 : await sb.from('issue_pages').select('type,title_label,heading,body,image_path').eq('issue_id', iss.id).order('idx');
             const data = q.data, error = q.error;
+            iss.pvTitles = null; iss.pvLast = -1;
+            if (preview && data && data.length) {
+                iss.pvLast = Math.max.apply(null, data.map(r => Number(r.idx)));
+                const q2 = await sb.rpc('get_preview_titles', { p_issue: iss.id });
+                if (!q2.error && q2.data) { iss.pvTitles = {}; q2.data.forEach(r => { iss.pvTitles[Number(r.idx)] = { type: r.type, titleLabel: r.title_label, heading: r.heading }; }); }
+            }
             if (error || !data || !data.length) { toast(preview ? "Aperçu indisponible pour ce numéro." : "Impossible de charger ce numéro. Vérifiez votre accès."); return; }
             iss.preview = !!preview;
             const tocByPage = data.map(p => {
@@ -7317,12 +7323,20 @@ show();
             const body = (t.sections || []).map(sec => {
                 const right = sec.side === 'right';
                 const g = tocGroup(sec.auto);
-                const idxs = g ? iss.pages.map((p, i) => ({ p, i })).filter(x => g.types.indexOf(x.p.type) >= 0).map(x => x.i) : (sec.pages || []).map(n => Number(n) - 1 + (iss.pageShift || 0));
+                const sh = iss.pageShift || 0;
+                const pvt = iss.preview && iss.pvTitles;
+                const pageAt = ix => (pvt && ix - sh > iss.pvLast) ? (iss.pvTitles[ix - sh] || null) : iss.pages[ix];
+                let idxs;
+                if (g) {
+                    idxs = iss.pages.map((p, i) => ({ p, i })).filter(x => g.types.indexOf(x.p.type) >= 0 && !(pvt && x.i - sh > iss.pvLast)).map(x => x.i);
+                    if (pvt) Object.keys(iss.pvTitles).forEach(k => { if (g.types.indexOf(iss.pvTitles[k].type) >= 0) idxs.push(Number(k) + sh); });
+                } else idxs = (sec.pages || []).map(n => Number(n) - 1 + sh);
                 const rows = idxs.map(ix => {
                     const n = ix + 1;
-                    const p = iss.pages[ix];
+                    const p = pageAt(ix);
                     if (!p || p.type === 'toc') return '';
-                    return `<button type="button" onclick="goToPage(${Number(n) - 1})" class="group w-full text-left flex items-end gap-2" style="margin-bottom:.8em">
+                    const locked = pvt && ix - sh > iss.pvLast;
+                    return `<button type="button" onclick="${locked ? 'previewUnlock()' : 'goToPage(' + (Number(n) - 1) + ')'}" class="group w-full text-left flex items-end gap-2" style="margin-bottom:.8em">
                         <span class="min-w-0">
                             <span class="block toc-accent font-semibold uppercase" style="font-size:.6em;letter-spacing:.12em">${richInline(tocNoColor(String(p.titleLabel || '')))}</span>
                             <span class="block font-medium group-hover:underline" style="font-size:1.05em;line-height:1.3">${renderHeading(tocNoColor(p.heading || p.titleLabel || '')).html}</span>
