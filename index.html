@@ -1128,6 +1128,49 @@ html[data-skin="soir"] #admin-panel [data-adsec]:not([data-adsec="clients"]):not
         /* v196 : suggestions de messages du chat */
         html[data-skin="soir"] #cht-chips{background:#F2EDE4!important}
         html[data-skin="soir"] #cht-chips button,html[data-skin="soir"] #cht-chips button.lv{background:#C9D1DC!important;color:#000!important;border:2px solid #14213D!important;box-shadow:0 2px 0 #14213D!important}
+        /* v197 : Admin > Chat champs châtain ; bande du chat en argent */
+        html[data-skin="soir"] #admin-panel [data-adsec="chat"] :is(input,textarea,select){background:#B08D6E!important;color:#000!important;border:1px solid #8A6A4E!important}
+        html[data-skin="soir"] #admin-panel [data-adsec="chat"] ::placeholder{color:#3A2C20!important;opacity:.8}
+        html[data-skin="soir"] #cht-note{background:#C9D1DC!important;color:#000!important;border:1px solid #000!important;border-left:0!important;border-right:0!important}
+        html[data-skin="soir"] #cht-note *{color:#000!important}
+        /* v198 : bouton Se connecter du chat */
+        html[data-skin="soir"] #cht-login{background:#C9D1DC!important;color:#000!important;border:2px solid #14213D!important;box-shadow:0 3px 0 #14213D!important}
+        html[data-skin="lav"] #cht-login{background:#DDD8EC!important;color:#1F5A3E!important;border:2px solid #1F5A3E!important;box-shadow:0 3px 0 #1F5A3E!important}
+        /* v199 : lecteur - surlignés, titres, pensées */
+        html[data-skin="soir"] .neon-rose{background:#C9D1DC!important;color:#0B1222!important;box-shadow:0 0 .45em rgba(201,209,220,.8),0 0 1em rgba(201,209,220,.5)!important}
+        html[data-skin="soir"] .neon-violet{background:#00E5FF!important;color:#0B1222!important;box-shadow:0 0 .45em #00E5FF,0 0 1em #00E5FF99!important}
+        html[data-skin="soir"] #page-heading .mc-fuchsia,html[data-skin="soir"] #page-heading.mc-fuchsia{color:#D5DBE5!important}
+        html[data-skin="soir"] #page-heading .mc-orange,html[data-skin="soir"] #page-heading.mc-orange{color:#B08D6E!important}
+        html[data-skin="lav"] .neon-rose{background:#D9D2EE!important;color:#2B2640!important;box-shadow:0 0 .35em rgba(106,92,163,.25)!important}
+        html[data-skin="lav"] .neon-violet{background:#6A5CA3!important;color:#fff!important;box-shadow:none!important}
+        html[data-skin="lav"] #page-heading .mc-orange,html[data-skin="lav"] #page-heading.mc-orange{color:#6A5CA3!important}
+        html[data-skin="lav"] #page-heading .mc-fuchsia,html[data-skin="lav"] #page-heading.mc-fuchsia{color:#1F5A3E!important}
+        html[data-skin="lav"] #page-text,html[data-skin="lav"] #page-text .font-cursive{font-family:Calibri,'Carlito','Segoe UI',Candara,Arial,sans-serif!important;font-weight:400;letter-spacing:0}
+        /* v200 : lavande - titres, pensées, Entr'acte */
+        html[data-skin="lav"] #page-heading .mc-orange{color:#1F5A3E!important}
+        html[data-skin="lav"] #page-heading .mc-fuchsia{color:#1F5A3E!important}
+        html[data-skin="lav"] #page-content-wrapper[data-ptype="story"] #page-heading .mc-orange{color:#A86412!important}
+        html[data-skin="lav"] #page-content-wrapper[data-ptype="thought"] .neon-rose{background:#F2B35E!important;color:#2B2640!important;box-shadow:0 0 .35em rgba(242,179,94,.5)!important}
+        html[data-skin="lav"] #page-content-wrapper[data-ptype="thought"] .neon-violet{background:#5BE49B!important;color:#14301F!important;box-shadow:0 0 .35em rgba(91,228,155,.5)!important}
+        /* v201 : titres des jeux (lavande) */
+        html[data-skin="lav"] #page-content-wrapper[data-ptype="code"] #page-heading .mc-fuchsia{color:#1F5A3E!important}
+        html[data-skin="lav"] #page-content-wrapper[data-ptype="code"] #page-heading .mc-orange{color:#A86412!important}
+        html[data-skin="lav"] #page-content-wrapper[data-ptype="game"] #page-heading .mc-fuchsia{color:#1F5A3E!important}
+        html[data-skin="lav"] #page-content-wrapper[data-ptype="game"] #page-heading .mc-orange{color:#A86412!important}
+        html[data-skin="lav"] #page-content-wrapper[data-ptype="riddle"] #page-heading .mc-fuchsia{color:#1F5A3E!important}
+        html[data-skin="lav"] #page-content-wrapper[data-ptype="riddle"] #page-heading .mc-orange{color:#A86412!important}
+        /* v203 : pages du pied de page (lavande) : titres en ambre foncé */
+        html[data-skin="lav"] .mm-legal-head h3,html[data-skin="lav"] .mm-legal-body :is(h1,h2,h3,h4,h5){color:#A86412!important}
+        html[data-skin="soir"] .mm-legal-head h3,html[data-skin="soir"] .mm-legal-body :is(h1,h2,h3,h4,h5){color:#B08D6E!important}
+        /* v206 : bouton FAQ de la bulle d'aide (lavande) */
+        html[data-skin="lav"] #help-panel .hp-body button[onclick*="faq"]{background:#DDD8EC!important;border:2px solid #6A5CA3!important;color:#4A3F7A!important}
+        /* v208 : suggestions du chat (lavande) */
+        html[data-skin="lav"] #cht-chips button,html[data-skin="lav"] #cht-chips button.lv{border:2px solid #B8AEDC!important;box-shadow:0 2px 0 #B8AEDC!important}
+        /* v209 : remplissage du bouton Lire pendant le tutoriel */
+        html[data-skin="soir"] .tuto-inject{background-image:linear-gradient(90deg,#B08D6E,#B08D6E)!important;color:#000!important}
+        html[data-skin="soir"] .tuto-inject *:not(.tuto-syringe):not(.tuto-syringe *){color:#000!important}
+        html[data-skin="lav"] .tuto-inject{background-image:linear-gradient(90deg,#F2B35E,#F2B35E)!important;color:#1F5A3E!important}
+        html[data-skin="lav"] .tuto-inject *:not(.tuto-syringe):not(.tuto-syringe *){color:#1F5A3E!important}
         html[data-skin="soir"] #tab-admin .bg-teal-600 *,html[data-skin="soir"] #tab-admin .bg-fuchsia-600 *,html[data-skin="soir"] #tab-admin .bg-purple-600 *{color:#0B1222!important}
         #skin-btn{display:inline-flex;align-items:center;cursor:pointer}
 </style>
@@ -7927,6 +7970,7 @@ show();
         function updateReaderPage() {
             if(!currentIssue || !currentIssue.pages.length) return;
             const pageData = currentIssue.pages[currentPage];
+            { const w0 = document.getElementById('page-content-wrapper'); if (w0) w0.setAttribute('data-ptype', pageData.type || ''); }
             { const sb = document.getElementById('reader-content-box'); if (sb) sb.scrollTop = 0; }
             const tocEl = document.getElementById('page-toc');
             const isToc = pageData.type === 'toc' && !!pageData.toc;
@@ -7984,6 +8028,7 @@ show();
             
             const headingEl = document.getElementById('page-heading');
             setHeading(headingEl, pageData.heading);
+            { const w = document.getElementById('page-content-wrapper'); if (w) w.setAttribute('data-ptype', pageData.type || ''); }
 
             const imgBox = document.getElementById('page-image');
             imgBox.innerHTML = '';
