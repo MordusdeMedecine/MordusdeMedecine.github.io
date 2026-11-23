@@ -310,7 +310,7 @@
         .vz .vli { position: relative; padding-left: 1.2em; } .vz .vli::before { content: '\2022'; position: absolute; left: .3em; }
         .vz .vhr { color: #cbd5e1; text-align: center; }
         .vz .vimg { display: inline-block; font-size: 0; cursor: pointer; line-height: 1.6; }
-        .vz .vimg::before { content: '\1F5BC\FE0F  Image (touchez pour la supprimer)'; font: 700 12px system-ui, sans-serif; background: #ecfeff; border: 1px dashed #0d9488; color: #0f766e; border-radius: 999px; padding: 3px 12px; }
+        .vz .vimg::before { content: '\1F5BC\FE0F  Image (touchez pour la modifier)'; font: 700 12px system-ui, sans-serif; background: #ecfeff; border: 1px dashed #0d9488; color: #0f766e; border-radius: 999px; padding: 3px 12px; }
         #cht-tabs button.neon { position: relative; z-index: 2; background: #0b1220; color: #67e8f9; border-color: #22d3ee; text-shadow: 0 0 6px #22d3ee, 0 0 14px #22d3ee; box-shadow: 0 0 6px #22d3ee, 0 0 16px #22d3ee, 0 0 30px rgba(232,121,249,.8), inset 0 0 8px rgba(34,211,238,.5); animation: chtneon 1.4s ease-in-out infinite alternate; }
         #cht-tabs button.neon.pk { color: #f5d0fe; border-color: #e879f9; text-shadow: 0 0 6px #e879f9, 0 0 14px #e879f9; box-shadow: 0 0 6px #e879f9, 0 0 16px #e879f9, 0 0 30px rgba(34,211,238,.8), inset 0 0 8px rgba(232,121,249,.5); }
         @keyframes chtneon { from { filter: brightness(.9) } to { filter: brightness(1.35) } }
@@ -4388,6 +4388,22 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                 }
             }
         }
+        function vzCut(st, a, b, ins) {
+            const t = st.get(), cuts = [];
+            for (const e of st.map) {
+                if (e.end <= a || e.start >= b) continue;
+                if (e.atom) cuts.push([e.start, e.end]);
+                else if (e.vis) cuts.push([Math.max(a, e.start), Math.min(b, e.end)]);
+                else if (e.nl) { const nx = st.lines.find(l => l.start === e.end); cuts.push([e.start, e.end + (nx ? vzPrefixLen(t, nx.start) : 0)]); }
+            }
+            if (!cuts.length) return;
+            cuts.sort((x, y) => y[0] - x[0]);
+            let out = t, p = cuts[cuts.length - 1][0];
+            for (const c of cuts) out = out.slice(0, c[0]) + out.slice(c[1]);
+            if (ins) { out = out.slice(0, p) + ins + out.slice(p); p += ins.length; }
+            else { const r = vzTidy(out, p); out = r[0]; p = r[1]; }
+            vzCommit(st, out, p);
+        }
         function vzInsert(st, a, b, ins) {
             if (st.single) ins = ins.replace(/\s*\n+\s*/g, ' ');
             const t = st.get(); vzCommit(st, t.slice(0, a) + ins + t.slice(b), a + ins.length);
@@ -4400,16 +4416,16 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             vzInsert(st, a, b, '\n' + pre);
         }
         function vzAttach(id, single) {
-            const ta = document.getElementById(id); if (!ta || VZ[id]) return;
+            const ta = document.getElementById(id); if (!ta) return; if (VZ[id]) { if (VZ[id].ta === ta) return; try { VZ[id].root.remove(); } catch (e) {} delete VZ[id]; }
             const proto = Object.getPrototypeOf(ta), dv = Object.getOwnPropertyDescriptor(proto, 'value');
             const dS = Object.getOwnPropertyDescriptor(proto, 'selectionStart'), dE = Object.getOwnPropertyDescriptor(proto, 'selectionEnd');
             const root = vzEl('div', 'vz'); root.style.display = 'none'; root.contentEditable = 'true'; root.spellcheck = true; root.lang = 'fr'; root.setAttribute('role', 'textbox'); root.setAttribute('aria-multiline', single ? 'false' : 'true');
-            root.dataset.ph = ta.getAttribute('placeholder') || '';
+            root.dataset.ph = ta.getAttribute('placeholder') || ''; root.dataset.vzid = id;
             if (!single) root.style.minHeight = Math.max(4, parseInt(ta.getAttribute('rows') || '6', 10)) * 1.55 + 1 + 'em';
             const st = VZ[id] = { id, ta, root, single: !!single, on: false, map: [], lines: [], sel: [0, 0], undo: [], redo: [], snapAt: 0, comp: false, rendered: null,
                 get: () => dv.get.call(ta), nset: v => dv.set.call(ta, v) };
             ta.parentNode.insertBefore(root, ta.nextSibling);
-            Object.defineProperty(ta, 'value', { configurable: true, get() { return dv.get.call(ta); }, set(v) { dv.set.call(ta, v); if (st.on) { vzRender(st); st.sel = [String(v == null ? '' : v).length, String(v == null ? '' : v).length]; st.undo = []; st.redo = []; } } });
+            Object.defineProperty(ta, 'value', { configurable: true, get() { return dv.get.call(ta); }, set(v) { const old = dv.get.call(ta); if (st.on && vzOp && String(v == null ? '' : v) !== old) { if (st.undo[st.undo.length - 1] !== old) { st.undo.push(old); if (st.undo.length > 80) st.undo.shift(); } st.redo = []; } dv.set.call(ta, v); if (st.on) { vzRender(st); st.sel = [String(v == null ? '' : v).length, String(v == null ? '' : v).length]; if (!vzOp) { st.undo = []; st.redo = []; } } } });
             const live = k => { if (!st.on) return (k ? dE : dS).get.call(ta); const s = vzGetSel(st); return s ? s[k] : st.sel[k]; };
             Object.defineProperty(ta, 'selectionStart', { configurable: true, get() { return live(0); }, set(v) {} });
             Object.defineProperty(ta, 'selectionEnd', { configurable: true, get() { return live(1); }, set(v) {} });
@@ -4424,7 +4440,13 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             root.addEventListener('beforeinput', e => {
                 const ty = e.inputType;
                 if (/^(insertParagraph|insertLineBreak|delete.*|historyUndo|historyRedo)$/.test(ty) && !st.comp) vzFresh(st);
-                const sel = vzGetSel(st) || st.sel;
+                let sel = vzGetSel(st) || st.sel;
+                if (!st.comp && sel[0] !== sel[1] && (/^delete/.test(ty) || ty === 'insertText' || ty === 'insertReplacementText')) {
+                    e.preventDefault(); vzFresh(st); sel = vzGetSel(st) || sel;
+                    let ins = /^insert/.test(ty) ? (e.data != null ? e.data : (e.dataTransfer ? e.dataTransfer.getData('text/plain') : '')) : '';
+                    if (st.single) ins = ins.replace(/\s*\n+\s*/g, ' ');
+                    vzCut(st, sel[0], sel[1], ins); return;
+                }
                 if (ty === 'insertParagraph' || ty === 'insertLineBreak') { e.preventDefault(); if (!st.single) vzEnter(st, sel[0], sel[1]); }
                 else if (/^delete(Content|Word|SoftLine|HardLine)Backward$/.test(ty) && sel[0] === sel[1]) { e.preventDefault(); vzDelBack(st, sel[0]); }
                 else if (/^delete(Content|Word|SoftLine|HardLine)Forward$/.test(ty) && sel[0] === sel[1]) { e.preventDefault(); vzDelFwd(st, sel[0]); }
@@ -4437,12 +4459,33 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             root.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 'z' || e.key === 'Z' || e.key === 'y')) { e.preventDefault(); vzUndo(st, e.key === 'y' || e.shiftKey); } else if (e.key === 'Enter' && st.single) e.preventDefault(); });
             root.addEventListener('click', e => {
                 const a = e.target.closest && e.target.closest('.vimg'); if (!a) return;
-                const en = st.map.find(x => x.node.parentElement === a); if (!en || !confirm('Supprimer cette image du texte ?')) return;
+                const en = st.map.find(x => x.node.parentElement === a); if (!en) return;
+                if (['ed-body', 'ed-intro', 'sp-body', 'fr-body'].indexOf(id) >= 0) { EDBODY_ID = id; edCaret = [en.start, en.start, id]; edImageOpen(); return; }
+                if (!confirm('Supprimer cette image du texte ?')) return;
                 const t = st.get(); vzCommit(st, t.slice(0, en.start) + t.slice(en.end), en.start);
             });
             root.addEventListener('focus', () => { ta.dispatchEvent(new Event('focus')); });
             root.addEventListener('blur', () => { clearTimeout(st.tm); if (st.on && !st.comp && st.get() !== st.rendered) vzRender(st); ta.dispatchEvent(new Event('blur')); });
             VZ.__sc = VZ.__sc || (document.addEventListener('selectionchange', () => { Object.keys(VZ).forEach(k => { const s = VZ[k]; if (!s || !s.on) return; const v = vzGetSel(s); if (v) { s.sel = v; if (s.id === 'ed-body') edCaret = v.slice(); } }); }), 1);
+        }
+        let vzOp = false;
+        document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[id$="-bar"],#edimg-modal,.mm-colmenu')) { vzOp = true; setTimeout(() => { vzOp = false; }, 0); } }, true);
+        let edLastF = null;
+        document.addEventListener('focusin', e => { const t = e.target; if (t && (t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && t.type === 'text') || (t.classList && t.classList.contains('vz')))) edLastF = t; });
+        function edUndo(redo) {
+            let t = edLastF; if (!t || !document.contains(t)) t = bodyEl();
+            const st = Object.keys(VZ).map(k => VZ[k]).find(x => x && x.root && (x.root === t || x.ta === t));
+            if (st && st.on) { vzFresh(st); vzUndo(st, redo); try { st.root.focus({ preventScroll: true }); } catch (e) {} return; }
+            if (!t) return; t.focus(); try { document.execCommand(redo ? 'redo' : 'undo'); } catch (e) {}
+        }
+        function edAddUR() {
+            const hd = document.getElementById('ed-heading'); let hb = hd && hd.nextElementSibling; while (hb && hb.classList.contains('vz')) hb = hb.nextElementSibling;
+            const cls = 'px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-xs';
+            const bars = ['ed-rich-bar', 'ci-bar', 'sp-bar', 'fr-bar', 'hl-bar', 'of-bar', 'toc-bar', 'ed-cv-bar', 'cvp-bar'].map(i => document.getElementById(i)); bars.push(hb);
+            bars.forEach(b => { if (!b || b.dataset.ur || !b.children.length) return; b.dataset.ur = '1';
+                const w = document.createElement('span'); w.className = 'inline-flex gap-1';
+                w.innerHTML = '<button type="button" class="' + cls + '" onmousedown="event.preventDefault()" onclick="edUndo(false)" title="Annuler">↶ Annuler</button><button type="button" class="' + cls + '" onmousedown="event.preventDefault()" onclick="edUndo(true)" title="Rétablir">↷ Rétablir</button>';
+                b.insertBefore(w, b.firstChild); });
         }
         function vzSet(id, on) {
             const st = VZ[id]; if (!st) return; on = !!on;
@@ -6648,7 +6691,7 @@ show();
         function renderTocBuilder() {
             const el = document.getElementById('ed-toc-sections');
             const n = edToc.sections.length;
-            if (!el.dataset.fin) { el.dataset.fin = '1'; el.addEventListener('focusin', e => { if (e.target.id && /^toc-[tic]-\d+$/.test(e.target.id)) FT.toc.id = e.target.id; }); }
+            if (!el.dataset.fin) { el.dataset.fin = '1'; el.addEventListener('focusin', e => { const fid = e.target.id || (e.target.dataset && e.target.dataset.vzid); if (fid && /^toc-[tic]-\d+$/.test(fid)) FT.toc.id = fid; }); }
             const sel = sc => '<option value="">Titre personnalisé (pages au choix)</option>' + TOC_GROUPS.map(g => '<option value="' + g.k + '"' + (sc.auto === g.k ? ' selected' : '') + '>' + g.label + '</option>').join('').replace('<option value="">', '<option value=""' + (sc.auto ? '' : ' selected') + '>');
             el.innerHTML = n ? edToc.sections.map((sc, i) => `
                 <div class="bg-slate-900/60 border border-slate-700 rounded-xl p-3 space-y-2">
@@ -6681,6 +6724,7 @@ show();
                 </div>`).join('') : '<p class="text-[11px] text-slate-500 italic">Aucune section pour le moment.</p>';
             document.getElementById('toc-fmt').classList.toggle('hidden', !n);
             if (n && !document.getElementById(FT.toc.id)) FT.toc.id = 'toc-t-0';
+            edToc.sections.forEach((sc, i) => { vzAttach('toc-t-' + i, true); vzSet('toc-t-' + i, true); vzAttach('toc-i-' + i, false); vzSet('toc-i-' + i, true); });
             edToc.sections.forEach((sc, i) => showTocImage(i));
         }
         async function showTocImage(i) {
@@ -8256,9 +8300,9 @@ show();
                 if (ev === 'PASSWORD_RECOVERY') document.getElementById('recovery-modal').classList.remove('hidden');
             });
             { let sec = 'clients'; try { sec = localStorage.getItem('mm_adsec') || 'clients'; } catch (e) {} adminSection(sec); }
-            ['ed-body', 'ed-intro', 'sp-body', 'fr-body', 'of-desc'].forEach(i => vzAttach(i, false)); vzAttach('ed-heading', true);
-            ['ed-intro', 'sp-body', 'fr-body', 'of-desc', 'ed-heading'].forEach(i => vzSet(i, true)); vzSet('ed-body', richActive());
-            loadCase(); loadReviewWall(); ensureVisitor(); trkStart(); buildHlBar(); buildSpBar(); buildFrBar(); buildIntroBar(); loadSitePages().then(renderAdminPages); mkFt('cv', 'ed-body', onEdBodyInput); mkFt('of', 'of-desc'); mkFt('toc', 'toc-t-0', function () { const e = document.getElementById(FT.toc.id); if (e) e.dispatchEvent(new Event('input')); }); buildFtBar('toc', 'toc-bar'); buildFtBar('cv', 'ed-cv-bar'); buildFtBar('of', 'of-bar'); loadOffers();
+            ['ed-body', 'ed-intro', 'sp-body', 'fr-body', 'of-desc', 'is-highlight'].forEach(i => vzAttach(i, false)); vzAttach('ed-heading', true);
+            ['ed-intro', 'sp-body', 'fr-body', 'of-desc', 'ed-heading', 'is-highlight'].forEach(i => vzSet(i, true)); vzSet('ed-body', richActive());
+            loadCase(); loadReviewWall(); ensureVisitor(); trkStart(); buildHlBar(); buildSpBar(); buildFrBar(); buildIntroBar(); loadSitePages().then(renderAdminPages); mkFt('cv', 'ed-body', onEdBodyInput); mkFt('of', 'of-desc'); mkFt('toc', 'toc-t-0', function () { const e = document.getElementById(FT.toc.id); if (e) e.dispatchEvent(new Event('input')); }); buildFtBar('toc', 'toc-bar'); buildFtBar('cv', 'ed-cv-bar'); buildFtBar('of', 'of-bar'); edAddUR(); loadOffers();
             { const y = document.getElementById('foot-year'); if (y) y.textContent = new Date().getFullYear(); }
             { const rf = window.refreshUI; window.refreshUI = function () { const r = rf.apply(this, arguments); try { loadNotifs(); } catch (e) {} try { if (document.readyState === 'complete') setTimeout(dossierTourMaybe, 1500); } catch (e) {} return r; }; loadNotifs(); setInterval(() => { if (currentUser) loadNotifs(); }, 60000); }
             setTimeout(function anecPopup() {
