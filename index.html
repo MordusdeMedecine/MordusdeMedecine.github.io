@@ -3114,7 +3114,7 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
             try {
                 const { data, error } = await sb.rpc('live_count');
                 if (error || !data) return;
-                const v = Math.max(1, Number(data.visitors) || 0), m = Number(data.members) || 0;
+                const isAdm = !!(currentUser && currentUser.role === 'admin'), v = isAdm ? (Number(data.visitors) || 0) : Math.max(1, Number(data.visitors) || 0), m = Number(data.members) || 0;
                 el.innerHTML = '<span class="live-dot"></span>' + v + ' visiteur' + (v > 1 ? 's' : '') + ' en ligne' + (m ? ' <span class="opacity-70">(dont ' + m + ' connecté' + (m > 1 ? 's' : '') + ')</span>' : '');
             } catch (e) {}
         }
