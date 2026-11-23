@@ -4615,7 +4615,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             return navigator.share(data);
         }
         function frShareOnce(done, img) {
-            const url = location.origin + location.pathname, text = 'Découvre Mordus de Médecine, le magazine d\'humour médical 🩺';
+            const url = mmLink(), text = 'Découvre Mordus de Médecine, le magazine d\'humour médical 🩺';
             if (navigator.share) { mmShare(text, url, img).then(done, () => {}); return; }
             if (frPending) return;
             frPending = true;
@@ -5439,8 +5439,18 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
         let sidebarOpen = false;
         let authMode = 'register';
 
+        // L'adresse suit la section affichée : un lien copié ou partagé ouvre la bonne section (?tab=numeros, gratuit, garde)
+        function mmLink() { return location.origin + location.pathname + (/^\?tab=[a-z]+$/.test(location.search) ? location.search : ''); }
+        function mmUrlSync(tab) {
+            try {
+                if (!/^(|\?tab=[a-z]+)$/.test(location.search) || /access_token|type=recovery/.test(location.hash)) return;
+                const q = ['numeros', 'gratuit', 'garde'].indexOf(tab) >= 0 ? '?tab=' + tab : '';
+                if (location.search !== q) history.replaceState(null, '', location.pathname + q);
+            } catch (e) {}
+        }
         function switchTab(tab) {
             if (tab === 'admin' && !(currentUser && currentUser.role === 'admin')) tab = 'accueil';
+            mmUrlSync(tab);
             if (tab === 'dashboard' && currentUser) loadCurrentUser().then(() => { refreshUI(); renderDashboard(); });
             if (tab === 'appreciation') renderReviewsTab();
             if (tab === 'garde') { renderGarde(); gardeMarkSeen(); }
@@ -7969,7 +7979,7 @@ show();
             }
             if (d.celebrate) celebrate();
             if (typeof d.share === 'string' && d.share) {
-                const url = location.origin + location.pathname, text = d.share.slice(0, 200);
+                const url = mmLink(), text = d.share.slice(0, 200);
                 try { track('share', 'score'); } catch (e) {}
                 if (navigator.share) mmShare(text, url, f.dataset.shimg).catch(() => {});
                 else { try { window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank', 'noopener'); } catch (e) {} }
@@ -8575,7 +8585,7 @@ show();
         }
         // ouverture depuis une notification : ?tab=garde, ?tab=numeros…
         window.addEventListener('load', () => setTimeout(() => {
-            try { const t = new URLSearchParams(location.search).get('tab'); if (t && ['accueil', 'numeros', 'gratuit', 'garde'].indexOf(t) >= 0) { switchTab(t); history.replaceState(null, '', location.pathname); } } catch (e) {}
+            try { const t = new URLSearchParams(location.search).get('tab'); if (t && ['accueil', 'numeros', 'gratuit', 'garde'].indexOf(t) >= 0) { switchTab(t); } } catch (e) {}
         }, 900));
 
         function skinAuto(){ try { return localStorage.getItem('mm_skin_auto') === '1'; } catch (e) { return false; } }
