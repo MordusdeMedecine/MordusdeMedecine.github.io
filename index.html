@@ -8366,7 +8366,50 @@ show();
             });
             const tokenFromUrl = new URLSearchParams(window.location.search).get('token');
             if (tokenFromUrl) activateToken(tokenFromUrl);
+            signupNudgeInit();
         });
+        // ====== INVITATION À CRÉER UN COMPTE GRATUIT (visiteurs non connectés, avant qu'ils ne partent) ======
+        window.addEventListener('load', () => setTimeout(() => { try { signupNudgeInit(); } catch (e) {} }, 2500));
+        function signupNudgeInit() {
+            if (window.__nudge) return;
+            const KEY = 'mm_signup_popup', GAP = 3 * 86400000, t0 = Date.now() - Math.round(performance.now());
+            let shown = false, tabs = 0;
+            const ready = () => !shown && !currentUser && Date.now() - t0 > 8000;
+            const blocked = () => {
+                const vt = document.getElementById('mm-vt'); if (vt && vt.classList.contains('on')) return true;
+                const rv = document.getElementById('reader-view'), am = document.getElementById('auth-modal'), cp = document.getElementById('cht-panel'), nf = document.getElementById('mm-404');
+                return (rv && !rv.classList.contains('hidden')) || (am && !am.classList.contains('hidden')) || document.getElementById('mm-popup') || document.getElementById('legal-modal') || (cp && !cp.classList.contains('hidden') && getComputedStyle(cp).display !== 'none' && getComputedStyle(cp).visibility !== 'hidden') || (nf && !nf.classList.contains('hidden'));
+            };
+            const fire = why => {
+                if (!ready() || blocked()) return false;
+                try { const t = +localStorage.getItem(KEY) || 0; if (Date.now() - t < GAP) { shown = true; return false; } localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
+                shown = true;
+                try { track('popup_inscription', why); } catch (e) {}
+                mmPopup({
+                    emoji: '🎭', title: 'Avant de partir…',
+                    html: '<p style="margin:.2rem 0 .6rem">Créez votre <b>compte gratuit</b> en une minute et profitez de toutes les activités gratuites :</p>'
+                        + '<ul style="text-align:left;margin:0 auto .6rem;display:inline-block;list-style:none;padding:0;line-height:1.6"><li>🎲 Certains jeux et devinettes</li><li>📝 Partager une anecdote au cours du service</li><li>💬 Réagir et discuter dans la Salle de garde</li><li>🔔 Être prévenu des nouveaux numéros</li></ul>'
+                        + '<p style="margin:.2rem 0 0;font-size:.85rem;color:#64748b">Et quand vous le voulez, à votre rythme, déverrouillez un numéro pour vous amuser encore plus.</p>',
+                    ok: 'Créer mon compte gratuit', cancel: 'Plus tard',
+                    onOk: () => { try { track('popup_inscription_clic', why); } catch (e) {} openAuthModal('register'); }
+                });
+                return true;
+            };
+            window.__nudge = { fire: fire, blocked: blocked, ready: ready };
+            // ordinateur : le curseur sort par le haut de la fenêtre (onglets, bouton fermer)
+            document.addEventListener('mouseout', e => { if (!e.relatedTarget && e.clientY <= 6) fire('sortie'); });
+            // téléphone : remontée rapide vers le haut (geste pour quitter / changer d'onglet)
+            let ly = window.scrollY, lt = Date.now(), up = 0;
+            window.addEventListener('scroll', () => {
+                const y = window.scrollY, t = Date.now(), dy = ly - y, dt = Math.max(1, t - lt);
+                if (dy > 0 && dy / dt > 1.2) up += dy; else if (dy < 0) up = 0;
+                if (up > 600 && y < 200 && Date.now() - t0 > 25000) { up = 0; fire('remontee'); }
+                ly = y; lt = t;
+            }, { passive: true });
+            // visiteur engagé : a parcouru 3 sections ou passé 90 s sans s'inscrire
+            const sw = window.switchTab; window.switchTab = function () { tabs++; return sw.apply(this, arguments); };
+            setInterval(() => { if (document.visibilityState === 'visible' && (tabs >= 3 || Date.now() - t0 > 90000)) fire('engage'); }, 5000);
+        }
             // ====== PAGE 404 ======
         const MM_ROUTES = ['', 'accueil', 'numeros', 'gratuit', 'garde', 'appreciation', 'dashboard', 'admin'];
         function show404() { const e = document.getElementById('mm-404'); if (e) { e.classList.remove('hidden'); e.scrollTop = 0; document.title = '404 – Dossier introuvable | Mordus de Médecine'; try { track('page_404', (location.pathname + location.hash).slice(0, 80)); } catch (x) {} } }
