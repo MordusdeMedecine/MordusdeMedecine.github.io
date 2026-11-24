@@ -20,6 +20,7 @@
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://mordus2med.com/apercu-social.jpg">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -1232,9 +1233,22 @@ html[data-skin="lav"] #cht-stk .st-beta::after{border-color:#E6D9B4}
 html[data-skin="soir"] #cht-stk .st-beta{background:#B08D6E;border-color:#8A6A4E;color:#000}
 html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         #skin-btn{display:inline-flex;align-items:center;cursor:pointer}
+
+        /* Boutons du premier écran, par thème */
+        .cta-a,.cta-b{color:#fff;border:2px solid transparent;transition:transform .1s}
+        .cta-a:active,.cta-b:active{transform:translateY(2px)}
+        .cta-a{background:linear-gradient(135deg,#0d9488,#059669)}
+        .cta-b{background:linear-gradient(135deg,#c026d3,#9333ea)}
+        html[data-skin="lav"] .cta-a{background:linear-gradient(135deg,#2F7F58,#1F5C3D);border-color:#5BE49B}
+        html[data-skin="lav"] .cta-b{background:linear-gradient(135deg,#7B6CB8,#6A5CA3);border-color:#DDD8EC}
+        html[data-skin="soir"] .cta-a{background:linear-gradient(135deg,#25396A,#1E2F52);color:#F2EDE4;border-color:#B08D6E}
+        html[data-skin="soir"] .cta-b{background:linear-gradient(135deg,#B08D6E,#8A6A4E);color:#14213D;border-color:#F2EDE4}
 </style>
 </head>
 <body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen font-sans">
+<div id="mm-splash" style="position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#f1f5f9;color:#0f766e;font-family:Georgia,serif;text-align:center;padding:24px;transition:opacity .25s"><div style="font-size:44px">🩺</div><div style="font-size:22px;font-weight:700">Mordus de Médecine</div><div style="font-size:14px;color:#64748b">Mon cahier de garde · on ouvre le service…</div><div style="width:120px;height:4px;border-radius:9px;background:#e2e8f0;overflow:hidden"><div style="width:40%;height:100%;background:#0d9488;animation:mmsp 1s ease-in-out infinite alternate"></div></div></div>
+<style>@keyframes mmsp{from{margin-left:0}to{margin-left:60%}}html[data-skin="soir"] #mm-splash{background:#0b1220!important;color:#5eead4!important}html[data-skin="lav"] #mm-splash{background:#ece9f4!important}</style>
+<script>(function(){function r(){var e=document.getElementById('mm-splash');if(!e)return;e.style.opacity='0';setTimeout(function(){e&&e.parentNode&&e.parentNode.removeChild(e)},300)}window.addEventListener('load',function(){setTimeout(r,120)});setTimeout(r,6000)})()</script>
 
     <!-- HEADER SECTION (Réarrangé pour laisser tout l'espace au titre) -->
     <header class="bg-teal-50/90 border-b border-teal-100 shadow-xs sticky top-0 z-30 backdrop-blur-md">
@@ -1291,6 +1305,11 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         <div id="tab-accueil" class="space-y-8 max-w-4xl mx-auto">
             
             <div id="greeting" class="greet-card flex items-center gap-4"></div>
+
+            <div id="first-cta" class="grid grid-cols-2 gap-3">
+                <button type="button" onclick="switchTab('gratuit')" class="cta-a rounded-2xl px-3 py-4 font-bold text-sm sm:text-base shadow-md">🎮 Jouer gratuitement<span class="block text-[11px] font-semibold opacity-90 mt-0.5">Enquête, charades, jeux</span></button>
+                <button type="button" onclick="switchTab('garde')" class="cta-b rounded-2xl px-3 py-4 font-bold text-sm sm:text-base shadow-md">🛏️ Lire les anecdotes<span class="block text-[11px] font-semibold opacity-90 mt-0.5">Le mur de la Salle de garde</span></button>
+            </div>
 
             <div id="next-issue" class="hidden greet-card flex items-center gap-3" style="border-style:solid;border-color:#5eead4;background:linear-gradient(120deg,#ecfeff,#fdf4ff)"></div>
 
