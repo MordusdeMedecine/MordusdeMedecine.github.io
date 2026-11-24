@@ -2266,6 +2266,7 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         // ====== CONFIG SUPABASE : remplace par les valeurs de ton projet ======
         const SUPABASE_URL = 'https://qjrdhdwazoteemhgpclb.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6ShoQb2xn_yOlvwsU-gmVw__YzvbYOV';
+        const MM_TAB0 = (() => { try { return new URLSearchParams(location.search).get('tab'); } catch (e) { return null; } })();
         const MM_RECOVERY = /type=recovery/.test(String(location.hash) + String(location.search));
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         function showRecovery() { const m = document.getElementById('recovery-modal'); if (m) m.classList.remove('hidden'); }
@@ -5444,7 +5445,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
         function mmUrlSync(tab) {
             try {
                 if (!/^(|\?tab=[a-z]+)$/.test(location.search) || /access_token|type=recovery/.test(location.hash)) return;
-                const q = ['numeros', 'gratuit', 'garde', 'appreciation'].indexOf(tab) >= 0 ? '?tab=' + tab : '';
+                const q = ['numeros', 'gratuit', 'garde', 'appreciation', 'dashboard', 'admin'].indexOf(tab) >= 0 ? '?tab=' + tab : '';
                 if (location.search !== q) history.replaceState(null, '', location.pathname + q);
             } catch (e) {}
         }
@@ -8585,20 +8586,21 @@ show();
         }
         // rechargement de la page : on revient à la section qu'on visitait (Mon dossier et Admin attendent que la connexion soit rétablie)
         window.addEventListener('load', () => {
-            let saved = null; try { saved = sessionStorage.getItem('mm_tab'); } catch (e) {}
-            if (!saved || saved === 'accueil' || /tab=/.test(location.search) || /^#/.test(location.hash) && location.hash.length > 1) return;
+            let saved = null, fromUrl = false;
+            try { const q = MM_TAB0; if (q === 'dashboard' || q === 'admin') { saved = q; fromUrl = true; } else if (!q) saved = sessionStorage.getItem('mm_tab'); } catch (e) {}
+            if (!saved || saved === 'accueil' || (!fromUrl && /^#/.test(location.hash) && location.hash.length > 1)) return;
             const priv = saved === 'dashboard' || saved === 'admin';
             let tries = 0;
             const go = () => {
                 tries++;
-                if (priv && !(currentUser && (saved !== 'admin' || currentUser.role === 'admin'))) { if (tries < 12) setTimeout(go, 700); return; }
+                if (priv && !(currentUser && (saved !== 'admin' || currentUser.role === 'admin'))) { if (tries < 12) setTimeout(go, 700); else if (fromUrl) { try { switchTab('accueil'); } catch (e) {} } return; }
                 try { switchTab(saved); } catch (e) {}
             };
             setTimeout(go, 1200);
         });
         // ouverture depuis une notification : ?tab=garde, ?tab=numeros…
         window.addEventListener('load', () => setTimeout(() => {
-            try { const t = new URLSearchParams(location.search).get('tab'); if (t && ['accueil', 'numeros', 'gratuit', 'garde', 'appreciation'].indexOf(t) >= 0) { switchTab(t); } } catch (e) {}
+            try { const t = new URLSearchParams(location.search).get('tab'); if (t && ['accueil', 'numeros', 'gratuit', 'garde', 'appreciation'].indexOf(t) >= 0) { switchTab(t); }  /* dashboard/admin : voir plus bas (attend la connexion) */ } catch (e) {}
         }, 900));
 
         function skinAuto(){ try { return localStorage.getItem('mm_skin_auto') === '1'; } catch (e) { return false; } }
