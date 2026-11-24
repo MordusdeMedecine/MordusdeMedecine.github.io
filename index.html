@@ -1251,13 +1251,16 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         html[data-skin="soir"] .cta-b{background:linear-gradient(135deg,#B08D6E,#8A6A4E);color:#14213D;border-color:#F2EDE4}
 
         /* Bandeau de bienvenue (visiteurs Facebook) */
-        #fb-welcome{background:linear-gradient(135deg,#fff1f2,#fdf4ff);border:2px solid #f0abfc;color:#4a044e;font-family:Calibri,'Carlito',system-ui,sans-serif}
+        #fb-welcome{background:linear-gradient(135deg,#fff1f2,#fdf4ff);border:3px solid #ff2bd6;--nc:255,43,214;color:#4a044e;font-family:Calibri,'Carlito',system-ui,sans-serif}
+        #fb-welcome{border-width:3px;box-shadow:0 0 6px rgba(var(--nc),.9),0 0 18px rgba(var(--nc),.6),inset 0 0 10px rgba(var(--nc),.25);animation:fbwGlow 2.2s ease-in-out infinite alternate}
+        @keyframes fbwGlow{from{box-shadow:0 0 4px rgba(var(--nc),.8),0 0 12px rgba(var(--nc),.45),inset 0 0 8px rgba(var(--nc),.2)}to{box-shadow:0 0 10px rgba(var(--nc),1),0 0 28px rgba(var(--nc),.75),inset 0 0 14px rgba(var(--nc),.35)}}
+        @media (prefers-reduced-motion:reduce){#fb-welcome{animation:none}}
         #fb-welcome .fbw-b{background:linear-gradient(135deg,#c026d3,#9333ea);color:#fff}
         #fb-welcome .fbw-x{background:transparent;color:#86198f;border:1px solid #f0abfc}
-        html[data-skin="lav"] #fb-welcome{background:#FBF8F1;border-color:#6A5CA3;color:#2B2640;font-family:'Share Tech Mono','Courier New',monospace}
+        html[data-skin="lav"] #fb-welcome{background:#FBF8F1;border-color:#2BD67B;--nc:43,214,123;color:#2B2640;font-family:'Share Tech Mono','Courier New',monospace}
         html[data-skin="lav"] #fb-welcome .fbw-b{background:linear-gradient(135deg,#2F7F58,#1F5C3D);color:#fff}
         html[data-skin="lav"] #fb-welcome .fbw-x{color:#6A5CA3;border-color:#6A5CA3}
-        html[data-skin="soir"] #fb-welcome{background:#1E2F52;border-color:#B08D6E;color:#F2EDE4;font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans','Chalkboard SE',cursive}
+        html[data-skin="soir"] #fb-welcome{background:#1E2F52;border-color:#22E5FF;--nc:34,229,255;color:#F2EDE4;font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans','Chalkboard SE',cursive}
         html[data-skin="soir"] #fb-welcome .fbw-b{background:#B08D6E;color:#14213D}
         html[data-skin="soir"] #fb-welcome .fbw-x{color:#F2EDE4;border-color:#B08D6E}
 </style>
