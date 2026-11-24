@@ -2634,6 +2634,7 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
             const n = NOTIFS.filter(x => !x.read).length;
             if (badge) { badge.textContent = n > 9 ? '9+' : String(n); badge.classList.toggle('hidden', !n); }
             gardeBadgeSet(NOTIFS.filter(x => !x.read && x.kind === 'anecdote').length);
+            try { const nb = NOTIFS.filter(x => !x.read && x.kind === 'newuser').length, btn = document.querySelector('[data-adnav="clients"]'); if (btn) { let b = document.getElementById('ad-new-badge'); if (!b) { b = document.createElement('span'); b.id = 'ad-new-badge'; b.className = 'ml-1.5 px-1.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold'; btn.appendChild(b); } b.textContent = nb > 9 ? '9+' : String(nb); b.classList.toggle('hidden', !nb); } } catch (e) {}
             renderNotifs();
         }
         function renderNotifs() {
@@ -2642,8 +2643,8 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
             const n = NOTIFS.filter(x => !x.read).length;
             box.innerHTML = '<div class="rounded-xl border border-fuchsia-200 bg-fuchsia-50/60 p-4"><div class="flex items-center justify-between gap-2 mb-2"><span class="text-sm font-bold text-slate-800">🔔 Notifications' + (n ? ' <span class="ml-1 px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px]">' + n + '</span>' : '') + '</span>' + (n ? '<button type="button" onclick="notifReadAll()" class="text-[11px] text-teal-700 underline">Tout marquer comme lu</button>' : '') + '</div>'
                 + (NOTIFS.length ? '<div class="space-y-1.5 max-h-72 overflow-y-auto">' + NOTIFS.map(x => '<button type="button" onclick="notifOpen(' + x.id + ')" class="w-full text-left text-xs rounded-lg px-2.5 py-2 border ' + (x.read ? 'bg-white/70 border-slate-200 text-slate-600' : 'bg-white border-fuchsia-300 text-slate-900 font-semibold') + '">'
-                    + (x.kind === 'anecdote' ? (x.detail === 'mine' ? '✅ Votre anecdote a été publiée dans la Salle de garde' : '📢 Nouvelle anecdote de <b>' + esc(x.actor) + '</b> dans la Salle de garde') : x.kind === 'reaction' ? emo(x.detail) + ' <b>' + esc(x.actor) + '</b> a réagi à votre anecdote' : '💬 <b>' + esc(x.actor) + '</b> a commenté votre anecdote')
-                    + ' <span class="font-normal text-slate-500">« ' + esc(x.snippet) + '… »</span>'
+                    + (x.kind === 'newuser' ? '🆕 Nouvel inscrit : <b>' + esc(x.actor) + '</b>' + (x.detail === 'pro' ? ' <span class="font-normal text-slate-500">(professionnel de santé)</span>' : x.detail === 'passionne' ? ' <span class="font-normal text-slate-500">(passionné)</span>' : '') : x.kind === 'anecdote' ? (x.detail === 'mine' ? '✅ Votre anecdote a été publiée dans la Salle de garde' : '📢 Nouvelle anecdote de <b>' + esc(x.actor) + '</b> dans la Salle de garde') : x.kind === 'reaction' ? emo(x.detail) + ' <b>' + esc(x.actor) + '</b> a réagi à votre anecdote' : '💬 <b>' + esc(x.actor) + '</b> a commenté votre anecdote')
+                    + (x.kind === 'newuser' ? '' : ' <span class="font-normal text-slate-500">« ' + esc(x.snippet) + '… »</span>')
                     + (x.kind === 'comment' ? '<span class="block font-normal text-slate-700 mt-0.5">« ' + esc(x.detail) + ' »</span>' : '')
                     + '<span class="block font-normal text-[10px] text-slate-400 mt-0.5">' + new Date(x.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</span></button>').join('') + '</div>'
                     : '<p class="text-xs text-slate-500">Aucune notification pour le moment. Vous serez prévenu ici quand quelqu\'un réagit à votre anecdote ou la commente.</p>') + '</div>';
@@ -2664,6 +2665,7 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         async function notifOpen(id) {
             const x = NOTIFS.find(n => n.id === id);
             if (x && !x.read) { x.read = true; sb.from('notifications').update({ read: true }).eq('id', id).then(() => {}, () => {}); }
+            if (x && x.kind === 'newuser') { loadNotifs(); switchTab('admin'); try { adminSection('clients'); } catch (e) {} return; }
             if (x && x.anecdote_id) gardeOpen[x.anecdote_id] = true;
             loadNotifs(); switchTab('garde');
         }
@@ -4893,6 +4895,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             all.forEach(e => e.classList.toggle('hidden', e.dataset.adsec !== name));
             document.querySelectorAll('#admin-nav [data-adnav]').forEach(b => b.classList.toggle('on', b.dataset.adnav === name));
             try { localStorage.setItem('mm_adsec', name); } catch (e) {}
+            if (name === 'clients') { try { const un = NOTIFS.filter(x => !x.read && x.kind === 'newuser'); if (un.length) { un.forEach(x => { x.read = true; }); sb.from('notifications').update({ read: true }).eq('kind', 'newuser').eq('read', false).then(() => loadNotifs(), () => {}); } } catch (e) {} }
             if (name === 'audience' && typeof loadAudience === 'function') loadAudience();
             if (name === 'chat' && typeof loadAdminChat === 'function') loadAdminChat();
             if (name === 'receiptgen') rgInit();
