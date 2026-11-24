@@ -1277,6 +1277,31 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         @keyframes mmFocus{0%,100%{box-shadow:0 0 0 0 rgba(var(--nc),0)}50%{box-shadow:0 0 0 2px rgba(var(--nc),.75),0 0 12px rgba(var(--nc),.45)}}
         @media (prefers-reduced-motion:reduce){.mm-focus{animation:none;box-shadow:0 0 0 2px rgba(var(--nc),.75)}}
         .mm-free-card,#case-box{scroll-margin-top:64px}
+        /* Texte riche : couleurs et polices dictées par le thème (toute section, y compris les nouvelles) */
+        html[data-skin="soir"] .mc-fuchsia{color:#E2B08C!important}
+        html[data-skin="soir"] .mc-vert{color:#8FD9B0!important}
+        html[data-skin="soir"] .mc-rouge{color:#FF9C95!important}
+        html[data-skin="soir"] .mc-bleu{color:#9CC3FF!important}
+        html[data-skin="soir"] .mc-orange{color:#E9B27A!important}
+        html[data-skin="soir"] .mc-violet{color:#C9D1DC!important}
+        html[data-skin="soir"] .mc-noir{color:#F2EDE4!important}
+        html[data-skin="soir"] .mc-gris{color:#AEB8C9!important}
+        html[data-skin="soir"] .toc-accent{color:#C9D1DC!important}
+        html[data-skin="lav"] .mc-fuchsia{color:#9B4F8E!important}
+        html[data-skin="lav"] .mc-vert{color:#2F7F58!important}
+        html[data-skin="lav"] .mc-rouge{color:#B3392F!important}
+        html[data-skin="lav"] .mc-bleu{color:#3F5FA8!important}
+        html[data-skin="lav"] .mc-orange{color:#B25A1E!important}
+        html[data-skin="lav"] .mc-violet{color:#6A5CA3!important}
+        html[data-skin="lav"] .mc-noir{color:#2B2640!important}
+        html[data-skin="lav"] .mc-gris{color:#6B6580!important}
+        html[data-skin="lav"] .toc-accent{color:#6A5CA3!important}
+        html[data-skin="lav"] .font-comic,html[data-skin="lav"] .font-calibri,html[data-skin="lav"] .font-comic *,html[data-skin="lav"] .font-calibri *{font-family:'Share Tech Mono','Courier New',monospace!important}
+        html[data-skin="soir"] .font-comic,html[data-skin="soir"] .font-calibri,html[data-skin="soir"] .font-comic *,html[data-skin="soir"] .font-calibri *{font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans','Chalkboard SE',cursive!important}
+        html[data-skin="soir"] .mm-free-card :is(p,li,span,strong,em,b,i,u,h3,h4,td,th,blockquote,a):not([class*="mc-"]){color:#E3E8F0}
+        html[data-skin="soir"] .mm-free-card h3.font-cursive{color:#F2EDE4!important}
+        html[data-skin="lav"] .mm-free-card :is(p,li,span,strong,em,b,i,u,td,th,blockquote):not([class*="mc-"]){color:#2B2640}
+        html[data-skin="lav"] .mm-free-card h3.font-cursive{color:#6A5CA3!important}
 </style>
 </head>
 <body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen font-sans">
