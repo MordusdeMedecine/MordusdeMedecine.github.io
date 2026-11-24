@@ -3169,6 +3169,12 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
                 + '</div></div>'
                 + '<p class="text-[10px] text-slate-500">Mesure anonyme : aucune adresse IP n\'est conservée. Les données démographiques disponibles sont le pays ou la région (déduit du fuseau horaire de l\'appareil), la langue et l\'appareil. L\'âge et le sexe ne sont pas collectés. La durée est le temps pendant lequel la page est restée visible à l\'écran.</p>';
             body.innerHTML = h;
+            Array.from(body.children).forEach(sec => {
+                if (sec.tagName === 'P') return;
+                const r = document.createElement('div'); r.className = 'flex justify-end';
+                r.innerHTML = '<button type="button" onclick="loadAudience()" class="px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-semibold">🔄 Actualiser</button>';
+                body.insertBefore(r, sec);
+            });
         }
 
         // ====== PAGES DU SITE MODIFIABLES (À propos, Confidentialité) ======
