@@ -7369,12 +7369,12 @@ show();
             ]);
             if (p.error) { tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-rose-400">Accès refusé ou erreur.</td></tr>`; return; }
             usersDB = p.data.map(x => ({
-                id: x.id, username: x.username, email: x.email, userCode: x.user_code, role: x.role, suspended: !!x.suspended,
+                id: x.id, username: x.username, email: x.email, userCode: x.user_code, role: x.role, suspended: !!x.suspended, createdAt: x.created_at || '',
                 lastReceipt: ((r.data || []).find(i => i.user_id === x.id) || {}).created_at || '',
                 unlockedIssues: (u.data || []).filter(i => i.user_id === x.id).map(i => i.issue_id),
                 submittedReceipts: (r.data || []).filter(i => i.user_id === x.id).map(i => ({ id: i.id, receipt: i.receipt, date: fmtDate(i.created_at), status: i.status, issueId: i.issue_id, proof: i.proof_path || '' }))
             }));
-            usersDB.sort((a, b) => b.lastReceipt.localeCompare(a.lastReceipt));
+            usersDB.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));  // nouveaux inscrits en tête
             await loadAdminIssues(); loadEditorPages(); loadAdminReviews(); loadAdminSlides(); loadAdminAnecdotes(); loadAdminCases(); loadAdminFree(); loadAdminGift(); loadAdminOffers(); loadAdminChat();
             if (!usersDB.length) { tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">Aucun utilisateur.</td></tr>`; return; }
             tableBody.innerHTML = usersDB.map(user => {
@@ -7393,7 +7393,7 @@ show();
                     : '<span class="text-slate-600 italic text-[11px]">Aucun</span>';
                 return `
                     <tr class="hover:bg-slate-800/50 transition-colors">
-                        <td class="p-3 font-bold text-white">${esc(user.username)}${user.suspended ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">⛔ Suspendu</span>' : ''}</td>
+                        <td class="p-3 font-bold text-white">${esc(user.username)}${user.createdAt && (Date.now() - new Date(user.createdAt).getTime()) < 172800000 ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[9px] font-bold align-middle">NOUVEAU</span>' : ''}${user.createdAt ? '<span class="block mt-0.5 text-[10px] font-normal text-slate-500">Inscrit le ' + esc(new Date(user.createdAt).toLocaleDateString('fr-FR')) + '</span>' : ''}${user.suspended ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">⛔ Suspendu</span>' : ''}</td>
                         <td class="p-3 font-mono text-slate-400">${esc(user.email)}</td>
                         <td class="p-3 font-mono font-bold text-teal-400">${esc(user.userCode)}</td>
                         <td class="p-3">${receiptsStr}</td>
