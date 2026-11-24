@@ -1237,6 +1237,12 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         /* Boutons du premier écran, par thème */
         .cta-a,.cta-b{color:#fff;border:2px solid transparent;transition:transform .1s}
         .cta-a:active,.cta-b:active{transform:translateY(2px)}
+        .cta-a,.cta-b{font-family:Calibri,'Carlito',system-ui,sans-serif;font-weight:700;font-size:1.1rem;line-height:1.2}
+        .cta-a span,.cta-b span{font-family:Calibri,'Carlito',system-ui,sans-serif;font-size:.8rem!important;font-weight:600!important;opacity:.95!important}
+        html[data-skin="lav"] .cta-a,html[data-skin="lav"] .cta-b{font-family:'Share Tech Mono','Courier New',monospace;font-size:1.02rem;letter-spacing:0}
+        html[data-skin="lav"] .cta-a span,html[data-skin="lav"] .cta-b span{font-family:'Share Tech Mono','Courier New',monospace;font-size:.72rem!important}
+        html[data-skin="soir"] .cta-a,html[data-skin="soir"] .cta-b{font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans','Chalkboard SE',cursive;font-size:1rem}
+        html[data-skin="soir"] .cta-a span,html[data-skin="soir"] .cta-b span{font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans','Chalkboard SE',cursive;font-size:.75rem!important}
         .cta-a{background:linear-gradient(135deg,#0d9488,#059669)}
         .cta-b{background:linear-gradient(135deg,#c026d3,#9333ea)}
         html[data-skin="lav"] .cta-a{background:linear-gradient(135deg,#2F7F58,#1F5C3D);border-color:#5BE49B}
@@ -1307,8 +1313,8 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
             <div id="greeting" class="greet-card flex items-center gap-4"></div>
 
             <div id="first-cta" class="grid grid-cols-2 gap-3">
-                <button type="button" onclick="switchTab('gratuit')" class="cta-a rounded-2xl px-3 py-4 font-bold text-sm sm:text-base shadow-md">🎮 Jouer gratuitement<span class="block text-[11px] font-semibold opacity-90 mt-0.5">Enquête, charades, jeux</span></button>
-                <button type="button" onclick="switchTab('garde')" class="cta-b rounded-2xl px-3 py-4 font-bold text-sm sm:text-base shadow-md">🛏️ Lire les anecdotes<span class="block text-[11px] font-semibold opacity-90 mt-0.5">Le mur de la Salle de garde</span></button>
+                <button type="button" onclick="switchTab('gratuit')" class="cta-a rounded-2xl px-3 py-4 shadow-md">🎮 Jouer gratuitement<span class="block text-[11px] font-semibold opacity-90 mt-0.5">Enquête, charades, jeux</span></button>
+                <button type="button" onclick="switchTab('garde')" class="cta-b rounded-2xl px-3 py-4 shadow-md">🛏️ Lire les anecdotes<span class="block text-[11px] font-semibold opacity-90 mt-0.5">Le mur de la Salle de garde</span></button>
             </div>
 
             <div id="next-issue" class="hidden greet-card flex items-center gap-3" style="border-style:solid;border-color:#5eead4;background:linear-gradient(120deg,#ecfeff,#fdf4ff)"></div>
@@ -5479,6 +5485,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
         }
         function switchTab(tab) {
             if (tab === 'admin' && !(currentUser && currentUser.role === 'admin')) tab = 'accueil';
+            if (tab === 'accueil' && window.__vtLate) { window.__vtLate = false; setTimeout(() => { try { if (document.getElementById('tab-accueil') && !document.getElementById('tab-accueil').classList.contains('hidden')) vtMaybe(true); } catch (e) {} }, 1500); }
             mmUrlSync(tab); try { sessionStorage.setItem('mm_tab', tab); } catch (e) {}
             if (tab === 'dashboard' && currentUser) loadCurrentUser().then(() => { refreshUI(); renderDashboard(); });
             if (tab === 'appreciation') renderReviewsTab();
@@ -8548,9 +8555,10 @@ show();
         function vtNext() { if (vtI >= VT_CUR.length - 1) return vtEnd(); vtI++; vtPaint(); }
         function vtConfetti() { const em = ['🎉', '💜', '✨', '🩺', '💊', '⭐', '😄']; for (let i = 0; i < 26; i++) { const e = document.createElement('div'); e.className = 'vt-conf'; e.textContent = em[i % em.length]; e.style.left = (Math.random() * 96) + 'vw'; e.style.animationDelay = (Math.random() * .8) + 's'; document.body.appendChild(e); setTimeout(() => e.remove(), 3400); } }
         function vtEnd() { const stay = VT_CUR === VT_DOSSIER; if (vtI >= VT_CUR.length - 1 && document.getElementById('mm-vt').classList.contains('on')) { try { vtConfetti(); } catch (e) {} } document.getElementById('mm-vt').classList.remove('on'); try { if (!stay) switchTab('accueil'); window.scrollTo(0, 0); } catch (e) {} }
-        function vtMaybe() {
+        function vtMaybe(late) {
             try {
-                if (localStorage.getItem('mm_visit_tour') === '1' || new URLSearchParams(location.search).get('tab')) return;
+                if (localStorage.getItem('mm_visit_tour') === '1') return;
+                if (!late && new URLSearchParams(location.search).get('tab')) { window.__vtLate = true; return; }
                 if (currentUser) { localStorage.setItem('mm_visit_tour', '1'); return; }
                 const m404 = document.getElementById('mm-404'); if (m404 && !m404.classList.contains('hidden')) return;
                 if (document.getElementById('mm-vt').classList.contains('on')) return;
