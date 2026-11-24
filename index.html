@@ -1263,6 +1263,20 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         html[data-skin="soir"] #fb-welcome{background:#1E2F52;border-color:#22E5FF;--nc:34,229,255;color:#F2EDE4;font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans','Chalkboard SE',cursive}
         html[data-skin="soir"] #fb-welcome .fbw-b{background:#B08D6E;color:#14213D}
         html[data-skin="soir"] #fb-welcome .fbw-x{color:#F2EDE4;border-color:#B08D6E}
+        .mm-deep-share{display:inline-flex;align-items:center;gap:.3rem;margin:0 0 .5rem;padding:.2rem .65rem;border-radius:999px;font-weight:600;font-size:.72rem;line-height:1.3;cursor:pointer;background:transparent;color:#a21caf;border:1px solid rgba(192,38,211,.45);opacity:.85;font-family:Calibri,'Carlito',system-ui,sans-serif;transition:opacity .15s,background .15s}
+        .mm-deep-share:hover,.mm-deep-share:active{opacity:1;background:rgba(192,38,211,.1)}
+        html[data-skin="lav"] .mm-deep-share{color:#2F7F58;border-color:rgba(47,127,88,.55);font-family:'Share Tech Mono','Courier New',monospace;font-size:.68rem;font-weight:700}
+        html[data-skin="lav"] .mm-deep-share:hover,html[data-skin="lav"] .mm-deep-share:active{background:rgba(43,214,123,.14)}
+        html[data-skin="soir"] .mm-deep-share{color:#CFE9F2;border-color:rgba(34,229,255,.5);font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans','Chalkboard SE',cursive;font-size:.72rem}
+        html[data-skin="soir"] .mm-deep-share:hover,html[data-skin="soir"] .mm-deep-share:active{background:rgba(34,229,255,.14)}
+        #case-box .mm-deep-share{color:#e9d5ff;border-color:rgba(233,213,255,.5)}
+        #case-box .mm-deep-share:hover,#case-box .mm-deep-share:active{background:rgba(255,255,255,.12)}
+        .mm-focus{--nc:255,43,214;border-radius:1rem;animation:mmFocus 1.6s ease-in-out 3}
+        html[data-skin="lav"] .mm-focus{--nc:43,214,123}
+        html[data-skin="soir"] .mm-focus{--nc:34,229,255}
+        @keyframes mmFocus{0%,100%{box-shadow:0 0 0 0 rgba(var(--nc),0)}50%{box-shadow:0 0 0 2px rgba(var(--nc),.75),0 0 12px rgba(var(--nc),.45)}}
+        @media (prefers-reduced-motion:reduce){.mm-focus{animation:none;box-shadow:0 0 0 2px rgba(var(--nc),.75)}}
+        .mm-free-card,#case-box{scroll-margin-top:64px}
 </style>
 </head>
 <body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen font-sans">
@@ -2312,6 +2326,8 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         // ====== CONFIG SUPABASE : remplace par les valeurs de ton projet ======
         const SUPABASE_URL = 'https://qjrdhdwazoteemhgpclb.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_6ShoQb2xn_yOlvwsU-gmVw__YzvbYOV';
+        const MM_JEU = (() => { try { const v = new URLSearchParams(location.search).get('jeu'); return v && /^\d+$/.test(v) ? v : null; } catch (e) { return null; } })();
+        const MM_CAS = (() => { try { return new URLSearchParams(location.search).has('cas'); } catch (e) { return false; } })();
         const MM_TAB0 = (() => { try { return new URLSearchParams(location.search).get('tab'); } catch (e) { return null; } })();
         const MM_RECOVERY = /type=recovery/.test(String(location.hash) + String(location.search));
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -4601,15 +4617,19 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             el.innerHTML = '';
             data.forEach(r => {
                 const card = document.createElement('div');
-                card.className = 'mm-free-card';
+                card.className = 'mm-free-card'; card.id = 'free-' + r.id;
+                const deep = mmDeep('?tab=gratuit&jeu=' + r.id);
                 let h = '<h3 class="font-cursive text-2xl font-bold text-fuchsia-700 mb-2">' + esc(r.title) + '</h3>';
                 card.innerHTML = h;
+                const shb = document.createElement('button'); shb.type = 'button'; shb.className = 'mm-deep-share'; shb.textContent = '📣 Partager ce jeu';
+                shb.onclick = () => mmShareDeep('🕵️ « ' + String(r.title || '').slice(0, 80) + ' » : un jeu gratuit de Mordus de Médecine. Tu relèves le défi ?', deep, r.share_image, 'jeu');
+                card.appendChild(shb);
                 el.appendChild(card);
                 if (r.share_lock > 0 && !frUnlocked(r)) { frLockedCard(card, r); return; }
                 freeParts(r.body, r.code).forEach(pt => {
                     const c = document.createElement('div');
                     if (pt.t === 'text') { c.className = 'text-base leading-relaxed text-slate-800 mb-3'; c.innerHTML = renderRich(pt.v); card.appendChild(c); }
-                    else if (pt.t === 'run') { c.className = 'mb-3'; card.appendChild(c); mountSandbox(c, pt.v, r.title, r.share_image); }
+                    else if (pt.t === 'run') { c.className = 'mb-3'; card.appendChild(c); mountSandbox(c, pt.v, r.title, r.share_image, deep); }
                     else {
                         c.className = 'mb-3 rounded-xl overflow-hidden border border-slate-700';
                         const bar = document.createElement('div'); bar.className = 'flex items-center justify-between px-3 py-1.5 bg-slate-800 text-slate-300 text-[11px] font-semibold';
@@ -4623,6 +4643,23 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                     }
                 });
             });
+            mmFocusFree();
+        }
+        function mmScrollTo(el) {
+            try {
+                const b = document.getElementById('btn-gratuit'), nav = b && b.closest('nav'), hdr = document.querySelector('header');
+                let off = 0; [hdr, nav].forEach(x => { if (x && getComputedStyle(x).position === 'sticky' || x && getComputedStyle(x).position === 'fixed') off = Math.max(off, x.getBoundingClientRect().bottom); });
+                window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - off - 10), behavior: 'smooth' });
+            } catch (e) { el.scrollIntoView(); }
+        }
+        function mmFocusFree() {
+            if (!MM_JEU || window.__jeuDone) return;
+            const card = document.getElementById('free-' + MM_JEU);
+            if (!card) return;
+            window.__jeuDone = true;
+            const go = () => mmScrollTo(card);
+            card.classList.add('mm-focus'); setTimeout(go, 150); setTimeout(go, 900);
+            setTimeout(() => card.classList.remove('mm-focus'), 6000);
         }
         // Contenu gratuit : un seul champ, texte + blocs ```code (affiché) ou ```interactif (exécuté)
         function freeParts(body, legacyCode) {
@@ -4669,8 +4706,8 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             } catch (e) { if (e && e.name === 'AbortError') throw e; }
             return navigator.share(data);
         }
-        function frShareOnce(done, img) {
-            const url = mmLink(), text = 'Découvre Mordus de Médecine, le magazine d\'humour médical 🩺';
+        function frShareOnce(done, img, r) {
+            const url = r ? mmDeep('?tab=gratuit&jeu=' + r.id) : mmLink(), text = r ? '🕵️ « ' + String(r.title || '').slice(0, 80) + ' » : un jeu gratuit de Mordus de Médecine. Tu relèves le défi ?' : 'Découvre Mordus de Médecine, le magazine d\'humour médical 🩺';
             if (navigator.share) { mmShare(text, url, img).then(done, () => {}); return; }
             if (frPending) return;
             frPending = true;
@@ -4695,7 +4732,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                 try { track('share', 'unlock:' + r.id); } catch (e) {}
                 if (k >= need) { toast('Jeu débloqué, merci !', 'success'); renderFree(); } else { toast('Merci ! Encore ' + (need - k) + ' partage' + (need - k > 1 ? 's' : '') + '.', 'success'); renderFree(); }
             };
-            b.onclick = () => frShareOnce(count, r.share_image);
+            b.onclick = () => frShareOnce(count, r.share_image, r);
             cp.onclick = () => { const url = location.origin + location.pathname; try { navigator.clipboard.writeText(url).then(count, () => toast('Copie impossible : ' + url)); } catch (e) { toast(url); } };
             box.appendChild(b); box.appendChild(cp); card.appendChild(box);
         }
@@ -5183,7 +5220,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const m = caseMode();
             const head = '<div class="case-head"><span class="case-pill">' + ico('stetho', 'w-4 h-4') + ' Le cas du jour</span><h3 class="font-cursive case-title">' + esc(caseData.title) + '</h3></div>';
             if (m !== 'pro' && m !== 'pub') {
-                el.innerHTML = head + '<p class="case-q">Avant la consultation, une petite question : êtes-vous du métier ?</p>'
+                el.innerHTML = head + '<button type="button" class="mm-deep-share" onclick="caseShare()">📣 Partager ce cas</button><p class="case-q">Avant la consultation, une petite question : êtes-vous du métier ?</p>'
                     + '<div class="case-choice"><button type="button" class="neon-btn neon-cyan" onclick="caseSetMode(\'pro\')">' + ico('stetho', 'w-5 h-5') + ' Oui, professionnel(le) de santé</button>'
                     + '<button type="button" class="neon-btn neon-pink" onclick="caseSetMode(\'pub\')">' + ico('heart', 'w-5 h-5') + ' Non, simple passionné(e)</button></div>';
                 return;
@@ -5209,10 +5246,30 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                     + caseStatsHtml(m, true)
                     + '<div class="case-cta"><span>Un nouveau cas arrive demain. En attendant, nos numéros en sont remplis.</span><button type="button" class="neon-btn neon-yellow" onclick="switchTab(\'numeros\')">Feuilleter un numéro</button></div>';
             }
-            el.innerHTML = head + '<p class="case-badge">' + (m === 'pro' ? 'Version professionnel(le) de santé' : 'Version tout public') + ' · <button type="button" class="case-switch" onclick="caseSetMode(\'\')">changer</button></p>'
+            el.innerHTML = head + '<button type="button" class="mm-deep-share" onclick="caseShare()">📣 Partager ce cas</button><p class="case-badge">' + (m === 'pro' ? 'Version professionnel(le) de santé' : 'Version tout public') + ' · <button type="button" class="case-switch" onclick="caseSetMode(\'\')">changer</button></p>'
                 + '<p class="case-q">' + esc(c.q) + '</p>' + (picked >= 0 ? '' : caseStatsHtml(m, false)) + '<div class="case-opts">' + opts + '</div>' + fb
                 + (visitorLabel() ? '<p class="case-visitor">' + visitorLabel() + '</p>' : '');
         }
+        function caseShare() {
+            if (!caseData) return;
+            mmShareDeep('🩺 Cas du jour : « ' + String(caseData.title || '').slice(0, 80) + ' ». Saurais-tu poser le bon diagnostic ? 👉', mmDeep('?cas'), null, 'cas');
+        }
+        function mmFocusCase() {
+            if (!MM_CAS) return;
+            let n = 0;
+            const t = setInterval(() => {
+                n++;
+                const el = document.getElementById('case-box');
+                if (el && !el.classList.contains('hidden') && el.offsetHeight > 40) {
+                    clearInterval(t);
+                    el.classList.add('mm-focus');
+                    const go = () => mmScrollTo(el);
+                    setTimeout(go, 150); setTimeout(go, 900);
+                    setTimeout(() => el.classList.remove('mm-focus'), 6000);
+                } else if (n > 40) clearInterval(t);
+            }, 300);
+        }
+        window.addEventListener('load', mmFocusCase);
         function caseAnswer(i) {
             const m = caseMode();
             if (!caseData || !caseData[m]) return;
@@ -5497,9 +5554,16 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
 
         // L'adresse suit la section affichée : un lien copié ou partagé ouvre la bonne section (?tab=numeros, gratuit, garde)
         function mmLink() { return location.origin + location.pathname + (/^\?tab=[a-z]+$/.test(location.search) ? location.search : ''); }
+        function mmDeep(q) { return location.origin + location.pathname + q; }
+        // partage générique avec repli (partage natif -> WhatsApp -> copie)
+        function mmShareDeep(text, url, img, kind) {
+            try { track('share', kind || 'lien'); } catch (e) {}
+            if (navigator.share) { mmShare(text, url, img).catch(() => {}); return; }
+            try { window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank', 'noopener'); } catch (e) { try { navigator.clipboard.writeText(url); toast('Lien copié !', 'success'); } catch (e2) {} }
+        }
         function mmUrlSync(tab) {
             try {
-                if (!/^(|\?tab=[a-z]+)$/.test(location.search) || /access_token|type=recovery/.test(location.hash)) return;
+                if (!/^(|\?tab=[a-z]+(&jeu=\d+)?|\?cas)$/.test(location.search) || /access_token|type=recovery/.test(location.hash)) return;
                 const q = ['numeros', 'gratuit', 'garde', 'appreciation', 'dashboard', 'admin'].indexOf(tab) >= 0 ? '?tab=' + tab : '';
                 if (location.search !== q) history.replaceState(null, '', location.pathname + q);
             } catch (e) {}
@@ -7966,7 +8030,7 @@ show();
                 else { sbxLock(true); sbxRefresh(); }
             } catch (e) { pseudo(); }
         }
-        function mountSandbox(container, code, title, shimg) {
+        function mountSandbox(container, code, title, shimg, link) {
             sbxStyle();
             const id = 'f' + (++sandboxSeq);
             const w = document.createElement('div');
@@ -7990,7 +8054,7 @@ show();
             f.setAttribute('referrerpolicy', 'no-referrer');
             f.title = String(title || 'Contenu interactif').replace(/<[^>]*>/g, '');
             f.style.height = '420px';
-            sandboxFrames[id] = f; if (shimg) f.dataset.shimg = shimg;
+            sandboxFrames[id] = f; if (shimg) f.dataset.shimg = shimg; if (link) f.dataset.link = link;
             w.appendChild(hint); w.appendChild(bar); w.appendChild(f);
             container.innerHTML = '';
             container.appendChild(w);
@@ -8036,7 +8100,7 @@ show();
             }
             if (d.celebrate) celebrate();
             if (typeof d.share === 'string' && d.share) {
-                const url = mmLink(), text = d.share.slice(0, 200);
+                const url = f.dataset.link || mmLink(), text = d.share.slice(0, 200);
                 try { track('share', 'score'); } catch (e) {}
                 if (navigator.share) mmShare(text, url, f.dataset.shimg).catch(() => {});
                 else { try { window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank', 'noopener'); } catch (e) {} }
@@ -8585,7 +8649,7 @@ show();
             window.addEventListener('load', () => setTimeout(() => {
                 const b = document.getElementById('fb-welcome'); if (!b) return;
                 if (!fromFb() || seen() || (typeof currentUser !== 'undefined' && currentUser)) return;
-                const tab = new URLSearchParams(location.search).get('tab'); if (tab && tab !== 'accueil') return;
+                const tab = new URLSearchParams(location.search).get('tab'); if ((tab && tab !== 'accueil') || MM_CAS) return;
                 b.classList.remove('hidden'); try { track('bandeau_facebook', 'vu'); } catch (e) {}
                 document.getElementById('fbw-go').onclick = () => { mark(); hide(); try { track('bandeau_facebook', 'jouer'); } catch (e) {} switchTab('gratuit'); };
                 document.getElementById('fbw-x').onclick = () => { mark(); hide(); try { track('bandeau_facebook', 'plus tard'); } catch (e) {} };
@@ -8595,7 +8659,7 @@ show();
             try {
                 if (localStorage.getItem('mm_visit_tour') === '1') return;
                 { const fw = document.getElementById('fb-welcome'); if (!late && fw && !fw.classList.contains('hidden')) { window.__vtLate = true; return; } }
-                if (!late && new URLSearchParams(location.search).get('tab')) { window.__vtLate = true; return; }
+                if (!late && (new URLSearchParams(location.search).get('tab') || MM_CAS)) { window.__vtLate = true; return; }
                 if (currentUser) { localStorage.setItem('mm_visit_tour', '1'); return; }
                 const m404 = document.getElementById('mm-404'); if (m404 && !m404.classList.contains('hidden')) return;
                 if (document.getElementById('mm-vt').classList.contains('on')) return;
