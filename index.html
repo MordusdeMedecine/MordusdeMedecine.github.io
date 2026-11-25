@@ -1329,6 +1329,18 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         html[data-skin="soir"] .aud-i:hover,html[data-skin="soir"] .aud-i.on{background:#B08D6E;color:#0B1222}
         html[data-skin="soir"] #aud-body .aud-ip{color:#0B1222!important;background:#E6ECF5!important;border-color:#B08D6E}
         html[data-skin="soir"] .aud-ip b{color:#0B1222}
+        /* Soir > Admin : tous les champs en argenté, texte foncé */
+        html[data-skin="soir"] #admin-panel#admin-panel#admin-panel#admin-panel :is(input:where(:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=button],[type=submit])),textarea,select),
+        html[data-skin="soir"] #admin-grant-modal#admin-grant-modal :is(input:where(:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=button],[type=submit])),textarea,select){background:#CBD2DC!important;background-color:#CBD2DC!important;color:#0B1222!important;border:1px solid #8A9AB0!important}
+        html[data-skin="soir"] #admin-panel#admin-panel#admin-panel#admin-panel :is(input,textarea)::placeholder{color:#5B6478!important;opacity:1!important}
+        html[data-skin="soir"] #admin-panel#admin-panel#admin-panel#admin-panel select option{background:#CBD2DC;color:#0B1222}
+        /* Soir > Mon dossier patient > Notifications : texte plus foncé, lisible */
+        html[data-skin="soir"] #notif-box button[class*="bg-white/70"]{background:rgba(230,236,245,.92)!important;color:#1B2438!important}
+        html[data-skin="soir"] #notif-box button[class*="bg-white/70"] :is(b,span,.text-slate-500,.text-slate-400,.text-slate-700){color:#1B2438!important}
+        html[data-skin="soir"] #notif-box button[class*="bg-white/70"] .text-slate-400{color:#3A4560!important}
+        html[data-skin="soir"] #notif-box button:not([class*="bg-white/70"]) .text-slate-500{color:#C9D1DC!important}
+        html[data-skin="soir"] #notif-box button:not([class*="bg-white/70"]) .text-slate-400{color:#B8C2D4!important}
+        html[data-skin="soir"] #notif-box button.text-teal-700{color:#0B1222!important}
 </style>
 </head>
 <body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen font-sans">
