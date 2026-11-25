@@ -1111,8 +1111,8 @@ html[data-skin="soir"] #admin-panel [data-adsec]:not([data-adsec="clients"]):not
         html[data-skin="soir"] #admin-users-table button[onclick^="openAdminGrantModal"]{background:#B08D6E!important;color:#0B1222!important;border:1px solid #8A6A4E!important}
         /* v189 : onglet Reçus (champs châtain, écriture argent, reste argent) */
         html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] [class*="bg-"]:not(input):not(select):not(textarea),html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] button,html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] #rg-go{background:#C9D1DC!important;background-image:none!important;color:#0B1222!important;border-color:#8A9AB0!important}
-        html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] input,html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] select,html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] textarea{background:#B08D6E!important;color:#E6ECF5!important;border:1px solid #8A6A4E!important}
-        html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] input::placeholder,html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] textarea::placeholder{color:#E6ECF5!important;opacity:.75}
+        html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] input,html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] select,html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] textarea{background:#E6ECF5!important;color:#0B1222!important;border:1px solid #B08D6E!important}
+        html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] input::placeholder,html[data-skin="soir"] #admin-panel [data-adsec="receiptgen"] textarea::placeholder{color:#5B6478!important;opacity:1}
         /* v190 : boutons Carrousel / Pages des numéros / Chat en châtain */
         html[data-skin="soir"] #admin-panel [data-adsec="carousel"] button[class*="bg-slate-7"],html[data-skin="soir"] #admin-panel [data-adsec="carousel"] button[class*="bg-slate-8"],html[data-skin="soir"] #admin-panel [data-adsec="carousel"] button[class*="bg-slate-9"],html[data-skin="soir"] #admin-panel [data-adsec="carousel"] button[class*="bg-purple-"],html[data-skin="soir"] #admin-panel [data-adsec="carousel"] button[class*="bg-indigo-"],html[data-skin="soir"] #admin-panel [data-adsec="carousel"] button[class*="bg-fuchsia-"],html[data-skin="soir"] #admin-panel [data-adsec="carousel"] button[class*="bg-teal-6"],html[data-skin="soir"] #admin-panel [data-adsec="carousel"] button[class*="bg-teal-7"],html[data-skin="soir"] #admin-panel [data-adsec="carousel"] button[class*="bg-emerald-6"],html[data-skin="soir"] #admin-panel [data-adsec="pages"] button[class*="bg-slate-7"],html[data-skin="soir"] #admin-panel [data-adsec="pages"] button[class*="bg-slate-8"],html[data-skin="soir"] #admin-panel [data-adsec="pages"] button[class*="bg-slate-9"],html[data-skin="soir"] #admin-panel [data-adsec="pages"] button[class*="bg-purple-"],html[data-skin="soir"] #admin-panel [data-adsec="pages"] button[class*="bg-indigo-"],html[data-skin="soir"] #admin-panel [data-adsec="pages"] button[class*="bg-fuchsia-"],html[data-skin="soir"] #admin-panel [data-adsec="pages"] button[class*="bg-teal-6"],html[data-skin="soir"] #admin-panel [data-adsec="pages"] button[class*="bg-teal-7"],html[data-skin="soir"] #admin-panel [data-adsec="pages"] button[class*="bg-emerald-6"],html[data-skin="soir"] #admin-panel [data-adsec="chat"] button[class*="bg-slate-7"],html[data-skin="soir"] #admin-panel [data-adsec="chat"] button[class*="bg-slate-8"],html[data-skin="soir"] #admin-panel [data-adsec="chat"] button[class*="bg-slate-9"],html[data-skin="soir"] #admin-panel [data-adsec="chat"] button[class*="bg-purple-"],html[data-skin="soir"] #admin-panel [data-adsec="chat"] button[class*="bg-indigo-"],html[data-skin="soir"] #admin-panel [data-adsec="chat"] button[class*="bg-fuchsia-"],html[data-skin="soir"] #admin-panel [data-adsec="chat"] button[class*="bg-teal-6"],html[data-skin="soir"] #admin-panel [data-adsec="chat"] button[class*="bg-teal-7"],html[data-skin="soir"] #admin-panel [data-adsec="chat"] button[class*="bg-emerald-6"]{background:#B08D6E!important;background-image:none!important;color:#0B1222!important;border:1px solid #8A6A4E!important}
         /* v191 : listes déroulantes Pages des numéros en argent ; case À la une en argent, contenu noir */
@@ -1309,6 +1309,26 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         html[data-skin="lav"] .mm-totop:hover{background:rgba(31,92,61,.95)}
         html[data-skin="soir"] .mm-totop{color:#E6F9FF;background:rgba(14,74,98,.84);border-color:rgba(34,229,255,.7);font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans','Chalkboard SE',cursive}
         html[data-skin="soir"] .mm-totop:hover{background:rgba(14,74,98,.95)}
+        /* Soir > Admin : champs de saisie clairs (fond glacé, texte foncé) au lieu du bleu marine illisible */
+        html[data-skin="soir"] :is(#admin-panel,#tab-admin,#admin-grant-modal) :is(input:where(:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=button],[type=submit])),textarea,select){background-color:#E6ECF5!important;color:#0B1222!important;border-color:#8A9AB0!important}
+        html[data-skin="soir"] :is(#admin-panel,#tab-admin,#admin-grant-modal) :is(input,textarea)::placeholder{color:#5B6478!important;opacity:1}
+        html[data-skin="soir"] :is(#admin-panel,#tab-admin,#admin-grant-modal) select option{background:#E6ECF5;color:#0B1222}
+        html[data-skin="soir"] :is(#admin-panel,#tab-admin) :is(input,textarea,select):focus{outline:2px solid #B08D6E;outline-offset:1px}
+        html[data-skin="soir"] :is(#admin-panel,#tab-admin) [contenteditable="true"]:not(.vz-ed){background-color:#E6ECF5;color:#0B1222}
+        .aud-info{margin-top:.4rem;display:flex;flex-direction:column;align-items:flex-start;gap:.4rem}
+        .aud-i{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font:italic 700 14px/1 Georgia,serif;cursor:pointer;color:#6d28d9;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.5)}
+        .aud-i:hover,.aud-i.on{background:#6d28d9;color:#fff}
+        .aud-ip{width:100%;padding:.65rem .8rem;border-radius:.8rem;font-size:.78rem;line-height:1.55;color:#1e1b4b;background:#f5f3ff;border:1px solid rgba(124,58,237,.45)}
+        .aud-ip[hidden]{display:none}
+        .aud-ip b{color:#1e1b4b}
+        html[data-skin="lav"] .aud-i{color:#2F7F58;background:rgba(43,214,123,.14);border-color:rgba(47,127,88,.6)}
+        html[data-skin="lav"] .aud-i:hover,html[data-skin="lav"] .aud-i.on{background:#2F7F58;color:#fff}
+        html[data-skin="lav"] .aud-ip{color:#2B2640;background:#FBF8F1;border-color:#6A5CA3}
+        html[data-skin="lav"] .aud-ip b{color:#1E1A33}
+        html[data-skin="soir"] .aud-i{color:#0B1222;background:#E6ECF5;border-color:#B08D6E}
+        html[data-skin="soir"] .aud-i:hover,html[data-skin="soir"] .aud-i.on{background:#B08D6E;color:#0B1222}
+        html[data-skin="soir"] #aud-body .aud-ip{color:#0B1222!important;background:#E6ECF5!important;border-color:#B08D6E}
+        html[data-skin="soir"] .aud-ip b{color:#0B1222}
 </style>
 </head>
 <body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen font-sans">
@@ -3231,12 +3251,26 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
                 + (rows.length ? rows.map(r => '<div class="mb-1.5"><div class="flex justify-between text-[11px] text-slate-300"><span class="truncate pr-2">' + esc(labelFn ? labelFn(r.k) : r.k) + '</span><span class="shrink-0">' + r.n + ' · ' + Math.round(Number(r.n) * 100 / tot) + ' %</span></div><div class="h-2 rounded-full bg-slate-700 overflow-hidden"><div class="h-2 rounded-full" style="width:' + (Number(r.n) * 100 / max).toFixed(1) + '%;background:' + (color || '#d946ef') + '"></div></div></div>').join('') : '<p class="text-[11px] text-slate-500 italic">Pas encore de données.</p>') + '</div>';
         }
         function audKpi(label, value, sub) { return '<div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-3 text-center"><div class="text-2xl font-extrabold text-white">' + value + '</div><div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">' + label + '</div>' + (sub ? '<div class="text-[10px] text-slate-500 mt-0.5">' + sub + '</div>' : '') + '</div>'; }
+        // ---- Audience : icône d'info sous chaque section (explication en langage simple, avec les chiffres du moment)
+        function audInfo(text) {
+            return '<div class="aud-info"><button type="button" class="aud-i" aria-expanded="false" aria-label="Comprendre ces graphiques" onclick="audInfoToggle(this)"><span>i</span></button>'
+                + '<div class="aud-ip" hidden>' + text + '</div></div>';
+        }
+        function audInfoToggle(b) {
+            const p = b.parentNode.querySelector('.aud-ip'); if (!p) return;
+            const open = p.hasAttribute('hidden');
+            if (open) p.removeAttribute('hidden'); else p.setAttribute('hidden', '');
+            b.setAttribute('aria-expanded', open ? 'true' : 'false'); b.classList.toggle('on', open);
+        }
+        const audSec = (html, info) => '<div class="aud-sec">' + html + audInfo(info) + '</div>';
+        const audTop = rows => { rows = (rows || []).filter(r => Number(r.n) > 0); if (!rows.length) return null; const tot = rows.reduce((a, r) => a + Number(r.n), 0) || 1; const t = rows.slice().sort((a, b) => Number(b.n) - Number(a.n))[0]; return { k: t.k, n: Number(t.n), pct: Math.round(Number(t.n) * 100 / tot) }; };
+        const audPl = (n, one, many) => n + ' ' + (Number(n) > 1 ? many : one);
         async function loadAudience() {
             const body = document.getElementById('aud-body'); if (!body) return;
             const days = parseInt(document.getElementById('aud-days').value, 10) || 7;
             body.innerHTML = '<p class="text-xs text-slate-400">Chargement…</p>';
-            const rs = await Promise.all([sb.rpc('admin_track_stats', { p_days: days }), sb.rpc('admin_track_devices', { p_days: days }), sb.rpc('admin_track_time', { p_days: days }), sb.rpc('admin_track_recent')]);
-            const failed = rs.map((r, i) => (r.error || !r.data) ? ['schema_v18c1_stats_chiffres', 'schema_v18c2_stats_appareils', 'schema_v18c3_stats_temps', 'schema_v18c4_stats_journal'][i] : null).filter(Boolean);
+            const rs = await Promise.all([sb.rpc('admin_track_stats', { p_days: days }), sb.rpc('admin_track_devices', { p_days: days }), sb.rpc('admin_track_time', { p_days: days }), sb.rpc('admin_track_recent'), sb.rpc('admin_track_cases', { p_days: days })]);
+            const failed = rs.slice(0, 4).map((r, i) => (r.error || !r.data) ? ['schema_v18c1_stats_chiffres', 'schema_v18c2_stats_appareils', 'schema_v18c3_stats_temps', 'schema_v18c4_stats_journal'][i] : null).filter(Boolean);
             if (failed.length) { body.innerHTML = '<p class="text-xs text-rose-400">Audience indisponible. Scripts à lancer dans Supabase (un onglet vide pour chacun) : ' + esc(failed.join(', ')) + '.sql, après schema_v18a et schema_v18b1 à v18b4.</p>'; return; }
             const d = Object.assign({}, rs[0].data, rs[1].data, rs[2].data, { recent: rs[3].data });
             const hours = []; for (let h = 0; h < 24; h++) { const r = (d.hours || []).find(x => Number(x.k) === h); hours.push(r ? Number(r.n) : 0); }
@@ -3244,7 +3278,49 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
             const tz = {}; (d.tz || []).forEach(r => { const c = tzCountry(r.k); tz[c] = (tz[c] || 0) + Number(r.n); });
             const countries = Object.keys(tz).map(k => ({ k: k, n: tz[k] })).sort((a, b) => b.n - a.n);
             const live = d.live || {};
-            let h = '<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">'
+            const cs = (rs[4] && !rs[4].error && rs[4].data) ? rs[4].data : null;
+            const per = days === 1 ? 'les dernières 24 h' : 'les ' + days + ' derniers jours';
+            const topDev = audTop(d.device), topOs = audTop(d.os), topBr = audTop(d.browser), topCo = audTop(countries);
+            const topH = (() => { let bi = -1, bn = 0; hours.forEach((n, i) => { if (n > bn) { bn = n; bi = i; } }); return bi < 0 ? null : { h: bi, n: bn }; })();
+            const dayRows = (d.days || []).slice();
+            const bestDay = dayRows.length ? dayRows.slice().sort((a, b) => Number(b.n) - Number(a.n))[0] : null;
+            const fd = k => String(k).split('-').reverse().join('/');
+            const evPerVisit = d.sessions ? (d.events / d.sessions).toFixed(1).replace('.', ',') : '0';
+            const INFO1 = 'Ces cases résument ce qui s\'est passé sur ' + per + '. <b>Visites</b> : combien de fois le site a été ouvert (la même personne peut revenir). <b>Visiteurs uniques</b> : combien de personnes différentes. <b>Nouveaux visiteurs</b> : ceux qui viennent pour la première fois. <b>Durée moyenne</b> : le temps réellement passé sur le site, écran allumé. <b>Membres</b> : les personnes inscrites.'
+                + '<br><br><b>En clair :</b> ' + d.sessions + ' visites par ' + d.visitors + ' personnes, dont ' + d.new_visitors + ' nouvelles. Chaque visite dure en moyenne ' + fmtDur(d.avg_s) + (Number(d.avg_s) < 20 ? ' : c\'est court, beaucoup de gens repartent vite.' : '.')
+                + (Number(d.member_sessions) > 0 ? ' Les membres restent ' + fmtDur(d.avg_member_s) + ' en moyenne, les simples visiteurs ' + fmtDur(d.avg_guest_s) + '.' : '')
+                + ' ' + audPl(d.members_new, 'nouveau membre s\'est', 'nouveaux membres se sont') + ' inscrit(s) sur la période.';
+            const INFO2 = '<b>Activités notées</b> : chaque action faite sur le site (ouvrir un onglet, lire une page, répondre au cas du jour…). <b>Temps total passé</b> : toutes les durées de visite additionnées.<br><br><b>En clair :</b> ' + d.events + ' actions ont été enregistrées, soit environ ' + evPerVisit + ' par visite, et les visiteurs ont passé ' + fmtDur(d.total_s) + ' au total sur le site.';
+            const INFO3 = 'Ces barres montrent <b>qui</b> visite le site : le type d\'appareil, le système (Android, iPhone…), le navigateur, le pays (déduit du fuseau horaire de l\'appareil), la langue, et les types d\'actions. Chaque barre indique le nombre et la part du total : plus elle est longue, plus c\'est fréquent.<br><br><b>En clair :</b> '
+                + [topDev && ('l\'appareil le plus utilisé est « ' + topDev.k + ' » (' + topDev.pct + ' %)'), topOs && ('le système principal est « ' + topOs.k + ' » (' + topOs.pct + ' %)'), topBr && ('le navigateur principal est « ' + topBr.k + ' » (' + topBr.pct + ' %)'), topCo && ('la plupart des visiteurs sont en ' + topCo.k + ' (' + topCo.pct + ' %)')].filter(Boolean).join(' ; ') + '.';
+            const INFO4 = 'Ce graphique montre <b>à quelle heure</b> les gens visitent le site (heure d\'Haïti, de 0 h à 23 h). Plus une barre est haute, plus il y a eu de visites à cette heure-là. C\'est utile pour choisir le meilleur moment de publier.<br><br><b>En clair :</b> ' + (topH ? 'le pic est à ' + topH.h + ' h, avec ' + audPl(topH.n, 'visite', 'visites') + '. Publie un peu avant cette heure pour toucher le plus de monde.' : 'pas encore assez de visites pour voir une tendance.');
+            const INFO5 = 'Chaque barre est <b>un jour</b> : elle montre combien de visites le site a reçues ce jour-là. Elle permet de voir si ton audience monte, baisse ou reste stable, et l\'effet d\'une publication ou d\'une publicité.<br><br><b>En clair :</b> ' + (bestDay ? 'le meilleur jour est le ' + fd(bestDay.k) + ' avec ' + audPl(bestDay.n, 'visite', 'visites') + '.' : 'pas encore de données.');
+            const topEv = (d.top_events || []).slice(0, 3).map(r => '« ' + (EVT_LABELS[r.type] || r.type) + (r.label ? ' : ' + r.label : '') + ' » (' + r.n + ')');
+            const INFO6 = 'Ce classement montre <b>ce que font le plus</b> les visiteurs : onglets ouverts, numéros lus, jeux lancés, connexions, etc. Il t\'indique ce qui intéresse vraiment ton public.<br><br><b>En clair :</b> ' + (topEv.length ? 'les actions les plus fréquentes sont ' + topEv.join(', ') + '.' : 'pas encore de données.');
+            const INFO7 = 'C\'est la liste, <b>de la plus récente à la plus ancienne</b>, des dernières choses faites sur le site, sans aucune adresse IP. Elle permet de voir presque en direct ce que font les visiteurs, et par où ils entrent et sortent.';
+            let caseSec = '';
+            if (cs) {
+                const ans = Number(cs.answers) || 0, resp = Number(cs.responders) || 0, okp = ans ? Math.round(Number(cs.correct) * 100 / ans) : 0, vis = Number(cs.visitors) || 0, part = vis ? Math.round(resp * 100 / vis) : 0;
+                const modeLbl = { pro: 'Professionnels de santé', pub: 'Passionnés' };
+                const modes = (cs.modes || []).map(m => ({ k: (modeLbl[m.k] || m.k) + ' · ' + (m.n ? Math.round(Number(m.ok) * 100 / Number(m.n)) : 0) + ' % de réussite', n: m.n }));
+                const perCase = (cs.per_case || []).map(c => ({ k: c.title + ' · ' + (c.n ? Math.round(Number(c.ok) * 100 / Number(c.n)) : 0) + ' % de réussite', n: c.n }));
+                const perDay = (cs.per_day || []).map(r => ({ k: fd(r.k), n: r.n })).reverse();
+                const hard = (cs.per_case || []).filter(c => Number(c.n) >= 3).sort((a, b) => (Number(a.ok) / Number(a.n)) - (Number(b.ok) / Number(b.n)))[0];
+                const INFOC = 'Cette section suit <b>le cas du jour</b>. <b>Réponses</b> : combien de fois quelqu\'un a répondu (une réponse par personne et par cas). <b>Bonnes réponses</b> : la part de bons diagnostics. <b>Participation</b> : parmi les visiteurs de la période, la part qui a répondu au cas. <b>Partages</b> : combien de fois le bouton « Partager ce cas » a été utilisé. Les barres comparent les professionnels et les passionnés, les cas entre eux, et les jours entre eux.<br><br><b>En clair :</b> '
+                    + (ans ? audPl(resp, 'personne a', 'personnes ont') + ' répondu au cas du jour sur ' + per + ', pour ' + audPl(ans, 'réponse', 'réponses') + ' au total, dont ' + okp + ' % de bonnes. ' + part + ' % des visiteurs participent' + (part < 10 ? ' : c\'est peu, le cas n\'est pas encore assez visible ou assez tentant.' : '.') : 'personne n\'a encore répondu au cas du jour sur ' + per + '.')
+                    + (hard ? ' Le cas le plus difficile est « ' + hard.title + ' » (' + Math.round(Number(hard.ok) * 100 / Number(hard.n)) + ' % de réussite).' : '')
+                    + (Number(cs.shares) ? ' Il a été partagé ' + audPl(cs.shares, 'fois', 'fois') + '.' : ' Il n\'a pas encore été partagé : le bouton « Partager ce cas » sert à ça.');
+                caseSec = audSec('<p class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">🩺 Cas du jour</p><div class="grid grid-cols-2 sm:grid-cols-4 gap-2">'
+                    + audKpi('Réponses', ans, audPl(resp, 'participant', 'participants'))
+                    + audKpi('Bonnes réponses', okp + ' %', cs.correct + ' sur ' + ans)
+                    + audKpi('Participation', part + ' %', 'des visiteurs répondent')
+                    + audKpi('Partages du cas', Number(cs.shares) || 0, 'clics sur « Partager ce cas »')
+                    + '</div><div class="grid sm:grid-cols-2 gap-3">' + audBars('Réponses par profil', modes, null, '#22d3ee') + audBars('Réponses par cas', perCase, null, '#a78bfa') + '</div>'
+                    + audBars('Réponses par jour', perDay, null, '#f472b6'), INFOC);
+            } else {
+                caseSec = '<p class="text-[11px] text-slate-500 italic">Cas du jour : les statistiques ne sont pas disponibles pour le moment.</p>';
+            }
+            let h = audSec('<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">'
                 + audKpi('En ligne maintenant', Number(live.visitors) || 0, (Number(live.members) || 0) + ' connecté(s)')
                 + audKpi('Visites', d.sessions, d.visitors + ' visiteurs uniques')
                 + audKpi('Nouveaux visiteurs', d.new_visitors, 'premières visites')
@@ -3253,15 +3329,16 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
                 + audKpi('Nouveaux membres', d.members_new, 'inscrits sur la période')
                 + audKpi('Visites membres', d.member_sessions, 'durée moy. ' + fmtDur(d.avg_member_s))
                 + audKpi('Visites visiteurs', d.guest_sessions, 'durée moy. ' + fmtDur(d.avg_guest_s))
-                + '</div>'
-                + '<div class="grid grid-cols-2 gap-2">' + audKpi('Activités notées', d.events) + audKpi('Temps total passé', fmtDur(d.total_s)) + '</div>'
-                + '<div class="grid sm:grid-cols-2 gap-3">' + audBars('Appareils', d.device, null, '#22d3ee') + audBars('Systèmes', d.os, null, '#a78bfa') + audBars('Navigateurs', d.browser, null, '#facc15') + audBars('Pays (déduit du fuseau horaire)', countries, null, '#39ff14') + audBars('Langues', d.lang, null, '#fb7185') + audBars('Activités par type', d.event_types, k => EVT_LABELS[k] || k, '#fb923c') + '</div>'
-                + '<div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-3"><p class="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">Heures de visite (heure d\'Haïti)</p><div class="flex items-end gap-[2px] h-24">' + hours.map((n, i) => '<div class="flex-1 flex flex-col justify-end items-center h-full" title="' + i + ' h : ' + n + '"><div class="w-full rounded-t bg-fuchsia-500" style="height:' + (n * 100 / hmax).toFixed(0) + '%;min-height:' + (n ? 2 : 0) + 'px"></div></div>').join('') + '</div><div class="flex justify-between text-[9px] text-slate-500 mt-1"><span>0 h</span><span>6 h</span><span>12 h</span><span>18 h</span><span>23 h</span></div></div>'
-                + audBars('Visites par jour', (d.days || []).map(r => ({ k: r.k.split('-').reverse().join('/'), n: r.n })).reverse(), null, '#38bdf8')
-                + audBars('Activités les plus fréquentes', (d.top_events || []).map(r => ({ k: (EVT_LABELS[r.type] || r.type) + (r.label ? ' : ' + r.label : ''), n: r.n })), null, '#f472b6')
-                + '<div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-3"><p class="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">Journal des dernières activités</p><div class="space-y-1 max-h-96 overflow-y-auto">'
+                + '</div>', INFO1)
+                + audSec('<div class="grid grid-cols-2 gap-2">' + audKpi('Activités notées', d.events) + audKpi('Temps total passé', fmtDur(d.total_s)) + '</div>', INFO2)
+                + audSec('<div class="grid sm:grid-cols-2 gap-3">' + audBars('Appareils', d.device, null, '#22d3ee') + audBars('Systèmes', d.os, null, '#a78bfa') + audBars('Navigateurs', d.browser, null, '#facc15') + audBars('Pays (déduit du fuseau horaire)', countries, null, '#39ff14') + audBars('Langues', d.lang, null, '#fb7185') + audBars('Activités par type', d.event_types, k => EVT_LABELS[k] || k, '#fb923c') + '</div>', INFO3)
+                + audSec('<div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-3"><p class="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">Heures de visite (heure d\'Haïti)</p><div class="flex items-end gap-[2px] h-24">' + hours.map((n, i) => '<div class="flex-1 flex flex-col justify-end items-center h-full" title="' + i + ' h : ' + n + '"><div class="w-full rounded-t bg-fuchsia-500" style="height:' + (n * 100 / hmax).toFixed(0) + '%;min-height:' + (n ? 2 : 0) + 'px"></div></div>').join('') + '</div><div class="flex justify-between text-[9px] text-slate-500 mt-1"><span>0 h</span><span>6 h</span><span>12 h</span><span>18 h</span><span>23 h</span></div></div>', INFO4)
+                + audSec(audBars('Visites par jour', (d.days || []).map(r => ({ k: r.k.split('-').reverse().join('/'), n: r.n })).reverse(), null, '#38bdf8'), INFO5)
+                + audSec(audBars('Activités les plus fréquentes', (d.top_events || []).map(r => ({ k: (EVT_LABELS[r.type] || r.type) + (r.label ? ' : ' + r.label : ''), n: r.n })), null, '#f472b6'), INFO6)
+                + caseSec
+                + audSec('<div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-3"><p class="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">Journal des dernières activités</p><div class="space-y-1 max-h-96 overflow-y-auto">'
                 + ((d.recent || []).sort((a, b) => b.at.localeCompare(a.at)).map(r => '<div class="text-[11px] text-slate-300 border-b border-slate-700/60 pb-1"><span class="text-slate-500">' + new Date(r.at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + '</span> · <b class="' + (r.who ? 'text-emerald-300' : 'text-slate-200') + '">' + esc(r.who || ('Visiteur ' + String(r.session_id || '').slice(0, 4))) + '</b> ' + esc(EVT_LABELS[r.type] || r.type) + (r.label ? ' <span class="text-fuchsia-300">' + esc(r.label) + '</span>' : '') + ' <span class="text-slate-500">· ' + esc([r.device, r.os, r.browser].filter(Boolean).join(' / ')) + '</span></div>').join('') || '<p class="text-[11px] text-slate-500 italic">Aucune activité notée.</p>')
-                + '</div></div>'
+                + '</div></div>', INFO7)
                 + '<p class="text-[10px] text-slate-500">Mesure anonyme : aucune adresse IP n\'est conservée. Les données démographiques disponibles sont le pays ou la région (déduit du fuseau horaire de l\'appareil), la langue et l\'appareil. L\'âge et le sexe ne sont pas collectés. La durée est le temps pendant lequel la page est restée visible à l\'écran.</p>';
             body.innerHTML = h;
             Array.from(body.children).forEach(sec => {
