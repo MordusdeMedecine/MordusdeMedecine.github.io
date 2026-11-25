@@ -1341,6 +1341,13 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         html[data-skin="soir"] #notif-box button:not([class*="bg-white/70"]) .text-slate-500{color:#C9D1DC!important}
         html[data-skin="soir"] #notif-box button:not([class*="bg-white/70"]) .text-slate-400{color:#B8C2D4!important}
         html[data-skin="soir"] #notif-box button.text-teal-700{color:#0B1222!important}
+
+html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2 > div,
+html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .rounded-t,
+html[data-skin="soir"] #aud-body:not(#zz):not(#yy) [class*="rounded-t-"],
+html[data-skin="soir"] #aud-body [style*="width:"][class*="bg-"],
+html[data-skin="soir"] #aud-body [style*="height:"][class*="bg-"]{background-color:#C9D1DC!important;color:#0B1222!important}
+html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-full{background-color:#8A6A4E!important}
 </style>
 </head>
 <body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen font-sans">
@@ -1614,12 +1621,7 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
                         <table class="w-full text-left text-xs text-slate-300">
                             <thead class="bg-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
                                 <tr>
-                                    <th class="p-3">Utilisateur</th>
-                                    <th class="p-3">Courriel</th>
-                                    <th class="p-3">Code Unique</th>
-                                    <th class="p-3">Reçus Soumis</th>
-                                    <th class="p-3">Magazines Déverrouillés</th>
-                                    <th class="p-3 text-right">Action Admin</th>
+                                    <th class="p-3">Inscrits <span class="font-normal normal-case opacity-70">(touchez un nom pour dérouler)</span></th>
                                 </tr>
                             </thead>
                             <tbody id="admin-users-table" class="divide-y divide-slate-800 bg-slate-900/50">
@@ -7647,13 +7649,13 @@ show();
         async function renderAdminPanel() {
             if (!currentUser || currentUser.role !== 'admin') return;
             const tableBody = document.getElementById('admin-users-table');
-            tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">Chargement...</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="1" class="p-4 text-center text-slate-500 italic">Chargement...</td></tr>`;
             const [p, u, r] = await Promise.all([
                 sb.from('profiles').select('*').order('created_at'),
                 sb.from('unlocked_issues').select('user_id,issue_id'),
                 sb.from('receipts').select('*').order('created_at', { ascending: false })
             ]);
-            if (p.error) { tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-rose-400">Accès refusé ou erreur.</td></tr>`; return; }
+            if (p.error) { tableBody.innerHTML = `<tr><td colspan="1" class="p-4 text-rose-400">Accès refusé ou erreur.</td></tr>`; return; }
             usersDB = p.data.map(x => ({
                 id: x.id, username: x.username, email: x.email, userCode: x.user_code, role: x.role, suspended: !!x.suspended, createdAt: x.created_at || '',
                 lastReceipt: ((r.data || []).find(i => i.user_id === x.id) || {}).created_at || '',
@@ -7662,7 +7664,7 @@ show();
             }));
             usersDB.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));  // nouveaux inscrits en tête
             await loadAdminIssues(); loadEditorPages(); loadAdminReviews(); loadAdminSlides(); loadAdminAnecdotes(); loadAdminCases(); loadAdminFree(); loadAdminGift(); loadAdminOffers(); loadAdminChat();
-            if (!usersDB.length) { tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">Aucun utilisateur.</td></tr>`; return; }
+            if (!usersDB.length) { tableBody.innerHTML = `<tr><td colspan="1" class="p-4 text-center text-slate-500 italic">Aucun utilisateur.</td></tr>`; return; }
             tableBody.innerHTML = usersDB.map(user => {
                 const issueOpts = '<option value="">Numéro…</option>' + adIssues.filter(i => i.title !== 'Prochainement disponible').map(i => `<option value="${Number(i.id)}">${esc(i.number)}</option>`).join('');
                 const receiptsStr = user.submittedReceipts.length
@@ -7678,17 +7680,25 @@ show();
                     ? user.unlockedIssues.map(id => `<span class="bg-emerald-950 text-emerald-300 border border-emerald-800 px-1.5 py-0.5 rounded text-[10px] inline-block mr-1">N° 0${esc(id)}</span>`).join('')
                     : '<span class="text-slate-600 italic text-[11px]">Aucun</span>';
                 return `
-                    <tr class="hover:bg-slate-800/50 transition-colors">
-                        <td class="p-3 font-bold text-white">${esc(user.username)}${user.createdAt && (Date.now() - new Date(user.createdAt).getTime()) < 172800000 ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[9px] font-bold align-middle">NOUVEAU</span>' : ''}${user.createdAt ? '<span class="block mt-0.5 text-[10px] font-normal text-slate-500">Inscrit le ' + esc(new Date(user.createdAt).toLocaleDateString('fr-FR')) + '</span>' : ''}${user.suspended ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">⛔ Suspendu</span>' : ''}</td>
-                        <td class="p-3 font-mono text-slate-400">${esc(user.email)}</td>
-                        <td class="p-3 font-mono font-bold text-teal-400">${esc(user.userCode)}</td>
-                        <td class="p-3">${receiptsStr}</td>
-                        <td class="p-3">${unlockedStr}</td>
-                        <td class="p-3 text-right">
-                            <div class="flex flex-col gap-1.5 items-end"><button onclick="openAdminGrantModal('${esc(user.username)}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">🛠️ Déverrouiller un numéro</button><button onclick="openAdminMsgModal('${esc(user.username)}')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">✉️ Envoyer un message</button>${user.role === 'admin' ? '' : (user.suspended ? `<button onclick="toggleSuspend('${esc(user.username)}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">✅ Réactiver le compte</button>` : `<button onclick="toggleSuspend('${esc(user.username)}')" class="bg-rose-700 hover:bg-rose-600 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">⛔ Suspendre le compte</button>`)}</div>
+                    <tr class="usr-row cursor-pointer hover:bg-slate-800/50 transition-colors" onclick="toggleUserRow(this)">
+                        <td class="p-3 font-bold text-white"><div class="flex items-start gap-2"><span class="usr-arrow inline-block transition-transform text-slate-400 mt-0.5">▸</span><div class="min-w-0">${esc(user.username)}${user.createdAt && (Date.now() - new Date(user.createdAt).getTime()) < 172800000 ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[9px] font-bold align-middle">NOUVEAU</span>' : ''}${user.createdAt ? '<span class="block mt-0.5 text-[10px] font-normal text-slate-500">Inscrit le ' + esc(new Date(user.createdAt).toLocaleDateString('fr-FR')) + '</span>' : ''}${user.suspended ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">⛔ Suspendu</span>' : ''}</div></div></td>
+                    </tr>
+                    <tr class="usr-detail hidden">
+                        <td class="p-3 pt-0 pl-8 text-[12px]">
+                            <div class="mb-1"><span class="text-slate-500">Courriel :</span> <span class="font-mono text-slate-400 break-all">${esc(user.email)}</span></div>
+                            <div class="mb-1"><span class="text-slate-500">Code :</span> <span class="font-mono font-bold text-teal-400">${esc(user.userCode)}</span></div>
+                            <div class="mb-1"><span class="text-slate-500 block">Reçus soumis</span>${receiptsStr}</div>
+                            <div class="mb-2"><span class="text-slate-500 block">Magazines déverrouillés</span>${unlockedStr}</div>
+                            <div class="flex flex-wrap gap-1.5"><button onclick="openAdminGrantModal('${esc(user.username)}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">🛠️ Déverrouiller un numéro</button><button onclick="openAdminMsgModal('${esc(user.username)}')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">✉️ Envoyer un message</button>${user.role === 'admin' ? '' : (user.suspended ? `<button onclick="toggleSuspend('${esc(user.username)}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">✅ Réactiver le compte</button>` : `<button onclick="toggleSuspend('${esc(user.username)}')" class="bg-rose-700 hover:bg-rose-600 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">⛔ Suspendre le compte</button>`)}</div>
                         </td>
                     </tr>`;
             }).join('');
+        }
+
+        function toggleUserRow(tr){
+            const d=tr.nextElementSibling; if(!d) return;
+            const open=d.classList.toggle('hidden')===false;
+            const ar=tr.querySelector('.usr-arrow'); if(ar) ar.style.transform=open?'rotate(90deg)':'';
         }
 
         function openAdminGrantModal(username) {
