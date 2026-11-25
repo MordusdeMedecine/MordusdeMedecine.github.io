@@ -1302,12 +1302,13 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         html[data-skin="soir"] .mm-free-card h3.font-cursive{color:#F2EDE4!important}
         html[data-skin="lav"] .mm-free-card :is(p,li,span,strong,em,b,i,u,td,th,blockquote):not([class*="mc-"]){color:#2B2640}
         html[data-skin="lav"] .mm-free-card h3.font-cursive{color:#6A5CA3!important}
-        .mm-totop{padding:.45rem 1.1rem;border-radius:999px;font-size:.78rem;font-weight:600;cursor:pointer;color:#f5d0fe;background:rgba(217,70,239,.14);border:1px solid rgba(217,70,239,.35);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);font-family:Calibri,'Carlito',system-ui,sans-serif;transition:background .15s,transform .1s}
-        .mm-totop:hover{background:rgba(217,70,239,.24)}.mm-totop:active{transform:translateY(2px)}
-        html[data-skin="lav"] .mm-totop{color:#bbf7d0;background:rgba(43,214,123,.12);border-color:rgba(43,214,123,.35);font-family:'Share Tech Mono','Courier New',monospace;font-size:.72rem;font-weight:700}
-        html[data-skin="lav"] .mm-totop:hover{background:rgba(43,214,123,.22)}
-        html[data-skin="soir"] .mm-totop{color:#CFE9F2;background:rgba(34,229,255,.1);border-color:rgba(34,229,255,.35);font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans','Chalkboard SE',cursive}
-        html[data-skin="soir"] .mm-totop:hover{background:rgba(34,229,255,.2)}
+        .mm-totop{position:fixed;left:14px;bottom:18px;z-index:40;padding:.5rem 1.1rem;border-radius:999px;font-size:.78rem;font-weight:700;cursor:pointer;color:#fae8ff;background:rgba(150,24,165,.8);border:1px solid rgba(217,70,239,.7);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(0,0,0,.35);font-family:Calibri,'Carlito',system-ui,sans-serif;opacity:0;pointer-events:none;transform:translateY(10px);transition:opacity .2s,transform .2s,background .15s}
+        .mm-totop.show{opacity:1;pointer-events:auto;transform:none}
+        .mm-totop:hover{background:rgba(150,24,165,.92)}.mm-totop:active{transform:translateY(2px)}
+        html[data-skin="lav"] .mm-totop{color:#ecfdf5;background:rgba(31,92,61,.84);border-color:rgba(43,214,123,.7);font-family:'Share Tech Mono','Courier New',monospace;font-size:.72rem}
+        html[data-skin="lav"] .mm-totop:hover{background:rgba(31,92,61,.95)}
+        html[data-skin="soir"] .mm-totop{color:#E6F9FF;background:rgba(14,74,98,.84);border-color:rgba(34,229,255,.7);font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans','Chalkboard SE',cursive}
+        html[data-skin="soir"] .mm-totop:hover{background:rgba(14,74,98,.95)}
 </style>
 </head>
 <body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen font-sans">
@@ -1795,7 +1796,7 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
                     <div class="flex items-center justify-between gap-2 flex-wrap"><h3 class="text-sm font-bold text-slate-200">📈 Audience et activité du site</h3>
                         <span class="flex gap-2"><select id="aud-days" onchange="loadAudience()" class="px-2 py-1.5 rounded-lg bg-slate-700 text-white text-[11px]"><option value="1">24 heures</option><option value="7" selected>7 jours</option><option value="30">30 jours</option><option value="90">90 jours</option></select><button type="button" onclick="loadAudience()" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-semibold">Actualiser</button></span></div>
                     <div id="aud-body" class="space-y-3"></div>
-                    <div class="flex justify-center pt-2 pb-1"><button type="button" class="mm-totop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Revenir en haut de la page">↑ Haut de page</button></div>
+                    <div class="flex justify-center pt-2 pb-1"><button type="button" id="mm-totop" class="mm-totop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Revenir en haut de la page">↑ Haut de page</button></div>
                 </div>
                 <div data-adsec="free" class="space-y-4 border-t border-slate-800 pt-6">
                     <div class="flex items-center justify-between gap-2"><h3 class="text-sm font-bold text-slate-200">🎁 Contenu gratuit (onglet public)</h3><button type="button" onclick="freeNew()" class="px-3 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold">+ Ajouter</button></div>
@@ -4677,6 +4678,18 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             });
             mmFocusFree();
         }
+        // Bouton « Haut de page » flottant (Admin > Audience)
+        (function () {
+            let t = 0;
+            function upd() {
+                const b = document.getElementById('mm-totop'); if (!b) return;
+                const sec = document.querySelector('#admin-panel [data-adsec="audience"]');
+                const on = !!sec && !sec.classList.contains('hidden') && sec.offsetParent !== null && window.scrollY > 300;
+                b.classList.toggle('show', on);
+            }
+            window.addEventListener('scroll', () => { if (!t) t = setTimeout(() => { t = 0; upd(); }, 80); }, { passive: true });
+            window.addEventListener('click', () => setTimeout(upd, 120), true);
+        })();
         function mmScrollTo(el) {
             try {
                 const b = document.getElementById('btn-gratuit'), nav = b && b.closest('nav'), hdr = document.querySelector('header');
