@@ -1279,6 +1279,19 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         html[data-skin="soir"] .mm-tr{color:#CFE9F2}
         html[data-skin="soir"] .garde-note:not(.garde-admin) .mm-tr{color:#0B1222!important;-webkit-text-fill-color:#0B1222!important}
         html[data-skin="soir"] .garde-note:not(.garde-admin) .bg-white :is(p,b,span:not([class*="rounded-full"]),.text-slate-800,.text-slate-500,.text-fuchsia-700,.mm-tr){color:#E6ECF5!important;-webkit-text-fill-color:#E6ECF5!important}
+        .mm-exit{display:inline-flex;align-items:center;gap:0;height:26px;padding:0 7px;border-radius:999px;border:1.5px solid #e11d48;background:linear-gradient(135deg,#fb7185,#e11d48);color:#fff;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 0 0 0 rgba(225,29,72,.55);animation:mmExitPulse 2.4s ease-out infinite;overflow:hidden;white-space:nowrap}
+        .mm-exit-lbl{max-width:0;opacity:0;margin-left:0;transition:max-width .25s,opacity .2s,margin-left .25s}
+        .mm-exit:hover .mm-exit-lbl,.mm-exit:focus-visible .mm-exit-lbl{max-width:60px;opacity:1;margin-left:5px}
+        .mm-exit:hover{animation:none;box-shadow:0 0 12px rgba(225,29,72,.7)}
+        .mm-exit:hover .mm-exit-arrow,.mm-exit:active .mm-exit-arrow{animation:mmExitGo .7s ease-in-out infinite}
+        @keyframes mmExitPulse{0%{box-shadow:0 0 0 0 rgba(225,29,72,.55)}70%{box-shadow:0 0 0 8px rgba(225,29,72,0)}100%{box-shadow:0 0 0 0 rgba(225,29,72,0)}}
+        @keyframes mmExitGo{0%,100%{transform:translateX(0)}50%{transform:translateX(2.5px)}}
+        html[data-skin="lav"] .mm-exit{border-color:#2F7F58;background:linear-gradient(135deg,#2BD67B,#2F7F58);color:#fff;font-family:'Share Tech Mono','Courier New',monospace;animation-name:mmExitPulseG}
+        html[data-skin="lav"] .mm-exit:hover{box-shadow:0 0 12px rgba(43,214,123,.7)}
+        @keyframes mmExitPulseG{0%{box-shadow:0 0 0 0 rgba(43,214,123,.55)}70%{box-shadow:0 0 0 8px rgba(43,214,123,0)}100%{box-shadow:0 0 0 0 rgba(43,214,123,0)}}
+        html[data-skin="soir"] .mm-exit{border-color:#22E5FF;background:linear-gradient(135deg,#1E2F52,#14213D);color:#22E5FF;font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans',cursive;animation-name:mmExitPulseC}
+        html[data-skin="soir"] .mm-exit:hover{box-shadow:0 0 12px rgba(34,229,255,.7)}
+        @keyframes mmExitPulseC{0%{box-shadow:0 0 0 0 rgba(34,229,255,.55)}70%{box-shadow:0 0 0 8px rgba(34,229,255,0)}100%{box-shadow:0 0 0 0 rgba(34,229,255,0)}}
         .mm-anec-more{display:inline-flex;align-items:center;gap:.25rem;margin-top:.25rem;padding:0;background:transparent;border:0;font-size:.72rem;font-weight:700;color:#a21caf;cursor:pointer}
         html[data-skin="lav"] .mm-anec-more{color:#2F7F58;font-family:'Share Tech Mono','Courier New',monospace}
         html[data-skin="soir"] .mm-anec-more{color:#0B1222;font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans',cursive}
@@ -1613,6 +1626,8 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
                 </div>
                 </div>
             </div>
+        
+            <div class="text-center pt-6 pb-2"><button type="button" onclick="askCloseAccount()" class="text-[10px] text-slate-500 underline opacity-60 hover:opacity-100 bg-transparent border-0 p-0 cursor-pointer">Fermer définitivement mon compte</button></div>
         </div>
 
         <!-- TAB 4: TABLEAU DE BORD ADMINISTRATEUR (SECRET & SÉCURISÉ) -->
@@ -5644,6 +5659,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                 sb.from('messages').select('id,kind,subject,body,created_at,read_at').eq('user_id', uid).order('created_at', { ascending: false }).limit(30)
             ]);
             if (p.error) { currentUser = null; return; }
+            if (p.data.closed_at) { try { await sb.auth.signOut(); } catch (e) {} currentUser = null; try { toast('Ce compte a été fermé définitivement.', 'error'); } catch (e) {} return; }
             currentUser = {
                 id: uid, username: p.data.username, firstName: p.data.first_name || '', email: p.data.email, userCode: p.data.user_code,
                 avatar: p.data.avatar || '', proStatus: p.data.pro_status || '', cardReady: 'pro_status' in p.data,
@@ -5841,11 +5857,16 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
 
             if (currentUser) {
                 dashBtn.classList.remove('hidden');
+                container.style.cssText = 'display:flex;align-items:center;gap:.4rem';
                 container.innerHTML = `
                     <button onclick="switchTab('dashboard')" class="flex items-center gap-1.5 px-2 py-0.5 bg-teal-100 hover:bg-teal-200 text-teal-900 rounded-lg text-[11px] leading-tight font-bold transition-colors">
                         <span class="inline-flex items-center gap-1">${ico('stetho', 'w-3 h-3')} ${esc(currentUser.username)}</span>
                         <span class="hidden sm:inline text-[10px] px-1.5 py-0.5 rounded-full border" style="${readerRank().cur.tone}">${esc(readerRank().cur.name)}</span>
                         <span class="text-[9px] font-mono bg-white px-1 rounded text-teal-700">${esc(currentUser.userCode)}</span>
+                    </button>
+                    <button type="button" class="mm-exit" onclick="askLogout()" title="Exéat ?" aria-label="Se déconnecter (exéat)">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path class="mm-exit-arrow" d="M16 17l5-5-5-5M21 12H9"/></svg>
+                        <span class="mm-exit-lbl">Exéat ?</span>
                     </button>
                 `;
             } else {
@@ -5958,6 +5979,19 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
 
         function askLogout() {
             mmPopup({ emoji: '🩺', title: "Déjà l'exéat ?", text: "Es-tu sûr(e) de vouloir donner l'exéat ? Ton dossier t'attendra bien au chaud pour ta prochaine consultation.", ok: 'Oui, exéat !', cancel: 'Non, je reste en garde', onOk: () => { window.logoutUser(); } });
+        }
+        function askCloseAccount() {
+            mmPopup({ emoji: '⚠️', title: 'Fermer ton compte ?', text: "Cette action est définitive : tu ne pourras plus te connecter avec ce compte, et tes numéros déverrouillés ne seront plus accessibles. L'équipe garde une trace de ton compte, marqué comme fermé.", ok: 'Continuer', cancel: 'Non, je reste', onOk: () => {
+                setTimeout(() => mmPopup({ emoji: '🔒', title: 'Dernière confirmation', text: 'Veux-tu vraiment fermer définitivement ton compte ? Il ne pourra pas être rouvert.', ok: 'Oui, fermer mon compte', cancel: 'Annuler', onOk: () => { closeMyAccount(); } }), 250);
+            } });
+        }
+        async function closeMyAccount() {
+            if (!currentUser) return;
+            const { error } = await sb.rpc('close_my_account');
+            if (error) { toast('Impossible de fermer le compte : ' + error.message, 'error'); return; }
+            try { track('compte', 'ferme'); } catch (e) {}
+            await logoutUser();
+            toast('Ton compte a été fermé définitivement. Merci d\'avoir fait un bout de chemin avec nous. 🩺', 'success');
         }
         async function logoutUser() {
             await sb.auth.signOut();
@@ -7722,7 +7756,7 @@ show();
             ]);
             if (p.error) { tableBody.innerHTML = `<tr><td colspan="1" class="p-4 text-rose-400">Accès refusé ou erreur.</td></tr>`; return; }
             usersDB = p.data.map(x => ({
-                id: x.id, username: x.username, email: x.email, userCode: x.user_code, role: x.role, suspended: !!x.suspended, createdAt: x.created_at || '',
+                id: x.id, username: x.username, email: x.email, userCode: x.user_code, role: x.role, suspended: !!x.suspended, closed: !!x.closed_at, createdAt: x.created_at || '',
                 lastReceipt: ((r.data || []).find(i => i.user_id === x.id) || {}).created_at || '',
                 unlockedIssues: (u.data || []).filter(i => i.user_id === x.id).map(i => i.issue_id),
                 submittedReceipts: (r.data || []).filter(i => i.user_id === x.id).map(i => ({ id: i.id, receipt: i.receipt, date: fmtDate(i.created_at), status: i.status, issueId: i.issue_id, proof: i.proof_path || '' }))
@@ -7746,7 +7780,7 @@ show();
                     : '<span class="text-slate-600 italic text-[11px]">Aucun</span>';
                 return `
                     <tr class="usr-row cursor-pointer hover:bg-slate-800/50 transition-colors" onclick="toggleUserRow(this)">
-                        <td class="p-3 font-bold text-white"><div class="flex items-start gap-2"><span class="usr-arrow inline-block transition-transform text-slate-400 mt-0.5">▸</span><div class="min-w-0">${esc(user.username)}${user.createdAt && (Date.now() - new Date(user.createdAt).getTime()) < 172800000 ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[9px] font-bold align-middle">NOUVEAU</span>' : ''}${user.createdAt ? '<span class="block mt-0.5 text-[10px] font-normal text-slate-500">Inscrit le ' + esc(new Date(user.createdAt).toLocaleDateString('fr-FR')) + '</span>' : ''}${user.suspended ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">⛔ Suspendu</span>' : ''}</div></div></td>
+                        <td class="p-3 font-bold text-white"><div class="flex items-start gap-2"><span class="usr-arrow inline-block transition-transform text-slate-400 mt-0.5">▸</span><div class="min-w-0">${esc(user.username)}${user.createdAt && (Date.now() - new Date(user.createdAt).getTime()) < 172800000 ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[9px] font-bold align-middle">NOUVEAU</span>' : ''}${user.createdAt ? '<span class="block mt-0.5 text-[10px] font-normal text-slate-500">Inscrit le ' + esc(new Date(user.createdAt).toLocaleDateString('fr-FR')) + '</span>' : ''}${user.closed ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">🔒 Compte fermé définitivement</span>' : (user.suspended ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">⛔ Suspendu</span>' : '')}</div></div></td>
                     </tr>
                     <tr class="usr-detail hidden">
                         <td class="p-3 pt-0 pl-8 text-[12px]">
@@ -7754,7 +7788,7 @@ show();
                             <div class="mb-1"><span class="text-slate-500">Code :</span> <span class="font-mono font-bold text-teal-400">${esc(user.userCode)}</span></div>
                             <div class="mb-1"><span class="text-slate-500 block">Reçus soumis</span>${receiptsStr}</div>
                             <div class="mb-2"><span class="text-slate-500 block">Magazines déverrouillés</span>${unlockedStr}</div>
-                            <div class="flex flex-wrap gap-1.5"><button onclick="openAdminGrantModal('${esc(user.username)}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">🛠️ Déverrouiller un numéro</button><button onclick="openAdminMsgModal('${esc(user.username)}')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">✉️ Envoyer un message</button>${user.role === 'admin' ? '' : (user.suspended ? `<button onclick="toggleSuspend('${esc(user.username)}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">✅ Réactiver le compte</button>` : `<button onclick="toggleSuspend('${esc(user.username)}')" class="bg-rose-700 hover:bg-rose-600 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">⛔ Suspendre le compte</button>`)}</div>
+                            <div class="flex flex-wrap gap-1.5"><button onclick="openAdminGrantModal('${esc(user.username)}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">🛠️ Déverrouiller un numéro</button><button onclick="openAdminMsgModal('${esc(user.username)}')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">✉️ Envoyer un message</button>${(user.role === 'admin' || user.closed) ? '' : (user.suspended ? `<button onclick="toggleSuspend('${esc(user.username)}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">✅ Réactiver le compte</button>` : `<button onclick="toggleSuspend('${esc(user.username)}')" class="bg-rose-700 hover:bg-rose-600 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition-colors shadow-xs">⛔ Suspendre le compte</button>`)}</div>
                         </td>
                     </tr>`;
             }).join('');
