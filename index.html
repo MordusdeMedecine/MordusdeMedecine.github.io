@@ -203,6 +203,59 @@
         #admin-panel .bg-purple-600, #admin-panel .bg-purple-700, #admin-panel .bg-teal-600, #admin-panel .bg-fuchsia-600, #admin-panel .bg-rose-700, #admin-panel .bg-rose-600, #admin-panel .bg-emerald-600, #admin-panel .bg-amber-600, #admin-panel .bg-red-600 { color: #ffffff; }
         #admin-panel input, #admin-panel select, #admin-panel textarea { color: #0f172a; }
         #admin-panel [data-adsec] { border-top: 0; padding-top: 0; }
+        /* ===== Calendrier comparatif (Admin > Audience) ===== */
+        .cmp { margin-top: 18px; background: rgba(30,41,59,.6); border: 1px solid #334155; border-radius: 16px; padding: 14px; color: #e2e8f0; }
+        .cmp h4 { margin: 0 0 4px; font-size: 14px; font-weight: 800; }
+        .cmp .cmp-hint { font-size: 11.5px; opacity: .8; margin: 0 0 10px; line-height: 1.45; }
+        .cmp-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+        .cmp-chip { border: 2px solid #475569; background: transparent; color: inherit; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .cmp-chip.on { color: #fff; }
+        .cmp-chip[data-g="a"] { border-color: #ec4899; } .cmp-chip[data-g="a"].on { background: #ec4899; }
+        .cmp-chip[data-g="b"] { border-color: #22d3ee; } .cmp-chip[data-g="b"].on { background: #0891b2; }
+        .cmp-seg { display: inline-flex; border: 1px solid #475569; border-radius: 999px; overflow: hidden; }
+        .cmp-seg button { background: transparent; color: inherit; border: 0; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .cmp-seg button.on { background: #475569; color: #fff; }
+        .cmp-link { background: transparent; border: 0; color: inherit; text-decoration: underline; font-size: 12px; cursor: pointer; opacity: .85; }
+        .cmp-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 4px 0 8px; }
+        .cmp-nav b { font-size: 14px; text-transform: capitalize; }
+        .cmp-nav button { background: rgba(148,163,184,.2); border: 0; color: inherit; border-radius: 10px; width: 36px; height: 32px; font-size: 16px; cursor: pointer; }
+        .cmp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .cmp-wd { text-align: center; font-size: 10.5px; font-weight: 700; opacity: .65; padding: 2px 0; }
+        .cmp-day { position: relative; border: 2px solid transparent; border-radius: 10px; min-height: 44px; padding: 3px 0 2px; background: rgba(148,163,184,.12); color: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.15; }
+        .cmp-day small { font-size: 9.5px; opacity: .7; }
+        .cmp-day.off { opacity: .28; cursor: default; }
+        .cmp-day.out { visibility: hidden; }
+        .cmp-day.today { border-color: #fbbf24; }
+        .cmp-day.a { background: #ec4899; color: #fff; border-color: #be185d; }
+        .cmp-day.b { background: #0891b2; color: #fff; border-color: #0e7490; }
+        .cmp-day.anchor { outline: 3px dashed #fbbf24; outline-offset: 1px; }
+        .cmp-sel { font-size: 12px; margin: 10px 0 4px; line-height: 1.6; }
+        .cmp-sel b.a { color: #f472b6; } .cmp-sel b.b { color: #22d3ee; }
+        .cmp-tbl { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; }
+        .cmp-tbl td:nth-child(n+2), .cmp-tbl th:nth-child(n+2) { white-space: nowrap; }
+        .cmp-tbl th, .cmp-tbl td { padding: 7px 5px; border-bottom: 1px solid rgba(148,163,184,.25); text-align: right; vertical-align: top; }
+        .cmp-tbl th:first-child, .cmp-tbl td:first-child { text-align: left; }
+        .cmp-tbl th { font-size: 11.5px; } .cmp-tbl th.a { color: #f472b6; } .cmp-tbl th.b { color: #22d3ee; }
+        .cmp-up { color: #4ade80; font-weight: 700; } .cmp-dn { color: #f87171; font-weight: 700; }
+        .cmp-note { font-size: 11px; opacity: .75; margin-top: 8px; line-height: 1.45; }
+        html[data-skin="lav"] .cmp { background: #ECE8F6; border-color: #B7B0CC; color: #2b2540; }
+        html[data-skin="lav"] .cmp-day { background: rgba(124,92,191,.10); }
+        html[data-skin="lav"] .cmp-day.a { background: #7C5CBF; border-color: #5b3f99; } html[data-skin="lav"] .cmp-chip[data-g="a"] { border-color: #7C5CBF; } html[data-skin="lav"] .cmp-chip[data-g="a"].on { background: #7C5CBF; }
+        html[data-skin="lav"] .cmp-day.b { background: #2E8B8B; border-color: #1f6a6a; } html[data-skin="lav"] .cmp-chip[data-g="b"] { border-color: #2E8B8B; } html[data-skin="lav"] .cmp-chip[data-g="b"].on { background: #2E8B8B; }
+        html[data-skin="lav"] .cmp-seg, html[data-skin="lav"] .cmp-chip { border-color: #B7B0CC; } html[data-skin="lav"] .cmp-seg button.on { background: #6b5a99; }
+        html[data-skin="lav"] .cmp-sel b.a, html[data-skin="lav"] .cmp-tbl th.a { color: #5b3f99; } html[data-skin="lav"] .cmp-sel b.b, html[data-skin="lav"] .cmp-tbl th.b { color: #1f6a6a; }
+        html[data-skin="lav"] .cmp-up { color: #1f7a3a; } html[data-skin="lav"] .cmp-dn { color: #b42318; }
+        html[data-skin="soir"] .cmp { background: #B08D6E; border-color: #8A6A4E; color: #0B1222; }
+        html[data-skin="soir"] .cmp-day { background: rgba(11,18,34,.12); }
+        html[data-skin="soir"] .cmp-day.a { background: #0B1222; color: #E6ECF5; border-color: #0B1222; }
+        html[data-skin="soir"] .cmp-day.b { background: #C9D1DC; color: #0B1222; border-color: #6b7a90; }
+        html[data-skin="soir"] .cmp-chip, html[data-skin="soir"] .cmp-seg { border-color: #0B1222; }
+        html[data-skin="soir"] .cmp-chip[data-g="a"].on { background: #0B1222; color: #E6ECF5; } html[data-skin="soir"] .cmp-chip[data-g="b"].on { background: #C9D1DC; color: #0B1222; }
+        html[data-skin="soir"] .cmp-seg button.on { background: #0B1222; color: #E6ECF5; }
+        html[data-skin="soir"] .cmp-sel b.a, html[data-skin="soir"] .cmp-sel b.b, html[data-skin="soir"] .cmp-tbl th.a, html[data-skin="soir"] .cmp-tbl th.b { color: #0B1222; }
+        html[data-skin="soir"] .cmp-up { color: #0B3D1E; } html[data-skin="soir"] .cmp-dn { color: #7A1212; }
+        html[data-skin="soir"] .cmp-day.today { border-color: #0B1222; }
+
         .mm-fold > summary { list-style: none; } .mm-fold > summary::-webkit-details-marker { display: none; }
         .mm-fold .mm-fold-chev { transition: transform .2s; display: inline-block; } .mm-fold[open] .mm-fold-chev { transform: rotate(180deg); }
         #admin-nav { border-bottom: 1px solid #e2e8f0; padding-bottom: .75rem; background: #ffffff; }
@@ -1863,6 +1916,7 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
                     <div class="flex items-center justify-between gap-2 flex-wrap"><h3 class="text-sm font-bold text-slate-200">📈 Audience et activité du site</h3>
                         <span class="flex gap-2"><select id="aud-days" onchange="loadAudience()" class="px-2 py-1.5 rounded-lg bg-slate-700 text-white text-[11px]"><option value="1">24 heures</option><option value="7" selected>7 jours</option><option value="30">30 jours</option><option value="90">90 jours</option></select><button type="button" onclick="loadAudience()" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-semibold">Actualiser</button></span></div>
                     <div id="aud-body" class="space-y-3"></div>
+                    <div id="cmp-wrap" class="cmp"></div>
                     <div class="flex justify-center pt-2 pb-1"><button type="button" id="mm-totop" class="mm-totop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Revenir en haut de la page">↑ Haut de page</button></div>
                 </div>
                 <div data-adsec="free" class="space-y-4 border-t border-slate-800 pt-6">
@@ -5234,6 +5288,114 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             else { rgImage(); rgCopy(); }
         }
 
+
+        // ====== CALENDRIER COMPARATIF (Admin > Audience) ======
+        const CMP = { month: null, a: new Set(), b: new Set(), g: 'a', period: false, anchor: null, heat: {}, today: '', timer: null, res: null, busy: false };
+        const CMP_MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+        const cmpKey = (y, m, d) => y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+        const cmpParse = k => { const x = k.split('-'); return { y: +x[0], m: +x[1] - 1, d: +x[2] }; };
+        const CMP_ABR = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+        const cmpShort = k => { const x = cmpParse(k); return x.d + ' ' + CMP_ABR[x.m]; };
+        function cmpInit() {
+            if (!CMP.today) { try { CMP.today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Port-au-Prince' }); } catch (e) { CMP.today = new Date().toISOString().slice(0, 10); } }
+            if (!CMP.month) { const t = cmpParse(CMP.today); CMP.month = { y: t.y, m: t.m }; }
+            cmpLoadHeat();
+        }
+        async function cmpLoadHeat() {
+            const { y, m } = CMP.month, last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+            cmpDraw();
+            try { const r = await sb.rpc('admin_track_calendar', { p_from: cmpKey(y, m, 1), p_to: cmpKey(y, m, last) }); CMP.heat = {}; (r.data || []).forEach(x => { CMP.heat[x.d] = Number(x.n); }); } catch (e) {}
+            cmpDraw();
+        }
+        function cmpMonth(delta) { let { y, m } = CMP.month; m += delta; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; } CMP.month = { y, m }; cmpLoadHeat(); }
+        function cmpToday() { const t = cmpParse(CMP.today); CMP.month = { y: t.y, m: t.m }; cmpLoadHeat(); }
+        function cmpSetG(g) { CMP.g = g; CMP.anchor = null; cmpDraw(); }
+        function cmpSetPeriod(on) { CMP.period = on; CMP.anchor = null; cmpDraw(); }
+        function cmpClear() { CMP.a.clear(); CMP.b.clear(); CMP.anchor = null; CMP.res = null; cmpDraw(); }
+        function cmpClick(k) {
+            if (k > CMP.today) return;
+            const mine = CMP.g === 'a' ? CMP.a : CMP.b, other = CMP.g === 'a' ? CMP.b : CMP.a;
+            if (!CMP.period) {
+                if (mine.has(k)) mine.delete(k); else { mine.add(k); other.delete(k); }
+            } else if (!CMP.anchor) { CMP.anchor = k; cmpDraw(); return; }
+            else {
+                let s0 = CMP.anchor < k ? CMP.anchor : k, s1 = CMP.anchor < k ? k : CMP.anchor;
+                const a0 = cmpParse(s0), a1 = cmpParse(s1);
+                let t = Date.UTC(a0.y, a0.m, a0.d); const end = Date.UTC(a1.y, a1.m, a1.d); let n = 0;
+                while (t <= end && n < 120) { const dt = new Date(t); const kk = cmpKey(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate()); if (kk <= CMP.today) { mine.add(kk); other.delete(kk); } t += 86400000; n++; }
+                CMP.anchor = null;
+            }
+            CMP.res = null; cmpDraw(); cmpSchedule();
+        }
+        function cmpSchedule() { clearTimeout(CMP.timer); if (CMP.a.size && CMP.b.size) CMP.timer = setTimeout(cmpRun, 500); }
+        async function cmpRun() {
+            if (!CMP.a.size || !CMP.b.size) { toast('Choisis des jours pour A et pour B.', 'error'); return; }
+            CMP.busy = true; cmpDraw();
+            try { const r = await sb.rpc('admin_track_compare', { p_a: Array.from(CMP.a).sort(), p_b: Array.from(CMP.b).sort() }); CMP.res = r.error ? { error: true } : (r.data || {}); } catch (e) { CMP.res = { error: true }; }
+            CMP.busy = false; cmpDraw();
+        }
+        function cmpDesc(set) {
+            const ks = Array.from(set).sort(); if (!ks.length) return 'aucun jour';
+            // regroupe les jours consécutifs en périodes
+            const out = []; let st = ks[0], pv = ks[0];
+            const nextDay = k => { const x = cmpParse(k); const dt = new Date(Date.UTC(x.y, x.m, x.d + 1)); return cmpKey(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate()); };
+            for (let i = 1; i <= ks.length; i++) { const k = ks[i]; if (k && k === nextDay(pv)) { pv = k; continue; } out.push(st === pv ? cmpShort(st) : cmpShort(st) + ' → ' + cmpShort(pv)); st = k; pv = k; }
+            return out.join(', ');
+        }
+        function cmpDraw() {
+            const w = document.getElementById('cmp-wrap'); if (!w || !CMP.month) return;
+            const { y, m } = CMP.month, first = new Date(Date.UTC(y, m, 1)), nd = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+            const lead = (first.getUTCDay() + 6) % 7;
+            let cells = ''; for (let i = 0; i < lead; i++) cells += '<span class="cmp-day out"></span>';
+            for (let d = 1; d <= nd; d++) {
+                const k = cmpKey(y, m, d), cls = ['cmp-day']; if (k > CMP.today) cls.push('off'); if (k === CMP.today) cls.push('today'); if (CMP.a.has(k)) cls.push('a'); if (CMP.b.has(k)) cls.push('b'); if (CMP.anchor === k) cls.push('anchor');
+                const n = CMP.heat[k];
+                cells += '<button type="button" class="' + cls.join(' ') + '" onclick="cmpClick(\'' + k + '\')" aria-label="' + d + ' ' + CMP_MOIS[m] + '"' + (CMP.a.has(k) ? ' aria-pressed="true"' : '') + '>' + d + '<small>' + (n ? n : '·') + '</small></button>';
+            }
+            const wd = ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(x => '<span class="cmp-wd">' + x + '</span>').join('');
+            let h = '<h4>📅 Comparer des moments</h4>'
+                + '<p class="cmp-hint">Choisis le groupe <b>A</b> puis touche des jours (ou une période), puis le groupe <b>B</b> et fais de même. Le petit chiffre sous chaque jour est le nombre de visites.</p>'
+                + '<div class="cmp-bar"><button type="button" class="cmp-chip' + (CMP.g === 'a' ? ' on' : '') + '" data-g="a" onclick="cmpSetG(\'a\')">Groupe A · ' + CMP.a.size + '</button><button type="button" class="cmp-chip' + (CMP.g === 'b' ? ' on' : '') + '" data-g="b" onclick="cmpSetG(\'b\')">Groupe B · ' + CMP.b.size + '</button>'
+                + '<span class="cmp-seg"><button type="button" class="' + (!CMP.period ? 'on' : '') + '" onclick="cmpSetPeriod(false)">Jours</button><button type="button" class="' + (CMP.period ? 'on' : '') + '" onclick="cmpSetPeriod(true)">Période</button></span>'
+                + '<button type="button" class="cmp-link" onclick="cmpToday()">Aujourd\'hui</button><button type="button" class="cmp-link" onclick="cmpClear()">Tout effacer</button></div>'
+                + (CMP.period ? '<p class="cmp-hint">Mode période : touche le premier jour, puis le dernier jour.' + (CMP.anchor ? ' <b>Début : ' + cmpShort(CMP.anchor) + '. Touche maintenant le dernier jour.</b>' : '') + '</p>' : '')
+                + '<div class="cmp-nav"><button type="button" onclick="cmpMonth(-1)" aria-label="Mois précédent">‹</button><b>' + CMP_MOIS[m] + ' ' + y + '</b><button type="button" onclick="cmpMonth(1)" aria-label="Mois suivant">›</button></div>'
+                + '<div class="cmp-grid">' + wd + cells + '</div>'
+                + '<div class="cmp-sel"><b class="a">A</b> : ' + esc(cmpDesc(CMP.a)) + '<br><b class="b">B</b> : ' + esc(cmpDesc(CMP.b)) + '</div>';
+            if (CMP.a.size && CMP.b.size) h += '<button type="button" class="cmp-chip on" data-g="b" style="margin-top:4px" onclick="cmpRun()">Comparer A et B</button>';
+            if (CMP.busy) h += '<p class="cmp-note">Calcul en cours…</p>';
+            else if (CMP.res && CMP.res.error) h += '<p class="cmp-note">Comparaison indisponible. Le script de comparaison n\'est peut-être pas encore installé dans Supabase.</p>';
+            else if (CMP.res) h += cmpTable(CMP.res);
+            w.innerHTML = h;
+        }
+        function cmpTable(r) {
+            const A = r.a || {}, B = r.b || {}, num = v => Number(v) || 0, f = v => String(Math.round(v * 10) / 10).replace('.', ',');
+            const pct = (n, t) => t ? Math.round(n * 100 / t) + ' %' : '0 %';
+            const rows = [
+                ['Jours choisis', g => num(g.days), v => String(v), false],
+                ['Visites', g => num(g.sessions), v => String(v)],
+                ['Visites par jour', g => num(g.days) ? num(g.sessions) / num(g.days) : 0, v => f(v)],
+                ['Visiteurs uniques', g => num(g.visitors), v => String(v)],
+                ['Nouveaux visiteurs', g => num(g.new_visitors), v => String(v)],
+                ['Membres actifs', g => num(g.members_active), v => String(v)],
+                ['Visites de membres', g => num(g.member_sessions), v => String(v)],
+                ['Visites d\'invités', g => num(g.guest_sessions), v => String(v)],
+                ['Durée moyenne', g => num(g.avg_s), v => fmtDur(v)],
+                ['Temps total passé', g => num(g.total_s), v => fmtDur(v)],
+                ['Actions sur le site', g => num(g.events), v => String(v)],
+                ['Visites sur mobile', g => num(g.sessions) ? num(g.mobile) * 100 / num(g.sessions) : 0, v => Math.round(v) + ' %'],
+                ['Visites sur ordinateur', g => num(g.sessions) ? num(g.desktop) * 100 / num(g.sessions) : 0, v => Math.round(v) + ' %']
+            ];
+            const body = rows.map(x => {
+                const a = x[1](A), b = x[1](B); let d = '–';
+                if (x[3] !== false && a > 0) { const p = Math.round((b - a) * 100 / a); d = '<span class="' + (p > 0 ? 'cmp-up' : (p < 0 ? 'cmp-dn' : '')) + '">' + (p > 0 ? '▲ +' : (p < 0 ? '▼ ' : '')) + p + ' %</span>'; }
+                else if (x[3] !== false && a === 0 && b > 0) d = '<span class="cmp-up">▲ nouveau</span>';
+                return '<tr><td>' + x[0] + '</td><td>' + x[2](a) + '</td><td>' + x[2](b) + '</td><td>' + d + '</td></tr>';
+            }).join('');
+            return '<table class="cmp-tbl"><thead><tr><th></th><th class="a">A</th><th class="b">B</th><th>Écart</th></tr></thead><tbody>' + body + '</tbody></table>'
+                + '<p class="cmp-note"><b>En clair :</b> « Écart » dit de combien B est plus haut (▲) ou plus bas (▼) que A. Les <b>visiteurs uniques</b> sont comptés sans doublon sur toute la durée du groupe : une personne qui revient deux jours compte pour une seule. Comparer 2 jours avec 7 jours donne donc des totaux différents : regarde plutôt « Visites par jour ».</p>';
+        }
+
         // ====== NAVIGATION DE L'ESPACE ADMIN ======
         function adminSection(name) {
             const all = Array.from(document.querySelectorAll('#admin-panel [data-adsec]'));
@@ -5242,7 +5404,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             document.querySelectorAll('#admin-nav [data-adnav]').forEach(b => b.classList.toggle('on', b.dataset.adnav === name));
             try { localStorage.setItem('mm_adsec', name); } catch (e) {}
             if (name === 'clients') { try { const un = NOTIFS.filter(x => !x.read && x.kind === 'newuser'); if (un.length) { un.forEach(x => { x.read = true; }); sb.from('notifications').update({ read: true }).eq('kind', 'newuser').eq('read', false).then(() => loadNotifs(), () => {}); } } catch (e) {} }
-            if (name === 'audience' && typeof loadAudience === 'function') loadAudience();
+            if (name === 'audience' && typeof loadAudience === 'function') { loadAudience(); try { cmpInit(); } catch (e) {} }
             if (name === 'chat' && typeof loadAdminChat === 'function') loadAdminChat();
             if (name === 'receiptgen') rgInit();
             if (name === 'issues') curAdminDraw();
