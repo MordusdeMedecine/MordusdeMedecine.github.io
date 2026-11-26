@@ -2231,6 +2231,10 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Vous êtes :</label>
                     <select id="auth-status" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:border-teal-600"><option value="">Choisissez votre statut…</option><option value="pro">🩺 Professionnel de santé</option><option value="passionne">❤️ Passionné(e) de médecine</option></select>
                 </div>
+                    <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Sexe :</label>
+                    <select id="auth-sex" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:border-teal-600"><option value="">Choisissez…</option><option value="F">Femme</option><option value="M">Homme</option></select>
+                </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nom d'utilisateur unique :</label>
                     <input type="text" id="auth-username" placeholder="Ex: estelle" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-teal-600">
@@ -5663,7 +5667,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             if (p.data.closed_at) { try { await sb.auth.signOut(); } catch (e) {} currentUser = null; try { toast('Ce compte a été fermé définitivement.', 'error'); } catch (e) {} return; }
             currentUser = {
                 id: uid, username: p.data.username, firstName: p.data.first_name || '', email: p.data.email, userCode: p.data.user_code,
-                avatar: p.data.avatar || '', proStatus: p.data.pro_status || '', cardReady: 'pro_status' in p.data,
+                avatar: p.data.avatar || '', proStatus: p.data.pro_status || '', sex: p.data.sex || '', cardReady: 'pro_status' in p.data,
                 role: p.data.role, isNew: (Date.now() - new Date(session.user.created_at || 0).getTime()) < 3 * 86400000, suspended: !!p.data.suspended, lastLogin: fmtDate(p.data.last_login),
                 unlockedIssues: (u.data || []).map(x => x.issue_id),
                 submittedReceipts: (r.data || []).map(x => ({ receipt: x.receipt, date: fmtDate(x.created_at), status: x.status, proof: !!x.proof_path })),
@@ -5852,12 +5856,52 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             if(tab === 'admin') renderAdminPanel();
         }
 
+        // Complément de profil : statut + sexe, demandés une fois par session aux membres qui ne les ont pas
+        function mmProfileAsk() {
+            try {
+                const u = currentUser;
+                if (!u || u.role === 'admin' || u.suspended) return;
+                if (u.proStatus && u.sex) return;
+                if (document.getElementById('mm-pc') || window.__pcAsked) return;
+                if (sessionStorage.getItem('mm_pc_later')) return;
+                window.__pcAsked = true;
+            } catch (e) { return; }
+            setTimeout(() => {
+                const u = currentUser; if (!u || (u.proStatus && u.sex)) return;
+                const d = document.createElement('div');
+                d.id = 'mm-pc';
+                d.style.cssText = 'position:fixed;inset:0;z-index:100002;background:rgba(15,23,42,.8);display:flex;align-items:center;justify-content:center;padding:1rem';
+                const sel = 'width:100%;padding:.6rem .8rem;border-radius:.75rem;border:1px solid #cbd5e1;font-size:.9rem;background:#fff;color:#0f172a;margin-top:.25rem';
+                d.innerHTML = '<div class="mm-pc-box" style="background:#fff;border:3px solid #d946ef;border-radius:1.25rem;max-width:22rem;width:100%;padding:1.3rem;box-shadow:0 0 28px rgba(217,70,239,.55);color:#0f172a">'
+                    + '<div style="font-size:2.2rem;text-align:center;line-height:1">🩺</div>'
+                    + '<h3 style="text-align:center;font-weight:800;font-size:1.1rem;margin:.5rem 0 .25rem">Complète ton dossier</h3>'
+                    + '<p style="text-align:center;font-size:.8rem;margin-bottom:.8rem;opacity:.85">Deux petites infos pour mieux t\'accueillir' + (u.firstName ? ', ' + esc(u.firstName) : '') + '.</p>'
+                    + (u.proStatus ? '' : '<label style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em">Tu es</label><select id="pc-status" style="' + sel + '"><option value="">Choisis…</option><option value="pro">🩺 Professionnel de santé</option><option value="passionne">❤️ Passionné(e) de médecine</option></select><div style="height:.7rem"></div>')
+                    + (u.sex ? '' : '<label style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em">Sexe</label><select id="pc-sex" style="' + sel + '"><option value="">Choisis…</option><option value="F">Femme</option><option value="M">Homme</option></select>')
+                    + '<p id="pc-err" style="color:#be123c;font-size:.75rem;font-weight:700;min-height:1rem;margin-top:.5rem;text-align:center"></p>'
+                    + '<button type="button" id="pc-ok" style="width:100%;padding:.7rem;border-radius:.75rem;background:#c026d3;color:#fff;font-weight:800;border:0;cursor:pointer">Enregistrer</button>'
+                    + '<button type="button" id="pc-later" style="display:block;margin:.6rem auto 0;background:transparent;border:0;font-size:.7rem;opacity:.6;text-decoration:underline;cursor:pointer;color:inherit">Plus tard</button></div>';
+                document.body.appendChild(d);
+                document.getElementById('pc-later').onclick = () => { try { sessionStorage.setItem('mm_pc_later', '1'); } catch (e) {} d.remove(); };
+                document.getElementById('pc-ok').onclick = async () => {
+                    const st = document.getElementById('pc-status'), sx = document.getElementById('pc-sex'), er = document.getElementById('pc-err');
+                    if ((st && !st.value) || (sx && !sx.value)) { er.textContent = 'Merci de répondre aux deux questions.'; return; }
+                    const { error } = await sb.rpc('complete_my_profile', { p_status: st ? st.value : null, p_sex: sx ? sx.value : null });
+                    if (error) { er.textContent = 'Erreur : ' + error.message; return; }
+                    if (st) currentUser.proStatus = st.value;
+                    if (sx) currentUser.sex = sx.value;
+                    d.remove(); toast('Merci ! Ton dossier est complété.', 'success');
+                    try { renderDashboard(); if (typeof gardeDraw === 'function') gardeDraw(); } catch (e) {}
+                };
+            }, 2500);
+        }
         function updateHeaderUserUI() {
             const container = document.getElementById('header-user-section');
             const dashBtn = document.getElementById('btn-dashboard');
 
             if (currentUser) {
                 dashBtn.classList.remove('hidden');
+                mmProfileAsk();
                 container.style.cssText = 'display:flex;align-items:center;gap:.4rem';
                 container.innerHTML = `
                     <button onclick="switchTab('dashboard')" class="flex items-center gap-1.5 px-2 py-0.5 bg-teal-100 hover:bg-teal-200 text-teal-900 rounded-lg text-[11px] leading-tight font-bold transition-colors">
@@ -5885,7 +5929,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             switchAuthMode(mode);
             document.getElementById('auth-error-msg').classList.add('hidden');
             document.getElementById('auth-username').value = '';
-            document.getElementById('auth-firstname').value = ''; document.getElementById('auth-status').value = '';
+            document.getElementById('auth-firstname').value = ''; document.getElementById('auth-status').value = ''; document.getElementById('auth-sex').value = '';
             document.getElementById('auth-email').value = '';
             document.getElementById('auth-email-confirm').value = '';
             document.getElementById('auth-password').value = '';
@@ -5907,6 +5951,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             document.getElementById('auth-username').parentElement.classList.toggle('hidden', !reg);
             document.getElementById('auth-firstname').parentElement.classList.toggle('hidden', !reg);
             document.getElementById('auth-status').parentElement.classList.toggle('hidden', !reg);
+            document.getElementById('auth-sex').parentElement.classList.toggle('hidden', !reg);
             document.getElementById('auth-email-confirm').parentElement.classList.toggle('hidden', !reg);
             document.getElementById('register-email-fields').lastElementChild.classList.toggle('hidden', !reg);
             document.getElementById('forgot-link').classList.toggle('hidden', reg);
@@ -5932,6 +5977,8 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                     if (!firstName) return showErr("Indiquez votre prénom : Raamyah aime appeler ses lecteurs par leur prénom.");
                     const proStatus = document.getElementById('auth-status').value;
                     if (!proStatus) return showErr("Indiquez si vous êtes professionnel de santé ou passionné(e) de médecine.");
+                    const sex = document.getElementById('auth-sex').value;
+                    if (!sex) return showErr("Indiquez votre sexe (Femme ou Homme).");
                     if (!/^[a-z0-9_.-]{3,30}$/.test(username)) return showErr("Nom d'utilisateur : 3 à 30 caractères (lettres, chiffres, . _ -).");
                     if (email !== emailConfirm) return showErr("Les deux adresses e-mail ne correspondent pas.");
                     if (password.length < 8) return showErr("Le mot de passe doit contenir au moins 8 caractères.");
@@ -5939,7 +5986,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                     const { data: free } = await sb.rpc('username_available', { u: username });
                     if (!free) return showErr("Ce nom d'utilisateur est déjà pris. Veuillez en choisir un autre.");
 
-                    const { data, error } = await sb.auth.signUp({ email, password, options: { data: { username, first_name: firstName, pro_status: proStatus } } });
+                    const { data, error } = await sb.auth.signUp({ email, password, options: { data: { username, first_name: firstName, pro_status: proStatus, sex: sex } } });
                     if (error) return showErr("Inscription impossible : " + error.message);
                     if (!data.session) return showErr("Compte créé ! Confirmez votre adresse via le courriel reçu, puis connectez-vous.", true);
 
@@ -7757,7 +7804,7 @@ show();
             ]);
             if (p.error) { tableBody.innerHTML = `<tr><td colspan="1" class="p-4 text-rose-400">Accès refusé ou erreur.</td></tr>`; return; }
             usersDB = p.data.map(x => ({
-                id: x.id, username: x.username, email: x.email, userCode: x.user_code, role: x.role, suspended: !!x.suspended, closed: !!x.closed_at, createdAt: x.created_at || '',
+                id: x.id, username: x.username, email: x.email, userCode: x.user_code, role: x.role, suspended: !!x.suspended, closed: !!x.closed_at, proStatus: x.pro_status || '', sex: x.sex || '', createdAt: x.created_at || '',
                 lastReceipt: ((r.data || []).find(i => i.user_id === x.id) || {}).created_at || '',
                 unlockedIssues: (u.data || []).filter(i => i.user_id === x.id).map(i => i.issue_id),
                 submittedReceipts: (r.data || []).filter(i => i.user_id === x.id).map(i => ({ id: i.id, receipt: i.receipt, date: fmtDate(i.created_at), status: i.status, issueId: i.issue_id, proof: i.proof_path || '' }))
@@ -7781,11 +7828,12 @@ show();
                     : '<span class="text-slate-600 italic text-[11px]">Aucun</span>';
                 return `
                     <tr class="usr-row cursor-pointer hover:bg-slate-800/50 transition-colors" onclick="toggleUserRow(this)">
-                        <td class="p-3 font-bold text-white"><div class="flex items-start gap-2"><span class="usr-arrow inline-block transition-transform text-slate-400 mt-0.5">▸</span><div class="min-w-0">${esc(user.username)}${user.createdAt && (Date.now() - new Date(user.createdAt).getTime()) < 172800000 ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[9px] font-bold align-middle">NOUVEAU</span>' : ''}${user.createdAt ? '<span class="block mt-0.5 text-[10px] font-normal text-slate-500">Inscrit le ' + esc(new Date(user.createdAt).toLocaleDateString('fr-FR')) + '</span>' : ''}${user.closed ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">🔒 Compte fermé définitivement</span>' : (user.suspended ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">⛔ Suspendu</span>' : '')}</div></div></td>
+                        <td class="p-3 font-bold text-white"><div class="flex items-start gap-2"><span class="usr-arrow inline-block transition-transform text-slate-400 mt-0.5">▸</span><div class="min-w-0">${esc(user.username)}${PRO_LABELS[user.proStatus] ? '<span class="ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full border font-bold align-middle" style="' + PRO_LABELS[user.proStatus][2] + '">' + PRO_LABELS[user.proStatus][0] + ' ' + (user.proStatus === 'pro' ? 'Professionnel' : 'Passionné(e)') + '</span>' : ''}${user.createdAt && (Date.now() - new Date(user.createdAt).getTime()) < 172800000 ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-emerald-600 text-white text-[9px] font-bold align-middle">NOUVEAU</span>' : ''}${user.createdAt ? '<span class="block mt-0.5 text-[10px] font-normal text-slate-500">Inscrit le ' + esc(new Date(user.createdAt).toLocaleDateString('fr-FR')) + '</span>' : ''}${user.closed ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">🔒 Compte fermé définitivement</span>' : (user.suspended ? '<span class="block mt-1 text-[10px] font-bold text-rose-400">⛔ Suspendu</span>' : '')}</div></div></td>
                     </tr>
                     <tr class="usr-detail hidden">
                         <td class="p-3 pt-0 pl-8 text-[12px]">
                             <div class="mb-1"><span class="text-slate-500">Courriel :</span> <span class="font-mono text-slate-400 break-all">${esc(user.email)}</span></div>
+                            ${user.sex ? '<div class="mb-1"><span class="text-slate-500">Sexe :</span> ' + (user.sex === 'F' ? 'Femme' : 'Homme') + '</div>' : ''}
                             <div class="mb-1"><span class="text-slate-500">Code :</span> <span class="font-mono font-bold text-teal-400">${esc(user.userCode)}</span></div>
                             <div class="mb-1"><span class="text-slate-500 block">Reçus soumis</span>${receiptsStr}</div>
                             <div class="mb-2"><span class="text-slate-500 block">Magazines déverrouillés</span>${unlockedStr}</div>
