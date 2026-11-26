@@ -8914,6 +8914,8 @@ show();
             { tab: 'dashboard', el: 'dash-rcpt', t: '🧾 Déposer mon ordonnance', p: "Tu as acheté un numéro ? Entre ici le numéro de ton reçu : une fois vérifié, ton numéro est déverrouillé. Pas de panique, c'est vite fait !" },
             { tab: 'dashboard', el: 'dash-units', t: '📚 Mes traitements en cours', p: "Tes numéros déverrouillés apparaissent ici, prêts à lire. Bonne lecture, et bonne garde ! 💜" }
         ];
+        // La visite automatique des nouveaux inscrits présente aussi la palette des thèmes et la bulle de chat
+        VT_DOSSIER.push(VT_STEPS[VT_STEPS.length - 2], VT_STEPS[VT_STEPS.length - 1]);
         let VT_CUR = VT_STEPS;
         let vtI = 0;
         function vtPaint() {
