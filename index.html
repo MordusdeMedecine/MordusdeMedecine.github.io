@@ -2776,7 +2776,7 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
             if (pre.length > 600) { pre = pre.slice(0, 597).replace(/\s+\S*$/, ''); cut = true; }
             if (cut || pre.length < String(r.body || '').trim().length) pre += ' […]';
             const text = '🛏️ Une anecdote de garde qui m\'a marqué(e) :\n\n« ' + pre + ' »\n\n👉 Lis la suite sur Mordus de Médecine :';
-            mmShareDeep(text, mmDeep('?tab=garde&anecdote=' + id), null, 'anecdote');
+            mmShareDeep(text, mmDeep('?tab=garde&anecdote=' + id), false, 'anecdote');
         }
         function mmFocusAnec() {
             if (!MM_ANEC || window.__anecDone) return;
@@ -4912,6 +4912,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
         const SOCIAL_IMG = 'apercu-social.jpg';
         async function mmShare(text, url, img) {
             const data = { title: 'Mordus de Médecine', text: text, url: url };
+            if (img === false) return navigator.share(data);
             try {
                 const r = await fetch(img || SOCIAL_IMG);
                 if (r.ok) {
