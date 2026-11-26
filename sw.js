@@ -17,6 +17,8 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
+  // ferme aussi les autres notifications qui mènent au même endroit
+  event.waitUntil(self.registration.getNotifications().then(l => l.forEach(n => { if (n !== event.notification && n.data && event.notification.data && n.data.url === event.notification.data.url) n.close(); })).catch(() => {}));
   const url = new URL((event.notification.data && event.notification.data.url) || './', self.registration.scope).href;
   event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
     for (const c of list) {

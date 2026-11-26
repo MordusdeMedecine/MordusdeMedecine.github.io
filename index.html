@@ -272,6 +272,7 @@
         #cht-panel .cht-ph { position: relative; display: flex; align-items: center; gap: 10px; padding: 11px 14px 17px; background: linear-gradient(120deg,#0d9488,#a21caf); color: #fff; }
         #cht-panel .cht-ph .t { flex: 1; line-height: 1.15; } #cht-panel .cht-ph .t b { font-size: 15px; } #cht-panel .cht-ph .t small { display: block; font-size: 11px; opacity: .9; }
         #cht-panel .cht-ph button { background: rgba(255,255,255,.22); border: 0; color: #fff; border-radius: 50%; width: 30px; height: 30px; font-size: 16px; }
+        #cht-panel .cht-ph button.cht-inv { width: auto; border-radius: 15px; padding: 0 11px; font-size: 12px; font-weight: 700; white-space: nowrap; }
         #cht-panel .cht-ecg { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; width: 100%; }
         #cht-panel .cht-ecg path { fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 140 160; animation: chtecg 2.4s linear infinite; opacity: .85; }
         #cht-note { padding: 6px 12px; font-size: 11px; background: #ccfbf1; color: #115e59; text-align: center; font-weight: 600; }
@@ -1295,7 +1296,7 @@ html[data-skin="soir"] #cht-stk .st-beta::after{border-color:#8A6A4E}
         .mm-anec-more{display:inline-flex;align-items:center;gap:.25rem;margin-top:.25rem;padding:0;background:transparent;border:0;font-size:.72rem;font-weight:700;color:#a21caf;cursor:pointer}
         html[data-skin="lav"] .mm-anec-more{color:#2F7F58;font-family:'Share Tech Mono','Courier New',monospace}
         html[data-skin="soir"] .mm-anec-more{color:#0B1222;font-family:'Comic Neue','Comic Relief','Comic Sans MS','Comic Sans',cursive}
-        .mm-anec-share{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:999px;background:transparent;color:#a21caf;border:1px solid rgba(192,38,211,.4);opacity:.8;cursor:pointer;transition:opacity .15s,background .15s}
+        .mm-anec-share{display:inline-flex;align-items:center;justify-content:center;gap:5px;width:auto;min-width:30px;height:30px;padding:0 11px 0 9px;font-size:12px;font-weight:600;line-height:1;border-radius:999px;background:transparent;color:#a21caf;border:1px solid rgba(192,38,211,.4);opacity:.8;cursor:pointer;transition:opacity .15s,background .15s}
         .mm-anec-share:hover,.mm-anec-share:active{opacity:1;background:rgba(192,38,211,.1)}
         html[data-skin="lav"] .mm-anec-share{color:#2F7F58;border-color:rgba(47,127,88,.55)}
         html[data-skin="lav"] .mm-anec-share:hover,html[data-skin="lav"] .mm-anec-share:active{background:rgba(43,214,123,.14)}
@@ -2666,7 +2667,7 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
             } else {
                 form.innerHTML = '<label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1">Votre anecdote (anonymisez toujours les patients)</label>'
                     + '<textarea id="garde-body" rows="6" maxlength="2000" placeholder="Il était 3 h du matin, et…" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-teal-600"></textarea>'
-                    + '<div class="flex items-center justify-between gap-3 mt-2"><span class="text-[11px] text-slate-500">Publiée après relecture par l\'équipe. 10 à 800 caractères.</span><button onclick="gardeSubmit()" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-xl text-xs shrink-0">Envoyer</button></div>';
+                    + '<div class="flex items-center justify-between gap-3 mt-2"><span class="text-[11px] text-slate-500">Publiée après relecture par l\'équipe. 10 à 2000 caractères.</span><button onclick="gardeSubmit()" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-xl text-xs shrink-0">Envoyer</button></div>';
             }
             list.innerHTML = '<p class="text-xs text-slate-500 text-center">Chargement…</p>';
             const { data, error } = await sb.from('anecdotes').select('id,author,body,status,created_at,user_id').order('created_at', { ascending: false }).limit(60);
@@ -2748,7 +2749,7 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
                         h += '</div>';
                     }
                 }
-                if (r.status === 'approved') h += '<div class="text-right mt-1"><button type="button" class="mm-anec-share" aria-label="Partager cette anecdote" title="Partager" onclick="gardeShare(' + r.id + ')"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button></div>';
+                if (r.status === 'approved') h += '<div class="text-right mt-1"><button type="button" class="mm-anec-share" aria-label="Partager cette anecdote" title="Partager" onclick="gardeShare(' + r.id + ')"><span>Partager</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button></div>';
                 return h + '</div>';
             }).join('');
             mmFocusAnec();
@@ -2842,6 +2843,7 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
             const n = NOTIFS.filter(x => !x.read).length;
             if (badge) { badge.textContent = n > 9 ? '9+' : String(n); badge.classList.toggle('hidden', !n); }
             gardeBadgeSet(NOTIFS.filter(x => !x.read && x.kind === 'anecdote').length);
+            try { const tg = document.getElementById('tab-garde'); if (tg && !tg.classList.contains('hidden') && NOTIFS.some(x => !x.read && ['anecdote', 'reaction', 'comment'].indexOf(x.kind) >= 0)) gardeMarkSeen(); } catch (e) {}
             try { const nb = NOTIFS.filter(x => !x.read && x.kind === 'newuser').length, btn = document.querySelector('[data-adnav="clients"]'); if (btn) { let b = document.getElementById('ad-new-badge'); if (!b) { b = document.createElement('span'); b.id = 'ad-new-badge'; b.className = 'ml-1.5 px-1.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold'; btn.appendChild(b); } b.textContent = nb > 9 ? '9+' : String(nb); b.classList.toggle('hidden', !nb); } } catch (e) {}
             renderNotifs();
         }
@@ -2850,12 +2852,14 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
             const emo = k => (GARDE_EMO.find(e => e[0] === k) || [0, '👍'])[1];
             const n = NOTIFS.filter(x => !x.read).length;
             box.innerHTML = '<div class="rounded-xl border border-fuchsia-200 bg-fuchsia-50/60 p-4"><div class="flex items-center justify-between gap-2 mb-2"><span class="text-sm font-bold text-slate-800">🔔 Notifications' + (n ? ' <span class="ml-1 px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[10px]">' + n + '</span>' : '') + '</span>' + (n ? '<button type="button" onclick="notifReadAll()" class="text-[11px] text-teal-700 underline">Tout marquer comme lu</button>' : '') + '</div>'
-                + (NOTIFS.length ? '<div class="space-y-1.5 max-h-72 overflow-y-auto">' + NOTIFS.map(x => '<button type="button" onclick="notifOpen(' + x.id + ')" class="w-full text-left text-xs rounded-lg px-2.5 py-2 border ' + (x.read ? 'bg-white/70 border-slate-200 text-slate-600' : 'bg-white border-fuchsia-300 text-slate-900 font-semibold') + '">'
+                + (NOTIFS.length ? '<div class="space-y-1.5 max-h-72 overflow-y-auto">' + NOTIFS.filter(x => NOTIF_OLD || !x.read).map(x => '<button type="button" onclick="notifOpen(' + x.id + ')" class="w-full text-left text-xs rounded-lg px-2.5 py-2 border ' + (x.read ? 'bg-white/70 border-slate-200 text-slate-600' : 'bg-white border-fuchsia-300 text-slate-900 font-semibold') + '">'
                     + (x.kind === 'newuser' ? '🆕 Nouvel inscrit : <b>' + esc(x.actor) + '</b>' + (x.detail === 'pro' ? ' <span class="font-normal text-slate-500">(professionnel de santé)</span>' : x.detail === 'passionne' ? ' <span class="font-normal text-slate-500">(passionné)</span>' : '') : x.kind === 'anecdote' ? (x.detail === 'mine' ? '✅ Votre anecdote a été publiée dans la Salle de garde' : '📢 Nouvelle anecdote de <b>' + esc(x.actor) + '</b> dans la Salle de garde') : x.kind === 'reaction' ? emo(x.detail) + ' <b>' + esc(x.actor) + '</b> a réagi à votre anecdote' : '💬 <b>' + esc(x.actor) + '</b> a commenté votre anecdote')
                     + (x.kind === 'newuser' ? '' : ' <span class="font-normal text-slate-500">« ' + esc(x.snippet) + '… »</span>')
                     + (x.kind === 'comment' ? '<span class="block font-normal text-slate-700 mt-0.5">« ' + esc(x.detail) + ' »</span>' : '')
                     + '<span class="block font-normal text-[10px] text-slate-400 mt-0.5">' + new Date(x.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</span></button>').join('') + '</div>'
-                    : '<p class="text-xs text-slate-500">Aucune notification pour le moment. Vous serez prévenu ici quand quelqu\'un réagit à votre anecdote ou la commente.</p>') + '</div>';
+                    : '<p class="text-xs text-slate-500">Aucune notification pour le moment. Vous serez prévenu ici quand quelqu\'un réagit à votre anecdote ou la commente.</p>')
+                + (NOTIFS.length && !NOTIFS.some(x => !x.read) && !NOTIF_OLD ? '<p class="text-xs text-slate-500">Tout est lu. Rien de nouveau pour le moment.</p>' : '')
+                + (NOTIFS.some(x => x.read) ? '<button type="button" onclick="notifToggleOld()" class="mt-2 text-[11px] text-teal-700 underline">' + (NOTIF_OLD ? 'Masquer les notifications lues' : 'Voir les notifications lues (' + NOTIFS.filter(x => x.read).length + ')') + '</button>' : '') + '</div>';
         }
         function gardeBadgeSet(n) {
             const b = document.getElementById('garde-badge'); if (!b) return;
@@ -2863,21 +2867,33 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
         }
         async function gardeMarkSeen() {
             if (!currentUser) return;
-            const unread = NOTIFS.filter(x => !x.read && x.kind === 'anecdote');
+            const KS = ['anecdote', 'reaction', 'comment'];
+            const unread = NOTIFS.filter(x => !x.read && KS.indexOf(x.kind) >= 0);
             if (!unread.length) return;
             unread.forEach(x => { x.read = true; });
             gardeBadgeSet(0);
-            try { await sb.from('notifications').update({ read: true }).eq('kind', 'anecdote').eq('read', false); } catch (e) {}
+            notifTrayClear();
+            try { await sb.from('notifications').update({ read: true }).in('kind', KS).eq('read', false); } catch (e) {}
             loadNotifs();
         }
+        // ferme les notifications affichées par le système (barre d'état) et le badge de l'icône
+        function notifTrayClear() {
+            try { if (navigator.clearAppBadge) navigator.clearAppBadge().catch(() => {}); } catch (e) {}
+            try { if (navigator.serviceWorker) navigator.serviceWorker.getRegistration().then(r => { if (r && r.getNotifications) r.getNotifications().then(l => l.forEach(n => n.close())).catch(() => {}); }).catch(() => {}); } catch (e) {}
+        }
+        let NOTIF_OLD = false;
+        function notifToggleOld() { NOTIF_OLD = !NOTIF_OLD; renderNotifs(); }
+        window.addEventListener('focus', () => { try { if (currentUser && !NOTIFS.some(x => !x.read)) notifTrayClear(); } catch (e) {} });
+        document.addEventListener('visibilitychange', () => { try { if (document.visibilityState === 'visible' && currentUser) { loadNotifs(); if (!NOTIFS.some(x => !x.read)) notifTrayClear(); } } catch (e) {} });
         async function notifOpen(id) {
             const x = NOTIFS.find(n => n.id === id);
-            if (x && !x.read) { x.read = true; sb.from('notifications').update({ read: true }).eq('id', id).then(() => {}, () => {}); }
+            if (x && !x.read) { x.read = true; notifTrayClear(); sb.from('notifications').update({ read: true }).eq('id', id).then(() => {}, () => {}); }
             if (x && x.kind === 'newuser') { loadNotifs(); switchTab('admin'); try { adminSection('clients'); } catch (e) {} return; }
             if (x && x.anecdote_id) gardeOpen[x.anecdote_id] = true;
             loadNotifs(); switchTab('garde');
         }
         async function notifReadAll() {
+            NOTIFS.forEach(x => { x.read = true; }); notifTrayClear();
             await sb.from('notifications').update({ read: true }).eq('read', false);
             loadNotifs();
         }
@@ -3912,6 +3928,26 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             if (open) { chtLeaveOn = false; chtTourEnd(); setTimeout(chtTourMaybe, 350); try { await loadSitePages(); } catch (e) {} chtRender(); await chtLoad(); if (chtTabV === 'live') await chtLiveLoad(true); } else chtBadge();
         }
         function chtLeaveShow(on) { chtLeaveOn = on; chtRender(); }
+        // invitation : un lien qui ouvre directement le chat chez l'invité
+        async function chtInvite() {
+            const url = mmDeep('?chat=live');
+            const text = '💬 Viens discuter avec moi dans le Pavillon de garde de Mordus de Médecine : une discussion entre mordus de médecine, en direct !';
+            try { track('share', 'chat'); } catch (e) {}
+            if (navigator.share) { try { await navigator.share({ title: 'Mordus de Médecine', text: text, url: url }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+            try { await navigator.clipboard.writeText(text + ' ' + url); toast("Lien d'invitation copié. Colle-le dans ta conversation.", 'success'); }
+            catch (e) { try { window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank', 'noopener'); } catch (e2) {} }
+        }
+        const MM_CHAT = (() => { try { const v = new URLSearchParams(location.search).get('chat'); return v === 'live' || v === 'red' ? v : null; } catch (e) { return null; } })();
+        window.addEventListener('load', () => { if (!MM_CHAT) return; setTimeout(async () => {
+            try {
+                try { switchTab('accueil'); } catch (e) {}
+                try { localStorage.setItem('mm_chat_tour', '1'); } catch (e) {}
+                await chtToggle(true);
+                if (MM_CHAT === 'live') chtTab('live');
+                try { chtTourEnd(); } catch (e) {}
+                if (!currentUser) setTimeout(() => { if (!currentUser) mmPopup({ emoji: '💬', title: 'On t\'attend dans la conversation !', text: 'Un ami t\'invite dans le Pavillon de garde. Connecte-toi pour discuter avec les autres mordus de médecine.', ok: 'Se connecter', cancel: 'Plus tard', onOk: () => openAuthModal('login') }); }, 900);
+            } catch (e) {}
+        }, 1700); });
         async function chtEnsureThread() {
             if (chtThread) return chtThread;
             if (!currentUser) return null;
@@ -8975,7 +9011,7 @@ show();
             window.addEventListener('load', () => setTimeout(() => {
                 const b = document.getElementById('fb-welcome'); if (!b) return;
                 if (!fromFb() || seen() || (typeof currentUser !== 'undefined' && currentUser)) return;
-                const tab = new URLSearchParams(location.search).get('tab'); if ((tab && tab !== 'accueil') || MM_CAS) return;
+                const tab = new URLSearchParams(location.search).get('tab'); if ((tab && tab !== 'accueil') || MM_CAS || new URLSearchParams(location.search).has('chat')) return;
                 b.classList.remove('hidden'); try { track('bandeau_facebook', 'vu'); } catch (e) {}
                 document.getElementById('fbw-go').onclick = () => { mark(); hide(); try { track('bandeau_facebook', 'jouer'); } catch (e) {} switchTab('gratuit'); };
                 document.getElementById('fbw-x').onclick = () => { mark(); hide(); try { track('bandeau_facebook', 'plus tard'); } catch (e) {} };
@@ -8985,7 +9021,7 @@ show();
             try {
                 if (localStorage.getItem('mm_visit_tour') === '1') return;
                 { const fw = document.getElementById('fb-welcome'); if (!late && fw && !fw.classList.contains('hidden')) { window.__vtLate = true; return; } }
-                if (!late && (new URLSearchParams(location.search).get('tab') || MM_CAS)) { window.__vtLate = true; return; }
+                if (!late && (new URLSearchParams(location.search).get('tab') || MM_CAS || new URLSearchParams(location.search).has('chat'))) { window.__vtLate = true; return; }
                 if (currentUser) { localStorage.setItem('mm_visit_tour', '1'); return; }
                 const m404 = document.getElementById('mm-404'); if (m404 && !m404.classList.contains('hidden')) return;
                 if (document.getElementById('mm-vt').classList.contains('on')) return;
@@ -9160,7 +9196,7 @@ show();
 <div id="help-panel" role="dialog" aria-label="Informations"><div class="hp-head"><span id="help-title">Besoin d'aide ?</span><button type="button" aria-label="Fermer" onclick="toggleHelp(false)">✕</button></div><div class="hp-body" id="help-body"></div></div>
 <div id="mm-vt" role="dialog" aria-live="polite"><div id="mm-vt-hole"></div><div id="mm-vt-card"><div id="mm-vt-av"></div><h4 id="mm-vt-t"></h4><p id="mm-vt-p"></p><div class="vt-row"><button type="button" id="mm-vt-skip" onclick="vtEnd()">Passer</button><span id="mm-vt-dots"></span><button type="button" id="mm-vt-next" onclick="vtNext()">Suivant</button></div></div></div>
 <button type="button" id="cht-fab" aria-label="Discuter avec la rédaction" onclick="chtToggle()"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.7A8 8 0 1 1 21 12z"/><path d="M12 8.5v7M8.5 12h7"/></svg><span class="cht-dot" id="cht-dot"></span></button>
-<div id="cht-panel" role="dialog" aria-label="Chat avec la rédaction"><div class="cht-ph"><div class="t"><b>Cabinet de la rédaction</b><small id="cht-sub"></small></div><button type="button" aria-label="Revoir le tutoriel" onclick="chtTourStart()" style="font-weight:700">?</button><button type="button" aria-label="Fermer" onclick="chtToggle(false)">×</button><svg class="cht-ecg" viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0 8 H110 L122 8 L130 1 L140 13 L150 4 L156 8 H260 L272 8 L280 2 L290 13 L298 5 L304 8 H400"/></svg></div>
+<div id="cht-panel" role="dialog" aria-label="Chat avec la rédaction"><div class="cht-ph"><div class="t"><b>Cabinet de la rédaction</b><small id="cht-sub"></small></div><button type="button" class="cht-inv" aria-label="Inviter des amis à la conversation" title="Inviter des amis" onclick="chtInvite()">👥 Inviter</button><button type="button" aria-label="Revoir le tutoriel" onclick="chtTourStart()" style="font-weight:700">?</button><button type="button" aria-label="Fermer" onclick="chtToggle(false)">×</button><svg class="cht-ecg" viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0 8 H110 L122 8 L130 1 L140 13 L150 4 L156 8 H260 L272 8 L280 2 L290 13 L298 5 L304 8 H400"/></svg></div>
 <div id="cht-tabs" style="position:relative"><button type="button" id="cht-tab-red" class="on" onclick="chtTab('red')">🩺 Rédaction</button><button type="button" id="cht-tab-live" onclick="chtTab('live')">🛋️ Pavillon de garde<span id="cht-on-n"></span></button></div><div id="cht-tour"><div class="card"><div class="dots" id="cht-tour-d"></div><b id="cht-tour-t"></b><p id="cht-tour-p"></p><label id="cht-tour-off"><input type="checkbox" id="cht-tour-skip" onchange="chtTourOff(this.checked)"> Ne plus afficher ce tutoriel</label><div class="row"><button type="button" class="skip" onclick="chtTourEnd()">Passer</button><button type="button" class="go" id="cht-tour-b" onclick="chtTourNext()">Suivant</button></div></div></div><div id="cht-note"></div><div id="cht-msgs"></div><div id="cht-chips"></div>
 <div id="cht-leave"><b style="font-size:12px;color:#92400e">✉️ Laissez-nous votre courriel et votre message</b><input id="cht-lem" type="email" maxlength="120" placeholder="Votre courriel" autocomplete="email"><textarea id="cht-lms" rows="3" maxlength="900" placeholder="Votre message"></textarea><div class="row"><button type="button" style="background:#f59e0b;color:#fff" onclick="chtLeave()">Envoyer</button><button type="button" style="background:#e2e8f0;color:#334155" onclick="chtLeaveShow(false)">Annuler</button></div></div>
 <form id="cht-form" onsubmit="chtFormSubmit(event)"><div id="cht-stk"></div><button type="button" id="cht-stk-btn" aria-label="Émojis et stickers" onclick="chtStkToggle()">😊</button><input id="cht-in" maxlength="300" autocomplete="off" placeholder="Décrivez vos symptômes… ou votre question"><button aria-label="Envoyer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4l-2-2M21 3l-3 3M17 7L7 17l-3 1 1-3L15 5zM14 8l2 2M3 21l3-3M10 14l-2-2"/></svg></button></form></div>
