@@ -1878,6 +1878,7 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
                         <button type="button" id="rg-pdf" onclick="rgPrint()" class="px-3 py-2 rounded-full bg-fuchsia-700 hover:bg-fuchsia-600 text-white text-xs font-bold">🖨️ PDF / Imprimer</button>
                         <button type="button" id="rg-msg" onclick="rgCopy()" class="px-3 py-2 rounded-full bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold">📋 Copier le message</button>
                         <button type="button" id="rg-share" onclick="rgShare()" class="px-3 py-2 rounded-full bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold">📤 Partager</button>
+                        <button type="button" id="rg-email" onclick="rgEmail()" class="px-3 py-2 rounded-full bg-sky-700 hover:bg-sky-600 text-white text-xs font-bold">📧 Envoyer au client</button>
                     </div>
                     <h4 class="text-xs font-bold text-slate-300 pt-2">Reçus déjà générés</h4>
                     <div id="rg-list" class="space-y-2"></div>
@@ -5184,8 +5185,8 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const r = rgCur || rgForm();
             rgv('rg-preview').innerHTML = rgHtml(r);
             rgv('rg-cn').textContent = rgNo(r);
-            ['rg-img', 'rg-pdf', 'rg-msg', 'rg-share'].forEach(id => { rgv(id).disabled = !rgCur; rgv(id).style.opacity = rgCur ? '' : '.4'; });
-            rgv('rg-state').textContent = rgCur ? '✅ Reçu enregistré : ' + rgNo(rgCur) : 'Aperçu : le numéro est confirmé quand tu appuies sur « Générer ».';
+            ['rg-img', 'rg-pdf', 'rg-msg', 'rg-share', 'rg-email'].forEach(id => { rgv(id).disabled = !rgCur; rgv(id).style.opacity = rgCur ? '' : '.4'; });
+            rgv('rg-state').textContent = rgCur ? '✅ Reçu enregistré : ' + rgNo(rgCur) + (rgCur.emailed_at ? ' · 📧 envoyé à ' + (rgCur.emailed_to || '') + ' le ' + fmtDate(rgCur.emailed_at) : '') : 'Aperçu : le numéro est confirmé quand tu appuies sur « Générer ».';
         }
         async function rgSeq() {
             const f = rgForm();
@@ -5348,6 +5349,28 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             p.save(); p.beginPath(); p.roundRect(16, 16, W - 32, y - 32, 6); p.clip(); p.drawImage(c, 0, 0, W, y, 0, 0, W, y); p.restore();
             p.strokeStyle = '#cbd5e1'; p.lineWidth = 2; p.beginPath(); p.roundRect(16, 16, W - 32, y - 32, 6); p.stroke();
             return o2;
+        }
+        async function rgEmail() {
+            if (!rgCur) return;
+            if (rgCur.voided) { toast('Ce reçu est annulé : il ne peut pas être envoyé.', 'error'); return; }
+            let to = (rgCur.emailed_to || '').trim();
+            if (!to) { const c = String(rgCur.client_contact || '').trim(); if (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c)) to = c; }
+            const ans = prompt('Envoyer le reçu ' + rgNo(rgCur) + ' par email.\nAdresse du client :', to);
+            if (ans === null) return;
+            to = ans.trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(to)) { toast('Adresse email invalide.', 'error'); return; }
+            if (rgCur.emailed_at && !confirm('Ce reçu a déjà été envoyé à ' + (rgCur.emailed_to || 'ce client') + ' le ' + fmtDate(rgCur.emailed_at) + '. Le renvoyer ?')) return;
+            const btn = rgv('rg-email'); btn.disabled = true; const old = btn.textContent; btn.textContent = 'Envoi…';
+            try {
+                const blob = await rgBlob();
+                const b64 = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(blob); });
+                const { data, error } = await sb.functions.invoke('send-receipt', { body: { doc_id: rgCur.id, email: to, png: b64 } });
+                if (error || !data || !data.sent) { toast('Envoi impossible : ' + ((data && data.error) || (error && error.message) || 'erreur'), 'error'); return; }
+                rgCur.emailed_at = new Date().toISOString(); rgCur.emailed_to = to;
+                toast('Email envoyé à ' + to + ' avec le reçu en pièce jointe.', 'success');
+                rgPaint(); rgList();
+            } catch (e) { toast('Envoi impossible : ' + (e && e.message || 'erreur'), 'error'); }
+            finally { btn.disabled = false; btn.textContent = old; }
         }
         async function rgBlob() { const cv = await rgCanvas(rgCur); return new Promise(res => cv.toBlob(res, 'image/png')); }
         async function rgImage() {
