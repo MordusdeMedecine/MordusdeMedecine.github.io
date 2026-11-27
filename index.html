@@ -7920,7 +7920,7 @@ show();
             const b = document.getElementById('adm-box-badge'); if (b) { b.textContent = n; b.classList.toggle('hidden', !n); }
             if (!document.getElementById('adm-box-modal').classList.contains('hidden')) admBoxRender();
         }
-        function admBoxOpen() { document.getElementById('adm-box-modal').classList.remove('hidden'); admBoxTab('in'); admBoxLoad(); }
+        function admBoxOpen() { if (!currentUser || currentUser.role !== 'admin') return; document.getElementById('adm-box-modal').classList.remove('hidden'); admBoxTab('in'); admBoxLoad(); }
         async function admBoxClose() {
             document.getElementById('adm-box-modal').classList.add('hidden');
             if (ADMBOX.some(m => m.sender === 'user' && !m.read_at)) { await sb.rpc('admin_mark_replies_read'); ADMBOX.forEach(m => { if (m.sender === 'user') m.read_at = m.read_at || new Date().toISOString(); }); const b = document.getElementById('adm-box-badge'); if (b) b.classList.add('hidden'); }
@@ -7939,7 +7939,9 @@ show();
             el.innerHTML = list.map(m => {
                 const inn = admBoxCur === 'in';
                 const head = (inn ? '📥 De ' : '📤 À ') + esc(who(m.user_id)) + ' · ' + esc(fmtDate(m.created_at)) + (inn ? (m.read_at ? '' : ' · <span class="text-rose-600">nouveau</span>') : (m.read_at ? ' · ✅ lu' : ' · non lu'));
-                const btn = inn ? '<div class="mt-2 text-right"><button type="button" onclick="admBoxReply(' + m.id + ')" class="text-[11px] font-bold text-teal-700 hover:underline">↩️ Répondre</button></div>' : '';
+                const em = (usersDB.find(x => x.id === m.user_id) || {}).email || '';
+                const mail = (em && currentUser && currentUser.role === 'admin') ? '<a href="mailto:' + esc(em) + '?subject=' + encodeURIComponent(/^re:/i.test(m.subject || '') ? m.subject : 'Re: ' + (m.subject || 'Mordus de Médecine')) + '&body=' + encodeURIComponent('Bonjour' + ((usersDB.find(x => x.id === m.user_id) || {}).firstName ? ' ' + usersDB.find(x => x.id === m.user_id).firstName : '') + ',\n\n\n\n' + (inn ? 'Votre message du ' + fmtDate(m.created_at) + ' :\n' : 'Notre message du ' + fmtDate(m.created_at) + ' :\n') + String(m.body).split('\n').map(l => '> ' + l).join('\n')) + '" class="text-[11px] font-bold text-sky-700 hover:underline">✉️ Répondre par email</a>' : '';
+                const btn = inn ? '<div class="mt-2 flex justify-end gap-4"><button type="button" onclick="admBoxReply(' + m.id + ')" class="text-[11px] font-bold text-teal-700 hover:underline">↩️ Répondre ici</button>' + mail + '</div>' : (mail ? '<div class="mt-2 text-right">' + mail + '</div>' : '');
                 return '<div class="rounded-xl border p-3 text-sm whitespace-pre-line ' + (inn ? 'bg-teal-50 border-teal-200 text-teal-900' : 'bg-slate-50 border-slate-200 text-slate-800') + '"><div class="text-[10px] font-bold uppercase tracking-wider mb-1">' + head + '</div>' + (m.subject ? '<div class="font-bold mb-1">' + esc(m.subject) + '</div>' : '') + esc(m.body) + btn + '</div>';
             }).join('');
         }
