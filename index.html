@@ -1865,6 +1865,7 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
                             <div><label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mode de paiement</label><select id="rg-method" class="w-full px-3 py-2 rounded-xl border border-slate-600 bg-slate-900 text-white text-sm focus:outline-none focus:border-fuchsia-500"><option>TakeApp</option><option>Espèces</option><option>MonCash</option><option>Virement bancaire/Dépôt en Succ.</option></select></div>
                             <div><label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Référence TakeApp</label><input id="rg-ref" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-600 bg-slate-900 text-white text-sm focus:outline-none focus:border-fuchsia-500"></div>
                         </div>
+                        <div><label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Style du reçu</label><select id="rg-style" onchange="rgSetStyle(this.value)" class="w-full px-3 py-2 rounded-xl border border-slate-600 bg-slate-900 text-white text-sm focus:outline-none focus:border-fuchsia-500"><option value="classic">Classique (rose, électrocardiogramme)</option><option value="ticket">Ticket de caisse (bronze, code-barres)</option></select></div>
                         <div class="flex flex-wrap gap-2 pt-1">
                             <button type="button" id="rg-go" onclick="rgGenerate()" class="px-4 py-2 rounded-full bg-gradient-to-r from-teal-600 to-fuchsia-700 text-white text-sm font-bold">✅ Générer le reçu</button>
                             <button type="button" id="rg-new" onclick="rgReset()" class="hidden px-4 py-2 rounded-full bg-slate-700 text-white text-sm font-bold">➕ Nouveau reçu</button>
@@ -5153,7 +5154,24 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const d = rgv('rg-date').value || new Date().toISOString().slice(0, 10), q = Math.max(1, parseInt(rgv('rg-qty').value, 10) || 1), u = Math.max(0, Number(rgv('rg-price').value) || 0);
             return { yr: Number(d.slice(0, 4)), issue_no: Math.max(0, parseInt(rgv('rg-x').value, 10) || 0), seq: rgSeqNext, client_name: rgv('rg-name').value.trim(), client_contact: rgv('rg-contact').value.trim(), member_code: rgv('rg-member').value.trim(), label: rgv('rg-label').value.trim(), qty: q, unit_price: u, total: q * u, currency: 'HTG', method: rgv('rg-method').value, reference: rgv('rg-ref').value.trim(), paid_on: d };
         }
+        let rgStyle = 'classic'; try { rgStyle = localStorage.getItem('mm_rg_style') === 'ticket' ? 'ticket' : 'classic'; } catch (e) {}
+        const RGT_CSS = ".rgt{background:#fffdf6;color:#14213D;width:100%;max-width:380px;margin:0 auto;padding:22px 20px 18px;position:relative;border:1px solid #d6cdb8;border-top:6px dashed #b08d6e;border-bottom:6px dashed #b08d6e;box-shadow:0 8px 30px rgba(0,0,0,.35);font:14px/1.45 'Courier New',Courier,monospace;box-sizing:border-box}.rgt *{box-sizing:border-box}.rgt .c{text-align:center}.rgt .nm{font-size:19px;font-weight:700;letter-spacing:.12em}.rgt .sb{font-size:11px;letter-spacing:.28em;color:#8a6a4c;margin-top:2px}.rgt .ds{border-top:2px dashed #b08d6e;margin:10px 0;height:0}.rgt .tt{text-align:center;font-weight:700;letter-spacing:.16em;font-size:15px}.rgt .l{display:flex;justify-content:space-between;gap:10px;padding:2px 0}.rgt .l span:last-child{font-weight:700;text-align:right}.rgt .it{padding:2px 0;word-break:break-word}.rgt .pu{display:flex;justify-content:space-between;color:#475569;font-size:13px}.rgt .tot{display:flex;justify-content:space-between;font-size:17px;font-weight:700}.rgt .st{display:flex;justify-content:space-between;font-size:16px;font-weight:700;color:#1a8a52}.rgt .st.v{color:#dc2626}.rgt .bc{display:flex;justify-content:center;align-items:flex-end;height:44px;gap:2px;margin:6px 0 2px}.rgt .bc i{display:block;height:100%;background:#14213D}.rgt .bn{text-align:center;font-size:11px;letter-spacing:.2em;color:#8a6a4c}.rgt .th{text-align:center;font-size:13px;margin-top:8px}.rgt .th small{display:block;color:#8a6a4c;font-size:11px;margin-top:2px}.rgt .stamp{position:absolute;right:16px;top:92px;transform:rotate(-8deg);border:3px solid #16a34a;color:#16a34a;border-radius:8px;padding:0 10px;font:700 16px 'Courier New',monospace;letter-spacing:.15em;opacity:.8}.rgt .stamp.v{border-color:#dc2626;color:#dc2626}";
+        function rgBars(t) { const w = []; for (let i = 0; i < 44; i++) { const c = String(t).charCodeAt(i % String(t).length) + i * 7; w.push(1 + (c % 3)); } return w; }
+        function rgHtmlT(r) {
+            const pre = (r.qty > 1 ? r.qty + ' × ' : '1 × ');
+            return '<div class="rgt"><div class="c"><div class="nm">MORDUS DE MÉDECINE</div><div class="sb">CAISSE DE LA RÉDACTION</div></div><div class="ds"></div><div class="tt">REÇU N° ' + esc(rgNo(r)) + '</div><div class="ds"></div>'
+                + '<div class="l"><span>Client</span><span>' + esc(r.client_name) + '</span></div>' + (r.client_contact ? '<div class="l"><span>Contact</span><span>' + esc(r.client_contact) + '</span></div>' : '') + (r.member_code ? '<div class="l"><span>Dossier</span><span>' + esc(r.member_code) + '</span></div>' : '')
+                + '<div class="l"><span>Date</span><span>' + esc(rgDate(r.paid_on)) + '</span></div><div class="ds"></div>'
+                + '<div class="it">' + pre + esc(r.label) + '</div><div class="pu"><span>P.U. ' + rgFmt(r.unit_price) + '</span><span>' + rgFmt(r.total) + '</span></div><div class="ds"></div>'
+                + '<div class="tot"><span>TOTAL PAYÉ</span><span>' + rgFmt(r.total) + ' ' + esc(r.currency) + '</span></div>'
+                + '<div class="l"><span>Paiement</span><span>' + esc(r.method) + '</span></div><div class="l"><span>Référence</span><span>' + esc(r.reference || '—') + '</span></div><div class="ds"></div>'
+                + '<div class="st' + (r.voided ? ' v">' : '">') + '<span>STATUT</span><span>' + (r.voided ? 'ANNULÉ ✖' : 'PAYÉ ✔') + '</span></div><div class="ds"></div>'
+                + '<div class="bc">' + rgBars(rgNo(r)).map(w => '<i style="width:' + w + 'px"></i>').join('') + '</div><div class="bn">' + esc(rgNo(r)) + '</div>'
+                + '<div class="th">MERCI DE VOTRE CONFIANCE !<small>Reçu validé par l\'équipe Mordus de Médecine</small></div></div>';
+        }
+        function rgSetStyle(v) { rgStyle = v === 'ticket' ? 'ticket' : 'classic'; try { localStorage.setItem('mm_rg_style', rgStyle); } catch (e) {} rgPaint(); }
         function rgHtml(r) {
+            if (rgStyle === 'ticket') return rgHtmlT(r);
             return '<div class="rgr"><div class="hd"><div class="logo">Mordus de Médecine</div><div class="sub">Mon cahier de garde</div><svg class="ecg" width="150" height="22" viewBox="0 0 150 22" fill="none" stroke="#c026d3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h40l6-9 8 17 7-12 5 4h80"/></svg></div>'
                 + '<div class="title"><b>REÇU</b><span class="no">' + esc(rgNo(r)) + '</span></div><div class="meta">' + esc(rgDate(r.paid_on)) + '</div>'
                 + '<div class="l"><span>Client</span><span>' + esc(r.client_name) + '</span></div>' + (r.client_contact ? '<div class="l"><span>Contact</span><span>' + esc(r.client_contact) + '</span></div>' : '') + (r.member_code ? '<div class="l"><span>N° de dossier</span><span>' + esc(r.member_code) + '</span></div>' : '')
@@ -5199,7 +5217,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
         async function rgInit() {
             if (!rgInited) {
                 rgInited = true;
-                const st = document.createElement('style'); st.textContent = RG_CSS; document.head.appendChild(st);
+                const st = document.createElement('style'); st.textContent = RG_CSS + RGT_CSS; document.head.appendChild(st); try { rgv('rg-style').value = rgStyle; } catch (e) {}
                 let p = 750, xx = ''; try { p = Number(localStorage.getItem('mm_rg_price')) || 750; xx = localStorage.getItem('mm_rg_x') || ''; } catch (e) {}
                 rgv('rg-price').value = p; rgv('rg-x').value = xx || 1; rgv('rg-date').value = new Date().toISOString().slice(0, 10);
                 if (!rgv('rg-label').value) rgv('rg-label').value = 'Mordus de Médecine – Numéro ' + rgv('rg-x').value;
@@ -5245,7 +5263,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
         function rgPrint() {
             if (!rgCur) return;
             const w = window.open('', '_blank'); if (!w) { toast('Autorise les fenêtres pour imprimer.', 'error'); return; }
-            w.document.write('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>' + esc(rgNo(rgCur)) + '</title><link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet"><style>' + RG_CSS + 'body{margin:0;padding:16px;background:#fff}.rgr{--rgbg:#fff;box-shadow:0 0 0 1px #e2e8f0}@media print{body{padding:0}}</style></head><body>' + rgHtml(rgCur) + '<script>setTimeout(function(){window.print()},700)<\/script></body></html>');
+            w.document.write('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>' + esc(rgNo(rgCur)) + '</title><link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet"><style>' + RG_CSS + RGT_CSS + 'body{margin:0;padding:16px;background:#fff}.rgr,.rgt{--rgbg:#fff;box-shadow:0 0 0 1px #e2e8f0}@media print{body{padding:0}}</style></head><body>' + rgHtml(rgCur) + '<script>setTimeout(function(){window.print()},700)<\/script></body></html>');
             w.document.close();
         }
         function rgWrap(ctx, text, maxW) {
@@ -5253,7 +5271,45 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             words.forEach(w => { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; });
             if (cur) lines.push(cur); return lines;
         }
+        async function rgCanvasT(r) {
+            const W = 760, M = 44, MONO = "'Courier New', Courier, monospace";
+            const c = document.createElement('canvas'); c.width = W; c.height = 1700; const x = c.getContext('2d');
+            x.fillStyle = '#fffdf6'; x.fillRect(0, 0, W, 1700);
+            const left = M + 14, right = W - M - 14, cx = W / 2; let y = 100;
+            const txt = (t, px, py, font, color, align) => { x.font = font; x.fillStyle = color; x.textAlign = align || 'left'; x.fillText(t, px, py); };
+            const dash = py => { x.save(); x.strokeStyle = '#b08d6e'; x.lineWidth = 3; x.setLineDash([10, 8]); x.beginPath(); x.moveTo(left, py); x.lineTo(right, py); x.stroke(); x.restore(); };
+            x.letterSpacing = '4px'; txt('MORDUS DE MÉDECINE', cx, y, '700 38px ' + MONO, '#14213D', 'center'); y += 34;
+            x.letterSpacing = '6px'; txt('CAISSE DE LA RÉDACTION', cx, y, '700 18px ' + MONO, '#8a6a4c', 'center'); x.letterSpacing = '0px'; y += 34;
+            dash(y); y += 46; x.letterSpacing = '4px'; txt('REÇU N°', cx, y, '700 28px ' + MONO, '#14213D', 'center'); y += 40; x.letterSpacing = '1px'; txt(rgNo(r), cx, y, '700 30px ' + MONO, '#14213D', 'center'); x.letterSpacing = '0px'; y += 26; dash(y); y += 8;
+            const row = (a, b) => { y += 42; txt(a, left, y, '26px ' + MONO, '#475569'); txt(b, right, y, '700 26px ' + MONO, '#14213D', 'right'); };
+            row('Client', r.client_name); if (r.client_contact) row('Contact', r.client_contact); if (r.member_code) row('Dossier', r.member_code); row('Date', rgDate(r.paid_on));
+            y += 26; dash(y); y += 8;
+            x.font = '26px ' + MONO; const lines = rgWrap(x, (r.qty > 1 ? r.qty + ' × ' : '1 × ') + r.label, right - left);
+            lines.forEach(ln => { y += 36; txt(ln, left, y, '26px ' + MONO, '#14213D'); });
+            y += 38; txt('P.U. ' + rgFmt(r.unit_price), left, y, '23px ' + MONO, '#475569'); txt(rgFmt(r.total), right, y, '23px ' + MONO, '#475569', 'right');
+            y += 24; dash(y); y += 50;
+            txt('TOTAL PAYÉ', left, y, '700 32px ' + MONO, '#14213D'); txt(rgFmt(r.total) + ' ' + r.currency, right, y, '700 32px ' + MONO, '#14213D', 'right');
+            row('Paiement', r.method); row('Référence', r.reference || '—');
+            y += 26; dash(y); y += 52;
+            const sc = r.voided ? '#dc2626' : '#16a34a';
+            txt('STATUT', left, y, '700 32px ' + MONO, '#14213D'); txt(r.voided ? 'ANNULÉ ✖' : 'PAYÉ ✔', right, y, '700 32px ' + MONO, sc, 'right');
+            y += 26; dash(y); y += 30;
+            const bars = rgBars(rgNo(r)); let tw = 0; bars.forEach(w => tw += (w + 2) * 2); let bx = cx - tw / 2; x.fillStyle = '#14213D';
+            bars.forEach(w => { x.fillRect(bx, y, w * 2, 84); bx += (w + 2) * 2; }); y += 84 + 28;
+            x.letterSpacing = '5px'; txt(rgNo(r), cx, y, '20px ' + MONO, '#8a6a4c', 'center'); x.letterSpacing = '0px'; y += 48;
+            txt('MERCI DE VOTRE CONFIANCE !', cx, y, '700 25px ' + MONO, '#14213D', 'center'); y += 32;
+            txt("Reçu validé par l'équipe Mordus de Médecine", cx, y, '19px ' + MONO, '#8a6a4c', 'center'); y += 56;
+            if (r.voided) { x.save(); x.translate(cx + 90, 560); x.rotate(-0.2); x.strokeStyle = sc; x.fillStyle = sc; x.globalAlpha = .75; x.lineWidth = 8; x.beginPath(); x.roundRect(-150, -42, 300, 84, 14); x.stroke(); x.letterSpacing = '8px'; x.font = '800 48px ' + MONO; x.textAlign = 'center'; x.fillText('ANNULÉ', 4, 16); x.restore(); }
+            const H = y, o2 = document.createElement('canvas'); o2.width = W; o2.height = H; const p = o2.getContext('2d');
+            p.fillStyle = '#dfe5ee'; p.fillRect(0, 0, W, H);
+            p.save(); p.beginPath(); p.rect(M - 10, 18, W - 2 * (M - 10), H - 36); p.clip(); p.drawImage(c, 0, 0, W, H, 0, 0, W, H); p.restore();
+            p.strokeStyle = '#d6cdb8'; p.lineWidth = 2; p.strokeRect(M - 10, 18, W - 2 * (M - 10), H - 36);
+            p.fillStyle = '#b08d6e'; p.fillRect(M - 10, 18, W - 2 * (M - 10), 8); p.fillRect(M - 10, H - 26, W - 2 * (M - 10), 8);
+            p.fillStyle = '#fffdf6'; for (let k = M - 10; k < W - (M - 10); k += 24) { p.fillRect(k + 14, 18, 8, 8); p.fillRect(k + 14, H - 26, 8, 8); }
+            return o2;
+        }
         async function rgCanvas(r) {
+            if (rgStyle === 'ticket') return rgCanvasT(r);
             try { await document.fonts.load('700 56px "Dancing Script"'); } catch (e) {}
             const W = 760, M = 40, S = 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif', MONO = 'ui-monospace, Menlo, Consolas, monospace';
             const c = document.createElement('canvas'); c.width = W; c.height = 1500; const x = c.getContext('2d');
