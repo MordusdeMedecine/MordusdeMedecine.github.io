@@ -1708,7 +1708,7 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
                 <div id="admin-nav" class="flex gap-2 overflow-x-auto pb-1"><button type="button" data-adnav="clients" onclick="adminSection('clients')" class="admin-navbtn"><span data-ico="clipboard" data-ico-class="w-4 h-4"></span>Clients & reçus</button><button type="button" data-adnav="chat" onclick="adminSection('chat')" class="admin-navbtn">💬 Chat</button><button type="button" data-adnav="issues" onclick="adminSection('issues')" class="admin-navbtn"><span data-ico="book" data-ico-class="w-4 h-4"></span>Numéros</button><button type="button" data-adnav="pages" onclick="adminSection('pages')" class="admin-navbtn"><span data-ico="pill" data-ico-class="w-4 h-4"></span>Pages des numéros</button><button type="button" data-adnav="carousel" onclick="adminSection('carousel')" class="admin-navbtn"><span data-ico="sun" data-ico-class="w-4 h-4"></span>Carrousel</button><button type="button" data-adnav="cases" onclick="adminSection('cases')" class="admin-navbtn"><span data-ico="stetho" data-ico-class="w-4 h-4"></span>Cas du jour</button><button type="button" data-adnav="reviews" onclick="adminSection('reviews')" class="admin-navbtn"><span data-ico="thermo" data-ico-class="w-4 h-4"></span>Avis</button><button type="button" data-adnav="sitepages" onclick="adminSection('sitepages')" class="admin-navbtn">📄 Pages du site</button><button type="button" data-adnav="offers" onclick="adminSection('offers')" class="admin-navbtn">🔥 Offres</button><button type="button" data-adnav="audience" onclick="adminSection('audience')" class="admin-navbtn">📈 Audience</button><button type="button" data-adnav="free" onclick="adminSection('free')" class="admin-navbtn"><span data-ico="gift" data-ico-class="w-4 h-4"></span>Contenu gratuit</button><button type="button" data-adnav="receiptgen" onclick="adminSection('receiptgen')" class="admin-navbtn">🧾 Reçus</button><button type="button" data-adnav="anecdotes" onclick="adminSection('anecdotes')" class="admin-navbtn" style="position:relative"><span data-ico="coffee" data-ico-class="w-4 h-4"></span>Anecdotes<span id="ad-anec-badge" class="hidden ml-1.5 rounded-full bg-rose-500 text-white text-[10px] font-bold leading-none px-1.5 py-1" style="box-shadow:0 0 8px rgba(244,63,94,.8)"></span></button></div>
 
                 <div data-adsec="clients" class="space-y-4">
-                    <div class="flex items-center justify-between gap-2"><h3 class="text-sm font-bold text-slate-200">📋 Comptes clients & reçus soumis :</h3><button onclick="renderAdminPanel()" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-semibold">🔄 Actualiser</button></div>
+                    <div class="flex items-center justify-between gap-2"><h3 class="text-sm font-bold text-slate-200">📋 Comptes clients & reçus soumis :</h3><div class="flex gap-2"><button onclick="admBoxOpen()" class="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-[11px] font-semibold">📨 Messagerie<span id="adm-box-badge" class="hidden ml-1.5 rounded-full bg-rose-500 text-white text-[10px] font-bold leading-none px-1.5 py-1"></span></button><button onclick="renderAdminPanel()" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-semibold">🔄 Actualiser</button></div></div>
                     
                     <div class="overflow-x-auto rounded-2xl border border-slate-800">
                         <table class="w-full text-left text-xs text-slate-300">
@@ -2359,6 +2359,15 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
             <h3 class="text-lg font-bold text-slate-900 text-center">📬 Message de l'équipe</h3>
             <div id="msg-modal-list" class="space-y-3 max-h-72 overflow-y-auto"></div>
             <button onclick="dismissMessages()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 rounded-xl text-sm transition-colors">J'ai compris</button>
+        </div>
+    </div>
+
+    <!-- MESSAGERIE (admin) : messages envoyés et réponses reçues -->
+    <div id="adm-box-modal" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-5 max-w-lg w-full shadow-2xl border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between"><h3 class="text-lg font-bold text-slate-900">📨 Messagerie</h3><button onclick="admBoxClose()" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold">Fermer</button></div>
+            <div class="flex gap-2"><button id="adm-tab-in" onclick="admBoxTab('in')" class="flex-1 py-2 rounded-xl text-sm font-bold bg-teal-600 text-white">📥 Réponses reçues</button><button id="adm-tab-out" onclick="admBoxTab('out')" class="flex-1 py-2 rounded-xl text-sm font-bold bg-slate-100 text-slate-700">📤 Envoyés</button></div>
+            <div id="adm-box-list" class="space-y-2 max-h-[55vh] overflow-y-auto"></div>
         </div>
     </div>
 
@@ -5869,7 +5878,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                 sb.from('profiles').select('*').eq('id', uid).single(),
                 sb.from('unlocked_issues').select('issue_id').eq('user_id', uid),
                 sb.from('receipts').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
-                sb.from('messages').select('id,kind,subject,body,created_at,read_at').eq('user_id', uid).order('created_at', { ascending: false }).limit(30)
+                sb.from('messages').select('id,kind,subject,body,created_at,read_at,sender,parent_id').eq('user_id', uid).order('created_at', { ascending: false }).limit(100)
             ]);
             if (p.error) { currentUser = null; return; }
             if (p.data.closed_at) { try { await sb.auth.signOut(); } catch (e) {} currentUser = null; try { toast('Ce compte a été fermé définitivement.', 'error'); } catch (e) {} return; }
@@ -5879,7 +5888,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                 role: p.data.role, isNew: (Date.now() - new Date(session.user.created_at || 0).getTime()) < 3 * 86400000, suspended: !!p.data.suspended, lastLogin: fmtDate(p.data.last_login),
                 unlockedIssues: (u.data || []).map(x => x.issue_id),
                 submittedReceipts: (r.data || []).map(x => ({ receipt: x.receipt, date: fmtDate(x.created_at), status: x.status, proof: !!x.proof_path })),
-                messages: (m.data || []).map(x => ({ id: x.id, kind: x.kind, subject: x.subject || '', body: x.body, date: fmtDate(x.created_at), read: !!x.read_at }))
+                messages: (m.data || []).map(x => ({ id: x.id, kind: x.kind, subject: x.subject || '', body: x.body, date: fmtDate(x.created_at), read: !!x.read_at, sender: x.sender || 'admin', parent: x.parent_id || null }))
             };
         }
 
@@ -7902,19 +7911,59 @@ show();
             loadAdminReviews();
         }
 
+        // ====== MESSAGERIE ADMIN : envoyés + réponses des membres ======
+        let ADMBOX = [], admBoxCur = 'in';
+        async function admBoxLoad() {
+            const r = await sb.from('messages').select('id,user_id,kind,subject,body,created_at,read_at,sender,parent_id').order('created_at', { ascending: false }).limit(300);
+            ADMBOX = r.data || [];
+            const n = ADMBOX.filter(m => m.sender === 'user' && !m.read_at).length;
+            const b = document.getElementById('adm-box-badge'); if (b) { b.textContent = n; b.classList.toggle('hidden', !n); }
+            if (!document.getElementById('adm-box-modal').classList.contains('hidden')) admBoxRender();
+        }
+        function admBoxOpen() { document.getElementById('adm-box-modal').classList.remove('hidden'); admBoxTab('in'); admBoxLoad(); }
+        async function admBoxClose() {
+            document.getElementById('adm-box-modal').classList.add('hidden');
+            if (ADMBOX.some(m => m.sender === 'user' && !m.read_at)) { await sb.rpc('admin_mark_replies_read'); ADMBOX.forEach(m => { if (m.sender === 'user') m.read_at = m.read_at || new Date().toISOString(); }); const b = document.getElementById('adm-box-badge'); if (b) b.classList.add('hidden'); }
+        }
+        function admBoxTab(t) {
+            admBoxCur = t;
+            document.getElementById('adm-tab-in').className = 'flex-1 py-2 rounded-xl text-sm font-bold ' + (t === 'in' ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-700');
+            document.getElementById('adm-tab-out').className = 'flex-1 py-2 rounded-xl text-sm font-bold ' + (t === 'out' ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-700');
+            admBoxRender();
+        }
+        function admBoxRender() {
+            const el = document.getElementById('adm-box-list'); if (!el) return;
+            const who = id => { const u = usersDB.find(x => x.id === id); return u ? u.username : 'membre'; };
+            const list = ADMBOX.filter(m => admBoxCur === 'in' ? m.sender === 'user' : m.sender !== 'user');
+            if (!list.length) { el.innerHTML = '<p class="text-sm text-slate-500 italic text-center py-6">' + (admBoxCur === 'in' ? 'Aucune réponse reçue pour le moment.' : 'Aucun message envoyé.') + '</p>'; return; }
+            el.innerHTML = list.map(m => {
+                const inn = admBoxCur === 'in';
+                const head = (inn ? '📥 De ' : '📤 À ') + esc(who(m.user_id)) + ' · ' + esc(fmtDate(m.created_at)) + (inn ? (m.read_at ? '' : ' · <span class="text-rose-600">nouveau</span>') : (m.read_at ? ' · ✅ lu' : ' · non lu'));
+                const btn = inn ? '<div class="mt-2 text-right"><button type="button" onclick="admBoxReply(' + m.id + ')" class="text-[11px] font-bold text-teal-700 hover:underline">↩️ Répondre</button></div>' : '';
+                return '<div class="rounded-xl border p-3 text-sm whitespace-pre-line ' + (inn ? 'bg-teal-50 border-teal-200 text-teal-900' : 'bg-slate-50 border-slate-200 text-slate-800') + '"><div class="text-[10px] font-bold uppercase tracking-wider mb-1">' + head + '</div>' + (m.subject ? '<div class="font-bold mb-1">' + esc(m.subject) + '</div>' : '') + esc(m.body) + btn + '</div>';
+            }).join('');
+        }
+        function admBoxReply(id) {
+            const m = ADMBOX.find(x => x.id === id); if (!m) return;
+            const u = usersDB.find(x => x.id === m.user_id); if (!u) { toast('Membre introuvable.', 'error'); return; }
+            document.getElementById('adm-box-modal').classList.add('hidden');
+            openAdminMsgModal(u.username, id, /^re:/i.test(m.subject || '') ? m.subject : ('Re: ' + (m.subject || '')));
+        }
+
         // ====== MESSAGES ADMIN -> CLIENT ======
-        let msgTargetUser = null;
+        let msgTargetUser = null, msgParentId = null;
         const WARNING_TEMPLATE = "Avertissement : des numéros de reçu soumis depuis votre compte n'ont pas pu être vérifiés. Si cela se reproduit, votre compte sera fermé sans préavis. Si vous pensez qu'il s'agit d'une erreur, répondez-nous par e-mail.";
-        function openAdminMsgModal(username) {
+        function openAdminMsgModal(username, parentId, subj) {
             msgTargetUser = usersDB.find(u => u.username === username);
             if (!msgTargetUser) return;
             document.getElementById('admin-msg-user').innerText = msgTargetUser.username;
             document.getElementById('admin-msg-body').value = '';
-            document.getElementById('admin-msg-subject').value = '';
-            document.getElementById('admin-msg-kind').value = 'warning';
+            msgParentId = parentId || null;
+            document.getElementById('admin-msg-subject').value = subj || '';
+            document.getElementById('admin-msg-kind').value = parentId ? 'info' : 'warning';
             document.getElementById('admin-msg-modal').classList.remove('hidden');
         }
-        function closeAdminMsgModal() { document.getElementById('admin-msg-modal').classList.add('hidden'); msgTargetUser = null; }
+        function closeAdminMsgModal() { document.getElementById('admin-msg-modal').classList.add('hidden'); msgTargetUser = null; msgParentId = null; }
         function fillWarningTemplate() {
             document.getElementById('admin-msg-kind').value = 'warning';
             document.getElementById('admin-msg-body').value = WARNING_TEMPLATE;
@@ -7927,30 +7976,54 @@ show();
             const subject = document.getElementById('admin-msg-subject').value.trim();
             if (subject.length < 2 || subject.length > 120) { toast("L'objet doit contenir entre 2 et 120 caractères.", 'error'); return; }
             if (body.length < 3 || body.length > 1000) { toast('Le message doit contenir entre 3 et 1000 caractères.', 'error'); return; }
-            const { error } = await sb.from('messages').insert({ user_id: msgTargetUser.id, kind, subject, body });
+            const row = { user_id: msgTargetUser.id, kind, subject, body }; if (msgParentId) row.parent_id = msgParentId;
+            const { error } = await sb.from('messages').insert(row);
             if (error) { toast('Erreur : ' + error.message, 'error'); return; }
             toast('Message envoyé à ' + msgTargetUser.username + '.', 'success');
             closeAdminMsgModal();
+            try { admBoxLoad(); } catch (e) {}
         }
         const msgCard = m => `<div class="rounded-xl border p-3 text-sm whitespace-pre-line ${m.kind === 'warning' ? 'bg-rose-50 border-rose-200 text-rose-900' : 'bg-sky-50 border-sky-200 text-sky-900'}"><div class="text-[10px] font-bold uppercase tracking-wider mb-1">${m.kind === 'warning' ? '⚠️ Avertissement' : 'ℹ️ Information'} · ${esc(m.date)}</div>${m.subject ? '<div class="font-bold text-sm mb-1">' + esc(m.subject) + '</div>' : ''}${esc(m.body)}</div>`;
+        const msgMine = m => `<div class="flex justify-end"><div class="max-w-[90%] rounded-xl border border-teal-200 bg-teal-50 text-teal-900 p-3 text-sm whitespace-pre-line"><div class="text-[10px] font-bold uppercase tracking-wider mb-1">📤 Ma réponse · ${esc(m.date)}${m.read ? ' · lue par l\'équipe' : ' · envoyée'}</div>${esc(m.body)}</div></div>`;
+        function msgReplyToggle(id) { const b = document.getElementById('mrp-' + id); if (b) { b.classList.toggle('hidden'); const t = b.querySelector('textarea'); if (t && !b.classList.contains('hidden')) t.focus(); } }
+        async function msgReplySend(id) {
+            const box = document.getElementById('mrp-' + id); if (!box) return;
+            const ta = box.querySelector('textarea'); const body = (ta.value || '').trim();
+            if (body.length < 3 || body.length > 1000) { toast('Le message doit contenir entre 3 et 1000 caractères.', 'error'); return; }
+            const btn = box.querySelector('button.mrp-go'); if (btn) btn.disabled = true;
+            const { data, error } = await sb.rpc('reply_to_team', { p_parent: id, p_body: body });
+            if (btn) btn.disabled = false;
+            if (error) { toast(String(error.message || 'Erreur').replace(/^.*?:\s*/, ''), 'error'); return; }
+            const parent = (currentUser.messages || []).find(m => m.id === id);
+            currentUser.messages.unshift({ id: data, kind: 'info', subject: parent ? 'Re: ' + (parent.subject || '') : '', body: body, date: fmtDate(new Date().toISOString()), read: false, sender: 'user', parent: id });
+            toast('Réponse envoyée à l\'équipe.', 'success');
+            renderMyMessages();
+        }
         function renderMyMessages() {
             const el = document.getElementById('dash-messages');
             if (!el || !currentUser) return;
-            const list = currentUser.messages || [];
-            const banner = currentUser.suspended ? '<div class="rounded-xl border border-rose-300 bg-rose-100 text-rose-900 p-3 text-sm font-semibold">⛔ Votre compte est suspendu : vos magazines et l\'envoi de reçus sont bloqués. Contactez l\'équipe par e-mail.</div>' : '';
-            el.innerHTML = banner + (list.length ? '<h4 class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">📬 Messages de l\'équipe</h4>' + list.map(msgCard).join('') : '');
+            const all = currentUser.messages || [];
+            const team = all.filter(m => m.sender !== 'user');
+            const mine = all.filter(m => m.sender === 'user');
+            const kids = id => mine.filter(m => m.parent === id).sort((a, b) => a.id - b.id);
+            const orphans = mine.filter(m => !team.some(t => t.id === m.parent));
+            const banner = currentUser.suspended ? '<div class="rounded-xl border border-rose-300 bg-rose-100 text-rose-900 p-3 text-sm font-semibold">⛔ Votre compte est suspendu : vos magazines et l\'envoi de reçus sont bloqués. Vous pouvez répondre à l\'équipe ci-dessous.</div>' : '';
+            const thread = m => '<div class="space-y-1.5">' + msgCard(m) + kids(m.id).map(msgMine).join('') +
+                '<div class="flex justify-end"><button type="button" onclick="msgReplyToggle(' + m.id + ')" class="text-[11px] font-bold text-teal-700 hover:underline">↩️ Répondre</button></div>' +
+                '<div id="mrp-' + m.id + '" class="hidden space-y-1.5"><textarea rows="3" maxlength="1000" placeholder="Votre réponse à l\'équipe…" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-teal-600"></textarea><div class="flex gap-2"><button type="button" onclick="msgReplySend(' + m.id + ')" class="mrp-go flex-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded-xl text-sm">Envoyer ma réponse</button><button type="button" onclick="msgReplyToggle(' + m.id + ')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold">Annuler</button></div></div></div>';
+            el.innerHTML = banner + ((team.length || orphans.length) ? '<h4 class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">📬 Messages de l\'équipe</h4>' + team.map(thread).join('') + (orphans.length ? '<h4 class="text-[11px] font-bold text-slate-600 uppercase tracking-wider">📤 Mes messages envoyés</h4>' + orphans.map(msgMine).join('') : '') : '');
         }
         function showUnreadMessages() {
             const modal = document.getElementById('msg-modal');
             if (!currentUser || !modal || !modal.classList.contains('hidden')) return;
-            const unread = (currentUser.messages || []).filter(m => !m.read);
+            const unread = (currentUser.messages || []).filter(m => !m.read && m.sender !== 'user');
             if (!unread.length) return;
             document.getElementById('msg-modal-list').innerHTML = unread.map(msgCard).join('');
             modal.classList.remove('hidden');
         }
         async function dismissMessages() {
             await sb.rpc('mark_messages_read');
-            (currentUser.messages || []).forEach(m => m.read = true);
+            (currentUser.messages || []).forEach(m => { if (m.sender !== 'user') m.read = true; });
             document.getElementById('msg-modal').classList.add('hidden');
             renderMyMessages();
         }
@@ -8018,7 +8091,7 @@ show();
                 submittedReceipts: (r.data || []).filter(i => i.user_id === x.id).map(i => ({ id: i.id, receipt: i.receipt, date: fmtDate(i.created_at), status: i.status, issueId: i.issue_id, proof: i.proof_path || '' }))
             }));
             usersDB.sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));  // nouveaux inscrits en tête
-            await loadAdminIssues(); loadEditorPages(); loadAdminReviews(); loadAdminSlides(); loadAdminAnecdotes(); loadAdminCases(); loadAdminFree(); loadAdminGift(); loadAdminOffers(); loadAdminChat();
+            await loadAdminIssues(); loadEditorPages(); loadAdminReviews(); loadAdminSlides(); loadAdminAnecdotes(); loadAdminCases(); loadAdminFree(); loadAdminGift(); loadAdminOffers(); loadAdminChat(); admBoxLoad();
             if (!usersDB.length) { tableBody.innerHTML = `<tr><td colspan="1" class="p-4 text-center text-slate-500 italic">Aucun utilisateur.</td></tr>`; return; }
             tableBody.innerHTML = usersDB.map(user => {
                 const issueOpts = '<option value="">Numéro…</option>' + adIssues.filter(i => i.title !== 'Prochainement disponible').map(i => `<option value="${Number(i.id)}">${esc(i.number)}</option>`).join('');
