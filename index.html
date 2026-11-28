@@ -4462,7 +4462,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const box = document.getElementById('ch-msgs'), keep = box.scrollTop;
             box.innerHTML = (m.data || []).map(x => '<div class="flex ' + (x.sender === 'admin' ? 'justify-end' : '') + '"><div class="max-w-[85%] rounded-2xl px-3 py-1.5 text-xs ' + (x.sender === 'admin' ? 'bg-fuchsia-700 text-white' : x.sender === 'auto' ? 'bg-slate-700 text-slate-300 italic' : 'bg-teal-900 text-teal-50') + '">' + (x.sender === 'auto' ? '🤖 ' : '') + esc(x.body).replace(/\n/g, '<br>') + '<div class="text-[9px] opacity-60 mt-0.5">' + esc(fmtDate(x.created_at)) + '</div></div></div>').join('') || '<p class="text-xs text-slate-500 italic">Aucun message.</p>';
             if (quiet) box.scrollTop = keep; else box.scrollTop = box.scrollHeight;
-            document.getElementById('ch-head').innerHTML = (t.kind === 'offline' ? '📩 Message laissé' : t.kind === 'guest' ? '👤 Visiteur' + (t.name ? ' · ' + esc(t.name) : '') : '💬 ' + esc(t.name || 'Membre')) + (t.email ? '<div class="text-[11px] font-normal text-slate-300">' + esc(t.email) + '</div>' : '');
+            document.getElementById('ch-head').innerHTML = (t.kind === 'offline' ? '📩 Message laissé' : t.kind === 'guest' ? '👤 Visiteur' + (t.name ? ' · ' + esc(t.name) : '') : '💬 ' + esc(t.name || 'Membre')) + (t.email ? '<div class="text-[11px] font-normal text-slate-300">' + esc(t.email) + (t.kind !== 'member' ? ' · ✉️ ta réponse partira aussi par email' : '') + '</div>' : '');
             const ml = document.getElementById('ch-mail');
             if (t.email) { ml.classList.remove('hidden'); ml.href = 'mailto:' + t.email + '?subject=' + encodeURIComponent('Mordus de Médecine : réponse de la rédaction') + '&body=' + encodeURIComponent('Bonjour,\n\nLa rédaction de Mordus de Médecine est de retour. Merci pour votre message.\n\n'); } else ml.classList.add('hidden');
             document.getElementById('ch-quick').innerHTML = (chtCfg().quick || []).map((q, k) => '<button type="button" onclick="chQuick(' + k + ')" class="px-2.5 py-1 rounded-full bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-semibold">⚡ ' + esc(q.t) + '</button>').join('');
@@ -4474,7 +4474,12 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const r = document.getElementById('ch-reply'), v = r.value.trim(); if (!v || !chCur) return;
             const { error } = await sb.from('chat_messages').insert({ thread_id: chCur.id, sender: 'admin', body: v });
             if (error) { toast('Erreur : ' + error.message, 'error'); return; }
-            r.value = ''; const i = chThreads.findIndex(t => t.id === chCur.id); chOpen(i);
+            r.value = ''; const th = chCur, i = chThreads.findIndex(t => t.id === chCur.id); chOpen(i);
+            if (th.email && th.kind !== 'member') {
+                const em = await sb.functions.invoke('send-chat-reply', { body: { thread_id: th.id, text: v } });
+                if (em.error || (em.data && em.data.error)) toast('Réponse enregistrée, mais l\'email n\'est pas parti : utilisez le bouton courriel.', 'error');
+                else toast('✉️ Réponse envoyée par email à ' + th.email, 'success');
+            }
         }
         function chClose() { chCur = null; document.getElementById('ch-conv').classList.add('hidden'); }
         async function chDelete() {
