@@ -323,6 +323,10 @@
         #help-panel .hp-head button { width: 28px; height: 28px; border-radius: 50%; background: rgba(15,23,42,.08); color: #334155; font-size: 15px; }
         #cht-fab { position: fixed; right: 14px; bottom: 14px; z-index: 40; width: 58px; height: 58px; border-radius: 50%; border: 0; background: linear-gradient(135deg,#0d9488,#c026d3); color: #fff; box-shadow: 0 6px 18px rgba(134,25,143,.4); display: none; align-items: center; justify-content: center; cursor: pointer; animation: chtbeat 6s ease-in-out infinite; }
         #cht-fab.show { display: flex; }
+        #cht-fab .cht-on { position: absolute; bottom: 3px; right: 3px; width: 15px; height: 15px; border-radius: 50%; border: 2.5px solid #fff; background: #94a3b8; }
+        #cht-fab .cht-on.on { background: #22c55e; box-shadow: 0 0 0 0 rgba(34,197,94,.7); animation: chtpulse 2s infinite; }
+        @keyframes chtpulse { 70% { box-shadow: 0 0 0 7px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
+        .cht-sd { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #94a3b8; margin-left: 5px; vertical-align: 1px; } .cht-sd.on { background: #22c55e; }
         #cht-fab::before { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 3px solid #c026d3; opacity: 0; animation: chtring 6s ease-out infinite; pointer-events: none; }
         #cht-fab .cht-dot { position: absolute; top: 0; right: 0; min-width: 18px; height: 18px; border-radius: 9px; background: #ef4444; color: #fff; font: 700 11px/18px system-ui; text-align: center; padding: 0 4px; display: none; }
         @keyframes chtbeat { 0%, 76%, 100% { transform: scale(1) } 80% { transform: scale(1.12) } 84% { transform: scale(1) } 88% { transform: scale(1.08) } 92% { transform: scale(1) } }
@@ -518,6 +522,27 @@
         .mm-legal-head h3 { font-size:1.35rem; font-weight:700; color:#a21caf; margin:0; }
         .mm-legal-head button { font-size:1.1rem; line-height:1; padding:.35rem .6rem; border-radius:.6rem; background:#f1f5f9; color:#334155; }
         .mm-legal-body { overflow-y:auto; padding:1rem 1.1rem 1.3rem; font-size:.92rem; line-height:1.6; }
+
+        .ct-card { display:block; width:100%; text-align:left; padding:.9rem 1rem; border:2px solid #99f6e4; border-radius:1rem; background:#f0fdfa; margin-top:.7rem; color:inherit; }
+        .ct-card.f { border-color:#f0abfc; background:#fdf4ff; }
+        .ct-card b { font-size:1.05rem; } .ct-sub { display:block; font-size:.85rem; color:#475569; margin-top:.15rem; }
+        .ct-st { display:block; font-size:.85rem; font-weight:700; margin-top:.3rem; color:#64748b; } .ct-st.on { color:#15803d; }
+        .ct-lab { display:block; margin-top:.6rem; font-weight:700; font-size:.85rem; }
+        .ct-in { width:100%; border:1px solid #cbd5e1; border-radius:.7rem; padding:.55rem .7rem; margin-top:.25rem; font-size:.95rem; background:#fff; color:#0f172a; }
+        .ct-note { font-size:.85rem; background:#fffbeb; border:1px solid #fde68a; border-radius:.7rem; padding:.5rem .7rem; }
+        .ct-send { padding:.65rem; border-radius:999px; background:linear-gradient(90deg,#0d9488,#c026d3); color:#fff; font-weight:800; }
+        .ct-sec { padding:.65rem 1rem; border-radius:999px; background:#e2e8f0; color:#334155; font-weight:700; }
+        html[data-skin="lav"] .ct-card { background:#F6EFDC; border-color:#4FAE7F; color:#2B2640; } html[data-skin="lav"] .ct-card.f { background:#EDEAF3; border-color:#6A5CA3; }
+        html[data-skin="lav"] .ct-sub { color:#5E597A; } html[data-skin="lav"] .ct-st { color:#5E597A; } html[data-skin="lav"] .ct-st.on { color:#1F5C3D; }
+        html[data-skin="lav"] .ct-in { background:#fff; color:#2B2640; border-color:#E6D9B4; } html[data-skin="lav"] .ct-note { background:#F6EFDC; border-color:#E6D9B4; color:#2B2640; }
+        html[data-skin="lav"] .ct-send { background:#2F7F58; color:#fff; box-shadow:0 0 10px rgba(91,228,155,.6); } html[data-skin="lav"] .ct-sec { background:#F6EFDC; color:#2B2640; border:1px solid #E6D9B4; }
+        html[data-skin="soir"] .ct-card { background:#14213D; border-color:#B08D6E; color:#F2EDE4!important; } html[data-skin="soir"] .ct-card.f { background:#25396A; border-color:#C9D1DC; }
+        html[data-skin="soir"] .ct-sub, html[data-skin="soir"] .ct-st { color:#A9B4C8!important; } html[data-skin="soir"] .ct-st.on { color:#86efac!important; }
+        html[data-skin="soir"] .ct-in { background:#0F1A31; color:#F2EDE4; border-color:#B08D6E; } html[data-skin="soir"] .ct-note { background:#8A6A4E; border-color:#B08D6E; color:#F2EDE4!important; }
+        html[data-skin="soir"] .ct-send { background:#B08D6E; color:#0F1A31; box-shadow:0 0 10px rgba(230,236,245,.45); } html[data-skin="soir"] .ct-sec { background:#8A6A4E; color:#F2EDE4; }
+        html[data-skin="lav"] .ct-card b, html[data-skin="lav"] .ct-send, html[data-skin="lav"] .ct-sec, html[data-skin="lav"] .ct-lab { font-family:'Share Tech Mono','Courier New',monospace!important; letter-spacing:0; }
+        html[data-skin="soir"] .ct-card b, html[data-skin="soir"] .ct-send, html[data-skin="soir"] .ct-sec, html[data-skin="soir"] .ct-lab { font-family:'Comic Sans MS','Comic Neue','Comic Relief',cursive!important; }
+        html[data-skin="soir"] .mm-legal-body .ct-lab, html[data-skin="soir"] .mm-legal-body .ct-card b, html[data-skin="soir"] .mm-legal-body .ct-note { color:#F2EDE4!important; }
         .mm-legal-body h4 { font-weight:800; color:#0f766e; margin:1rem 0 .25rem; font-size:.95rem; }
         .mm-legal-body p { margin:.3rem 0; } .mm-legal-body ul { margin:.3rem 0 .3rem 1.2rem; list-style:disc; } .mm-legal-body a { color:#0f766e; text-decoration:underline; }
         .live-dot { display:inline-block; width:.55rem; height:.55rem; border-radius:50%; background:#22c55e; margin-right:.4rem; box-shadow:0 0 0 0 rgba(34,197,94,.7); animation:livePulse 1.8s infinite; }
@@ -3950,7 +3975,8 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             document.getElementById('cht-tab-red').classList.toggle('on', chtTabV === 'red');
             document.getElementById('cht-tab-live').classList.toggle('on', chtTabV === 'live');
             if (chtTabV === 'live') { chtRenderLive(); return; }
-            document.getElementById('cht-sub').textContent = av ? 'Consultation privée · réponse sous quelques heures' : 'Rédaction indisponible · réponses automatiques';
+            chtStatusSync();
+            document.getElementById('cht-sub').textContent = av ? '🟢 Rédaction en ligne · consultation privée' : '⚪ Rédaction hors ligne · réponses automatiques';
             const note = document.getElementById('cht-note');
             note.className = av ? '' : 'off'; note.id = 'cht-note';
             note.textContent = av ? 'Consultation privée : seuls vous et l\'équipe la voient' : 'La rédaction est absente pour le moment';
@@ -3970,6 +3996,16 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             document.getElementById('cht-leave').classList.toggle('show', chtLeaveOn);
             if (chtLeaveOn && currentUser && !document.getElementById('cht-lem').value) document.getElementById('cht-lem').value = currentUser.email || '';
         }
+        function chtStatusSync() {
+            const av = chtCfg().available !== false;
+            const a = document.getElementById('cht-on'), b = document.getElementById('cht-red-sd'), f = document.getElementById('cht-fab');
+            [a, b].forEach(e => { if (e) e.classList.toggle('on', av); });
+            if (f) f.title = av ? 'La rédaction est en ligne' : 'La rédaction est hors ligne';
+            if (f) f.setAttribute('aria-label', av ? 'Discuter avec la rédaction (en ligne)' : 'Discuter avec la rédaction (hors ligne)');
+            const c = document.getElementById('ct-chat-st'); if (c) { c.textContent = av ? '🟢 La rédaction est en ligne' : '⚪ La rédaction est hors ligne pour le moment'; c.classList.toggle('on', av); }
+        }
+        async function chtStatusPoll() { try { const r = await sb.from('site_pages').select('key,title,body').eq('key', 'chat_config').maybeSingle(); if (r.data) SITEPAGES['chat_config'] = r.data; } catch (e) {} chtStatusSync(); }
+        setTimeout(chtStatusPoll, 2500); setInterval(chtStatusPoll, 60000);
         function chtBadge() {
             const n = chtThread ? (chtThread.unread_user || 0) : 0, d = document.getElementById('cht-dot'); if (!d) return;
             d.style.display = n && !chtIsOpen ? 'block' : 'none'; d.textContent = n;
@@ -4560,16 +4596,14 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const d = document.createElement('div');
             d.id = 'legal-modal';
             d.style.cssText = 'position:fixed;inset:0;z-index:100002;background:rgba(15,23,42,.8);display:flex;align-items:center;justify-content:center;padding:.75rem';
-            const card = 'display:block;width:100%;text-align:left;padding:.9rem 1rem;border:2px solid #99f6e4;border-radius:1rem;background:#f0fdfa;margin-top:.7rem';
-            const inp = 'width:100%;border:1px solid #cbd5e1;border-radius:.7rem;padding:.55rem .7rem;margin-top:.25rem;font-size:.95rem;background:#fff;color:#0f172a';
             const choose = '<p>Comment préférez-vous nous joindre ?</p>'
-                + '<button type="button" id="ct-chat" style="' + card + '"><b style="font-size:1.05rem">💬 Discuter avec la rédaction</b><span style="display:block;font-size:.85rem;color:#475569;margin-top:.15rem">Le chat, ouvert à tous, même sans compte. Réponse rapide quand la rédaction est disponible.</span></button>'
-                + '<button type="button" id="ct-form" style="' + card + ';border-color:#f0abfc;background:#fdf4ff"><b style="font-size:1.05rem">✉️ Envoyer un message</b><span style="display:block;font-size:.85rem;color:#475569;margin-top:.15rem">Un formulaire : nous vous répondons par courriel.</span></button>';
-            const form = '<p>Écrivez-nous, nous vous répondrons par courriel.</p><p style="font-size:.85rem;background:#fffbeb;border:1px solid #fde68a;border-radius:.7rem;padding:.5rem .7rem">📬 Pensez à vérifier vos courriels indésirables (spam / junk) au cas où notre réponse s’y glisserait.</p>'
-                + '<label style="display:block;margin-top:.6rem;font-weight:700;font-size:.85rem">Votre nom (facultatif)<input id="ct-nom" maxlength="60" autocomplete="name" style="' + inp + '"></label>'
-                + '<label style="display:block;margin-top:.6rem;font-weight:700;font-size:.85rem">Votre courriel<input id="ct-em" type="email" maxlength="120" autocomplete="email" style="' + inp + '"></label>'
-                + '<label style="display:block;margin-top:.6rem;font-weight:700;font-size:.85rem">Votre message<textarea id="ct-msg" rows="5" maxlength="900" style="' + inp + '"></textarea></label>'
-                + '<div style="display:flex;gap:.5rem;margin-top:.9rem"><button type="button" id="ct-send" style="flex:1;padding:.65rem;border-radius:999px;background:linear-gradient(90deg,#0d9488,#c026d3);color:#fff;font-weight:800">Envoyer</button><button type="button" id="ct-back" style="padding:.65rem 1rem;border-radius:999px;background:#e2e8f0;color:#334155;font-weight:700">Retour</button></div>';
+                + '<button type="button" id="ct-chat" class="ct-card"><b>💬 Discuter avec la rédaction</b><span class="ct-sub">Le chat, ouvert à tous, même sans compte. Réponse rapide quand la rédaction est disponible.</span><span id="ct-chat-st" class="ct-st"></span></button>'
+                + '<button type="button" id="ct-form" class="ct-card f"><b>✉️ Envoyer un message</b><span class="ct-sub">Un formulaire : nous vous répondons par courriel.</span></button>';
+            const form = '<p>Écrivez-nous, nous vous répondrons par courriel.</p><p class="ct-note">📬 Pensez à vérifier vos courriels indésirables (spam / junk) au cas où notre réponse s’y glisserait.</p>'
+                + '<label class="ct-lab">Votre nom (facultatif)<input id="ct-nom" maxlength="60" autocomplete="name" class="ct-in"></label>'
+                + '<label class="ct-lab">Votre courriel<input id="ct-em" type="email" maxlength="120" autocomplete="email" class="ct-in"></label>'
+                + '<label class="ct-lab">Votre message<textarea id="ct-msg" rows="5" maxlength="900" class="ct-in"></textarea></label>'
+                + '<div style="display:flex;gap:.5rem;margin-top:.9rem"><button type="button" id="ct-send" class="ct-send" style="flex:1">Envoyer</button><button type="button" id="ct-back" class="ct-sec">Retour</button></div>';
             d.innerHTML = '<div class="mm-legal" role="dialog" aria-modal="true"><div class="mm-legal-head"><h3 class="font-cursive">Nous contacter</h3><button type="button" aria-label="Fermer" id="legal-close">✕</button></div><div class="mm-legal-body" id="ct-body"></div></div>';
             document.body.appendChild(d);
             const close = () => { d.remove(); document.removeEventListener('keydown', onKey); };
@@ -4579,7 +4613,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             d.addEventListener('click', e => { if (e.target === d) close(); });
             const body = document.getElementById('ct-body');
             const showChoose = () => {
-                body.innerHTML = choose;
+                body.innerHTML = choose; chtStatusSync();
                 document.getElementById('ct-chat').onclick = () => { close(); try { chtTab('red'); } catch (e) {} chtToggle(true); try { track('contact', 'chat'); } catch (e) {} };
                 document.getElementById('ct-form').onclick = showForm;
             };
@@ -4598,11 +4632,12 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
                     busy = false;
                     if (r.error) { toast('Envoi impossible : ' + r.error.message, 'error'); return; }
                     try { track('contact', 'formulaire'); } catch (x) {}
-                    body.innerHTML = '<p style="font-size:1.05rem"><b>✅ Merci !</b> Votre message est bien reçu. Nous vous répondrons à <b>' + esc(e) + '</b> dès que possible.</p><p style="font-size:.9rem">📬 Pensez à vérifier vos courriels indésirables (spam / junk) au cas où notre réponse s’y glisserait.</p><button type="button" id="ct-ok" style="margin-top:.9rem;padding:.65rem 1.2rem;border-radius:999px;background:#e2e8f0;color:#334155;font-weight:700">Fermer</button>';
+                    body.innerHTML = '<p style="font-size:1.05rem"><b>✅ Merci !</b> Votre message est bien reçu. Nous vous répondrons à <b>' + esc(e) + '</b> dès que possible.</p><p style="font-size:.9rem">📬 Pensez à vérifier vos courriels indésirables (spam / junk) au cas où notre réponse s’y glisserait.</p><button type="button" id="ct-ok" class="ct-sec" style="margin-top:.9rem">Fermer</button>';
                     document.getElementById('ct-ok').onclick = close;
                 };
             };
             if (mode === 'form') showForm(); else showChoose();
+            chtStatusSync();
         }
 
         // ====== OFFRES SUR LES NUMÉROS ======
@@ -9611,9 +9646,9 @@ show();
 <button type="button" id="help-fab" aria-label="Aide et informations" aria-expanded="false" onclick="toggleHelp()">?</button>
 <div id="help-panel" role="dialog" aria-label="Informations"><div class="hp-head"><span id="help-title">Besoin d'aide ?</span><button type="button" aria-label="Fermer" onclick="toggleHelp(false)">✕</button></div><div class="hp-body" id="help-body"></div></div>
 <div id="mm-vt" role="dialog" aria-live="polite"><div id="mm-vt-hole"></div><div id="mm-vt-card"><div id="mm-vt-av"></div><h4 id="mm-vt-t"></h4><p id="mm-vt-p"></p><div class="vt-row"><button type="button" id="mm-vt-skip" onclick="vtEnd()">Passer</button><span id="mm-vt-dots"></span><button type="button" id="mm-vt-next" onclick="vtNext()">Suivant</button></div></div></div>
-<button type="button" id="cht-fab" aria-label="Discuter avec la rédaction" onclick="chtToggle()"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.7A8 8 0 1 1 21 12z"/><path d="M12 8.5v7M8.5 12h7"/></svg><span class="cht-dot" id="cht-dot"></span></button>
+<button type="button" id="cht-fab" aria-label="Discuter avec la rédaction" onclick="chtToggle()"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.7A8 8 0 1 1 21 12z"/><path d="M12 8.5v7M8.5 12h7"/></svg><span class="cht-dot" id="cht-dot"></span><span class="cht-on" id="cht-on"></span></button>
 <div id="cht-panel" role="dialog" aria-label="Chat avec la rédaction"><div class="cht-ph"><div class="t"><b>Cabinet de la rédaction</b><small id="cht-sub"></small></div><button type="button" class="cht-inv" aria-label="Inviter des amis à la conversation" title="Inviter des amis" onclick="chtInvite()">👥 Inviter</button><button type="button" aria-label="Revoir le tutoriel" onclick="chtTourStart()" style="font-weight:700">?</button><button type="button" aria-label="Fermer" onclick="chtToggle(false)">×</button><svg class="cht-ecg" viewBox="0 0 400 14" preserveAspectRatio="none"><path d="M0 8 H110 L122 8 L130 1 L140 13 L150 4 L156 8 H260 L272 8 L280 2 L290 13 L298 5 L304 8 H400"/></svg></div>
-<div id="cht-tabs" style="position:relative"><button type="button" id="cht-tab-red" class="on" onclick="chtTab('red')">🩺 Rédaction</button><button type="button" id="cht-tab-live" onclick="chtTab('live')">🛋️ Pavillon de garde<span id="cht-on-n"></span></button></div><div id="cht-tour"><div class="card"><div class="dots" id="cht-tour-d"></div><b id="cht-tour-t"></b><p id="cht-tour-p"></p><label id="cht-tour-off"><input type="checkbox" id="cht-tour-skip" onchange="chtTourOff(this.checked)"> Ne plus afficher ce tutoriel</label><div class="row"><button type="button" class="skip" onclick="chtTourEnd()">Passer</button><button type="button" class="go" id="cht-tour-b" onclick="chtTourNext()">Suivant</button></div></div></div><div id="cht-note"></div><div id="cht-msgs"></div><div id="cht-chips"></div>
+<div id="cht-tabs" style="position:relative"><button type="button" id="cht-tab-red" class="on" onclick="chtTab('red')">🩺 Rédaction<span class="cht-sd" id="cht-red-sd"></span></button><button type="button" id="cht-tab-live" onclick="chtTab('live')">🛋️ Pavillon de garde<span id="cht-on-n"></span></button></div><div id="cht-tour"><div class="card"><div class="dots" id="cht-tour-d"></div><b id="cht-tour-t"></b><p id="cht-tour-p"></p><label id="cht-tour-off"><input type="checkbox" id="cht-tour-skip" onchange="chtTourOff(this.checked)"> Ne plus afficher ce tutoriel</label><div class="row"><button type="button" class="skip" onclick="chtTourEnd()">Passer</button><button type="button" class="go" id="cht-tour-b" onclick="chtTourNext()">Suivant</button></div></div></div><div id="cht-note"></div><div id="cht-msgs"></div><div id="cht-chips"></div>
 <div id="cht-leave"><b style="font-size:12px;color:#92400e">✉️ Laissez-nous votre courriel et votre message</b><div style="font-size:11px;color:#92400e;margin-top:2px">📬 Pensez à vérifier vos courriels indésirables (spam / junk) au cas où notre réponse s’y glisserait.</div><input id="cht-lem" type="email" maxlength="120" placeholder="Votre courriel" autocomplete="email"><textarea id="cht-lms" rows="3" maxlength="900" placeholder="Votre message"></textarea><div class="row"><button type="button" style="background:#f59e0b;color:#fff" onclick="chtLeave()">Envoyer</button><button type="button" style="background:#e2e8f0;color:#334155" onclick="chtLeaveShow(false)">Annuler</button></div></div>
 <form id="cht-form" onsubmit="chtFormSubmit(event)"><div id="cht-stk"></div><button type="button" id="cht-stk-btn" aria-label="Émojis et stickers" onclick="chtStkToggle()">😊</button><input id="cht-in" maxlength="300" autocomplete="off" placeholder="Décrivez vos symptômes… ou votre question"><button aria-label="Envoyer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4l-2-2M21 3l-3 3M17 7L7 17l-3 1 1-3L15 5zM14 8l2 2M3 21l3-3M10 14l-2-2"/></svg></button></form></div>
 <div id="help-arrow" aria-hidden="true"><svg viewBox="0 0 170 130" width="170" height="130"><defs><filter id="pencil" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter></defs><g class="pill"><g transform="rotate(-3 78 20)"><path class="body" d="M20 3 H136 A17 17 0 0 1 136 37 H20 A17 17 0 0 1 3 20 Z"/><path class="flap" d="M3 20 L20 3 L20 20 Z"/></g><text x="86" y="27" text-anchor="middle" style="font-size:20px" transform="rotate(-3 78 20)">Besoin d'aide ?</text></g><g filter="url(#pencil)"><path class="stroke s1" pathLength="1" d="M104 40 C100 72 28 64 34 104"/><path class="stroke s2" pathLength="1" d="M107 42 C98 76 32 68 37 102"/><path class="stroke s3" pathLength="1" d="M20 88 L34 110 L49 90"/></g></svg></div>
