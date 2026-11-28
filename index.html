@@ -2422,6 +2422,7 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
             <nav class="flex flex-wrap justify-center gap-x-5 gap-y-1.5 font-semibold" aria-label="Informations du site">
                 <button type="button" onclick="openLegal('faq')" class="text-teal-700 hover:underline">FAQ</button>
                 <button type="button" onclick="openLegal('apropos')" class="text-teal-700 hover:underline">À propos / Histoire</button>
+                <button type="button" onclick="openContact()" class="text-teal-700 hover:underline">Nous contacter</button>
                 <button type="button" onclick="openLegal('confidentialite')" class="text-teal-700 hover:underline">Politique de confidentialité</button>
                 <a href="https://www.facebook.com/share/19bPxSuKwG/" target="_blank" rel="noopener noreferrer" onclick="try{track('facebook_clic','pied de page')}catch(e){}" class="inline-flex items-center gap-1.5 text-teal-700 hover:underline" aria-label="Notre page Facebook (s'ouvre dans un nouvel onglet)"><svg viewBox="0 0 24 24" class="w-5 h-5" aria-hidden="true"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Notre page Facebook</a>
             </nav>
@@ -3922,6 +3923,14 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             return null;
         }
         let chtTabV = 'red', chtLive = [], chtLiveLast = 0, chtLiveBusy = false, chtLiveN = 0, chtLiveErr = '';
+        let chtGuest = [], chtGuestBusy = false;
+        function chtGuestTok(make) { try { let t = localStorage.getItem('mm_chat_guest'); if (!t && make) { t = (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); })); localStorage.setItem('mm_chat_guest', t); } return t || ''; } catch (e) { return ''; } }
+        async function chtGuestLoad() {
+            const t = chtGuestTok(false); if (!t) { chtGuest = []; return; }
+            const r = await sb.rpc('chat_guest_fetch', { p_token: t });
+            if (!r.error) { const n = (r.data || []).length, had = chtGuest.length; chtGuest = r.data || []; if (chtIsOpen && chtGuest.some(m => m.sender === 'admin')) sb.rpc('chat_guest_read', { p_token: t }); return n !== had; }
+            return false;
+        }
         let chtIsOpen = false, chtThread = null, chtMsgs = [], chtLocal = [], chtLeaveOn = false, chtBusy = false, chtLast = 0, chtTick = 0, chtErr = '';
         const chtTime = d => { const x = d ? new Date(d) : new Date(); return ('0' + x.getHours()).slice(-2) + ':' + ('0' + x.getMinutes()).slice(-2); };
         function chtBub(m) {
@@ -3938,17 +3947,17 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const note = document.getElementById('cht-note');
             note.className = av ? '' : 'off'; note.id = 'cht-note';
             note.textContent = av ? 'Consultation privée : seuls vous et l\'équipe la voient' : 'La rédaction est absente pour le moment';
-            const list = currentUser ? chtMsgs : chtLocal;
+            const list = currentUser ? chtMsgs : (av ? chtGuest : chtLocal);
             let h = '<div class="cht-sys">' + esc(av ? cfg.welcome : cfg.offline) + '</div>';
             if (chtErr) h += '<div class="cht-sys" style="border-color:#fca5a5;color:#b91c1c">' + esc(chtErr) + '</div>';
-            if (av && !currentUser) h += '<div class="cht-sys">Connectez-vous pour discuter avec la rédaction.</div><button type="button" id="cht-login" onclick="chtToggle(false);openAuthModal(\'login\')">Se connecter</button>';
+            if (av && !currentUser && !list.length) h += '<div class="cht-sys">Pas besoin de compte : écrivez-nous directement. Gardez cette page ouverte pour voir la réponse, ou laissez votre courriel.</div>';
             h += list.map(chtBub).join('');
             box.innerHTML = h; box.scrollTop = box.scrollHeight;
             const chips = [];
-            (cfg.autos || []).forEach((r, i) => { if (!av || currentUser) chips.push('<button type="button" onclick="chtTopic(' + i + ')">' + esc(r.t) + '</button>'); });
+            (cfg.autos || []).forEach((r, i) => { if (true) chips.push('<button type="button" onclick="chtTopic(' + i + ')">' + esc(r.t) + '</button>'); });
             if (!av || !currentUser) chips.push('<button type="button" class="lv" onclick="chtLeaveShow(true)">✉️ Laisser mon courriel et mon message</button>');
             document.getElementById('cht-chips').innerHTML = chips.join('');
-            const canType = !av || !!currentUser;
+            const canType = true;
             document.getElementById('cht-form').style.display = canType ? 'flex' : 'none';
             document.getElementById('cht-leave').classList.toggle('show', chtLeaveOn);
             if (chtLeaveOn && currentUser && !document.getElementById('cht-lem').value) document.getElementById('cht-lem').value = currentUser.email || '';
@@ -3959,7 +3968,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
         }
         async function chtLoad() {
             chtErr = '';
-            if (!currentUser) { chtThread = null; chtMsgs = []; chtRender(); return; }
+            if (!currentUser) { chtThread = null; chtMsgs = []; try { await chtGuestLoad(); } catch (e) {} chtRender(); return; }
             const t = await sb.from('chat_threads').select('*').eq('user_id', currentUser.id).maybeSingle();
             if (t.error) { chtErr = "Chat indisponible : lancez les scripts schema_v28a, v28b, v28c et v28d dans Supabase."; chtRender(); return; }
             chtThread = t.data || null;
@@ -3972,8 +3981,8 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
         }
         let chtTourI = 0;
         const CHT_TOUR = [
-            { tab: 'cht-tab-red', t: '🩺 Rédaction', p: 'Écrivez directement à l\'équipe de Mordus de Médecine : une question, un souci avec un numéro ou un paiement. Si personne n\'est disponible, laissez votre courriel et votre message : on vous répondra.' },
-            { tab: 'cht-tab-live', pk: 1, t: '🛋️ Pavillon de garde', p: 'Le salon pour papoter en direct avec les autres membres connectés. Soyez courtois : chaque message peut être signalé.' }
+            { tab: 'cht-tab-red', t: '🩺 Rédaction', p: 'Ouvert à tous, même sans compte : écrivez directement à l\'équipe de Mordus de Médecine : une question, un souci avec un numéro ou un paiement. Si personne n\'est disponible, laissez votre courriel et votre message : on vous répondra.' },
+            { tab: 'cht-tab-live', pk: 1, t: '🛋️ Pavillon de garde', p: 'Le salon pour papoter en direct avec les autres membres inscrits (compte gratuit requis). Soyez courtois : chaque message peut être signalé.' }
         ];
         function chtTourPaint() {
             const st = CHT_TOUR[chtTourI], tr = document.getElementById('cht-tour');
@@ -4049,7 +4058,15 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             if (!text || chtBusy) return;
             if (Date.now() - chtLast < 1500) { toast('Doucement : un instant entre deux messages.'); return; }
             const cfg = chtCfg(), av = cfg.available !== false;
-            if (av && !currentUser) { toast('Connectez-vous pour discuter avec la rédaction.'); return; }
+            if (av && !currentUser) {
+                if (chtGuestBusy) return; chtGuestBusy = true; chtLast = Date.now();
+                try {
+                    const r = await sb.rpc('chat_guest_send', { p_token: chtGuestTok(true), p_name: '', p_body: text });
+                    if (r.error) { toast(/Doucement|trop/.test(r.error.message) ? r.error.message : 'Envoi impossible : ' + r.error.message, 'error'); return; }
+                    await chtGuestLoad(); chtRender();
+                } finally { chtGuestBusy = false; }
+                return;
+            }
             chtBusy = true; chtLast = Date.now();
             try {
                 if (!await chtPost('user', text)) return;
@@ -4162,7 +4179,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             document.getElementById('cht-sub').textContent = '❤️ Discussion entre mordus de médecine' + (chtOnline > 0 ? ' · ' + chtOnlineTxt() : '');
             const note = document.getElementById('cht-note'); note.className = ''; note.textContent = adm ? 'Vue admin : vous pouvez supprimer un message ou bloquer un membre' : 'Ambiance détente, mais respect de rigueur : les messages sont modérés';
             let h = '<div class="cht-sys">☕ La garde commence, café à volonté</div>';
-            if (!currentUser) h += '<div class="cht-sys">Connectez-vous pour rejoindre la discussion.</div><button type="button" id="cht-login" onclick="chtToggle(false);openAuthModal(\'login\')">Se connecter</button>';
+            if (!currentUser) h += '<div class="cht-sys">🔒 Le Pavillon de garde est réservé aux membres inscrits. Créez un compte gratuit pour rejoindre la discussion entre mordus de médecine.</div><button type="button" id="cht-login" onclick="chtToggle(false);openAuthModal(\'register\')">Créer mon compte</button><button type="button" id="cht-login2" style="margin-top:6px;background:#e2e8f0;color:#334155" onclick="chtToggle(false);openAuthModal(\'login\')">J\'ai déjà un compte</button>';
             if (chtLiveErr) h += '<div class="cht-sys" style="border-color:#fca5a5;color:#b91c1c">' + esc(chtLiveErr) + '</div>';
             if (currentUser) h += chtLive.map(m => {
                 const me = m.user_id === currentUser.id, em = AVATARS.indexOf(m.avatar) >= 0 ? m.avatar : String(m.name || '?').trim().charAt(0).toUpperCase();
@@ -4261,7 +4278,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             setInterval(() => { if (chtIsOpen && chtTabV === 'live' && currentUser) chtLiveLoad(); }, 4000);
             setInterval(async () => {
                 chtTick++;
-                if (!currentUser) return;
+                if (!currentUser) { if (chtIsOpen && chtTabV !== 'live' && chtGuestTok(false) && (chtCfg().available !== false)) { try { if (await chtGuestLoad()) chtRender(); } catch (e) {} } return; }
                 if (chtIsOpen) { if (chtTabV !== 'live') await chtLoad(); return; }
                 if (chtTick % 6 === 0 && document.getElementById('cht-fab').classList.contains('show')) {
                     const t = await sb.from('chat_threads').select('*').eq('user_id', currentUser.id).maybeSingle();
@@ -4436,7 +4453,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const un = chThreads.reduce((n, t) => n + (t.unread_admin || 0), 0);
             const nb = document.querySelector('#admin-nav [data-adnav="chat"]');
             chUn = un; chNav();
-            el.innerHTML = chThreads.length ? chThreads.map((t, i) => '<button type="button" onclick="chOpen(' + i + ')" class="w-full text-left flex items-center gap-2 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 rounded-xl px-3 py-2"><div class="flex-1 min-w-0"><div class="text-xs font-semibold text-white truncate">' + (t.kind === 'offline' ? '📩 Message laissé · ' : '💬 ') + esc(t.name || t.email || 'Visiteur') + '</div><div class="text-[10px] text-slate-400 truncate">' + esc(t.email || '') + ' · ' + esc(fmtDate(t.last_at)) + '</div></div>' + (t.unread_admin ? '<span class="bg-rose-600 text-white text-[10px] font-bold rounded-full px-2 py-0.5">' + t.unread_admin + '</span>' : '') + '</button>').join('') : '<p class="text-xs text-slate-500 italic">Aucune conversation pour le moment.</p>';
+            el.innerHTML = chThreads.length ? chThreads.map((t, i) => '<button type="button" onclick="chOpen(' + i + ')" class="w-full text-left flex items-center gap-2 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 rounded-xl px-3 py-2"><div class="flex-1 min-w-0"><div class="text-xs font-semibold text-white truncate">' + (t.kind === 'offline' ? '📩 Message laissé · ' : t.kind === 'guest' ? '👤 Visiteur · ' : '💬 ') + esc(t.name || t.email || 'Visiteur') + '</div><div class="text-[10px] text-slate-400 truncate">' + esc(t.email || '') + ' · ' + esc(fmtDate(t.last_at)) + '</div></div>' + (t.unread_admin ? '<span class="bg-rose-600 text-white text-[10px] font-bold rounded-full px-2 py-0.5">' + t.unread_admin + '</span>' : '') + '</button>').join('') : '<p class="text-xs text-slate-500 italic">Aucune conversation pour le moment.</p>';
             if (chCur) { const i = chThreads.findIndex(t => t.id === chCur.id); if (i >= 0) chOpen(i, true); }
         }
         async function chOpen(i, quiet) {
@@ -4445,7 +4462,7 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const box = document.getElementById('ch-msgs'), keep = box.scrollTop;
             box.innerHTML = (m.data || []).map(x => '<div class="flex ' + (x.sender === 'admin' ? 'justify-end' : '') + '"><div class="max-w-[85%] rounded-2xl px-3 py-1.5 text-xs ' + (x.sender === 'admin' ? 'bg-fuchsia-700 text-white' : x.sender === 'auto' ? 'bg-slate-700 text-slate-300 italic' : 'bg-teal-900 text-teal-50') + '">' + (x.sender === 'auto' ? '🤖 ' : '') + esc(x.body).replace(/\n/g, '<br>') + '<div class="text-[9px] opacity-60 mt-0.5">' + esc(fmtDate(x.created_at)) + '</div></div></div>').join('') || '<p class="text-xs text-slate-500 italic">Aucun message.</p>';
             if (quiet) box.scrollTop = keep; else box.scrollTop = box.scrollHeight;
-            document.getElementById('ch-head').innerHTML = (t.kind === 'offline' ? '📩 Message laissé' : '💬 ' + esc(t.name || 'Membre')) + (t.email ? '<div class="text-[11px] font-normal text-slate-300">' + esc(t.email) + '</div>' : '');
+            document.getElementById('ch-head').innerHTML = (t.kind === 'offline' ? '📩 Message laissé' : t.kind === 'guest' ? '👤 Visiteur' + (t.name ? ' · ' + esc(t.name) : '') : '💬 ' + esc(t.name || 'Membre')) + (t.email ? '<div class="text-[11px] font-normal text-slate-300">' + esc(t.email) + '</div>' : '');
             const ml = document.getElementById('ch-mail');
             if (t.email) { ml.classList.remove('hidden'); ml.href = 'mailto:' + t.email + '?subject=' + encodeURIComponent('Mordus de Médecine : réponse de la rédaction') + '&body=' + encodeURIComponent('Bonjour,\n\nLa rédaction de Mordus de Médecine est de retour. Merci pour votre message.\n\n'); } else ml.classList.add('hidden');
             document.getElementById('ch-quick').innerHTML = (chtCfg().quick || []).map((q, k) => '<button type="button" onclick="chQuick(' + k + ')" class="px-2.5 py-1 rounded-full bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-semibold">⚡ ' + esc(q.t) + '</button>').join('');
@@ -4521,6 +4538,57 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             document.getElementById('legal-close').onclick = close;
             d.addEventListener('click', e => { if (e.target === d) close(); });
             try { track('page_info', key); } catch (e) {}
+        }
+
+        // ====== NOUS CONTACTER : chat ou formulaire ======
+        function openContact(mode) {
+            const old = document.getElementById('legal-modal'); if (old) old.remove();
+            const d = document.createElement('div');
+            d.id = 'legal-modal';
+            d.style.cssText = 'position:fixed;inset:0;z-index:100002;background:rgba(15,23,42,.8);display:flex;align-items:center;justify-content:center;padding:.75rem';
+            const card = 'display:block;width:100%;text-align:left;padding:.9rem 1rem;border:2px solid #99f6e4;border-radius:1rem;background:#f0fdfa;margin-top:.7rem';
+            const inp = 'width:100%;border:1px solid #cbd5e1;border-radius:.7rem;padding:.55rem .7rem;margin-top:.25rem;font-size:.95rem;background:#fff;color:#0f172a';
+            const choose = '<p>Comment préférez-vous nous joindre ?</p>'
+                + '<button type="button" id="ct-chat" style="' + card + '"><b style="font-size:1.05rem">💬 Discuter avec la rédaction</b><span style="display:block;font-size:.85rem;color:#475569;margin-top:.15rem">Le chat, ouvert à tous, même sans compte. Réponse rapide quand la rédaction est disponible.</span></button>'
+                + '<button type="button" id="ct-form" style="' + card + ';border-color:#f0abfc;background:#fdf4ff"><b style="font-size:1.05rem">✉️ Envoyer un message</b><span style="display:block;font-size:.85rem;color:#475569;margin-top:.15rem">Un formulaire : nous vous répondons par courriel.</span></button>';
+            const form = '<p>Écrivez-nous, nous vous répondrons par courriel.</p>'
+                + '<label style="display:block;margin-top:.6rem;font-weight:700;font-size:.85rem">Votre nom (facultatif)<input id="ct-nom" maxlength="60" autocomplete="name" style="' + inp + '"></label>'
+                + '<label style="display:block;margin-top:.6rem;font-weight:700;font-size:.85rem">Votre courriel<input id="ct-em" type="email" maxlength="120" autocomplete="email" style="' + inp + '"></label>'
+                + '<label style="display:block;margin-top:.6rem;font-weight:700;font-size:.85rem">Votre message<textarea id="ct-msg" rows="5" maxlength="900" style="' + inp + '"></textarea></label>'
+                + '<div style="display:flex;gap:.5rem;margin-top:.9rem"><button type="button" id="ct-send" style="flex:1;padding:.65rem;border-radius:999px;background:linear-gradient(90deg,#0d9488,#c026d3);color:#fff;font-weight:800">Envoyer</button><button type="button" id="ct-back" style="padding:.65rem 1rem;border-radius:999px;background:#e2e8f0;color:#334155;font-weight:700">Retour</button></div>';
+            d.innerHTML = '<div class="mm-legal" role="dialog" aria-modal="true"><div class="mm-legal-head"><h3 class="font-cursive">Nous contacter</h3><button type="button" aria-label="Fermer" id="legal-close">✕</button></div><div class="mm-legal-body" id="ct-body"></div></div>';
+            document.body.appendChild(d);
+            const close = () => { d.remove(); document.removeEventListener('keydown', onKey); };
+            const onKey = e => { if (e.key === 'Escape') close(); };
+            document.addEventListener('keydown', onKey);
+            document.getElementById('legal-close').onclick = close;
+            d.addEventListener('click', e => { if (e.target === d) close(); });
+            const body = document.getElementById('ct-body');
+            const showChoose = () => {
+                body.innerHTML = choose;
+                document.getElementById('ct-chat').onclick = () => { close(); try { chtTab('red'); } catch (e) {} chtToggle(true); try { track('contact', 'chat'); } catch (e) {} };
+                document.getElementById('ct-form').onclick = showForm;
+            };
+            const showForm = () => {
+                body.innerHTML = form;
+                document.getElementById('ct-back').onclick = showChoose;
+                const em = document.getElementById('ct-em'); if (currentUser && currentUser.email) em.value = currentUser.email;
+                let busy = false;
+                document.getElementById('ct-send').onclick = async () => {
+                    if (busy) return;
+                    const e = em.value.trim(), m = document.getElementById('ct-msg').value.trim(), n = document.getElementById('ct-nom').value.trim();
+                    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) { toast('Entrez un courriel valide.', 'error'); return; }
+                    if (m.length < 3) { toast('Écrivez votre message.', 'error'); return; }
+                    busy = true;
+                    const r = await sb.rpc('chat_leave_message', { p_email: e, p_body: (n ? 'De : ' + n + '\n\n' : '') + m });
+                    busy = false;
+                    if (r.error) { toast('Envoi impossible : ' + r.error.message, 'error'); return; }
+                    try { track('contact', 'formulaire'); } catch (x) {}
+                    body.innerHTML = '<p style="font-size:1.05rem"><b>✅ Merci !</b> Votre message est bien reçu. Nous vous répondrons à <b>' + esc(e) + '</b> dès que possible.</p><button type="button" id="ct-ok" style="margin-top:.9rem;padding:.65rem 1.2rem;border-radius:999px;background:#e2e8f0;color:#334155;font-weight:700">Fermer</button>';
+                    document.getElementById('ct-ok').onclick = close;
+                };
+            };
+            if (mode === 'form') showForm(); else showChoose();
         }
 
         // ====== OFFRES SUR LES NUMÉROS ======
