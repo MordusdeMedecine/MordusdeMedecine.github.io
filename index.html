@@ -2988,14 +2988,19 @@ html[data-skin="soir"] #aud-body:not(#zz):not(#yy) .overflow-hidden.h-2.rounded-
             toast('Merci ! Votre anecdote sera publiée après relecture.', 'success');
             renderGarde();
         }
+        let anecChatSeen = null;
         async function anecBadgeRefresh() {
             if (!currentUser || currentUser.role !== 'admin') return;
             try {
                 const { count, error } = await sb.from('anecdotes').select('id', { count: 'exact', head: true }).eq('status', 'pending');
                 if (error) return;
-                const n = count || 0, t = n > 99 ? '99+' : String(n);
+                const cr = await sb.from('chat_threads').select('unread_admin');
+                const cu = cr.error ? 0 : (cr.data || []).reduce((x, r) => x + (r.unread_admin || 0), 0);
+                if (!cr.error) { if (anecChatSeen !== null && cu > anecChatSeen) { toast('💬 Nouveau message au chat : ouvrez Admin, Chat.', 'success'); try { if (document.getElementById('ch-list') && document.getElementById('ch-list').offsetParent) loadAdminChat(); } catch (e) {} } anecChatSeen = cu; chUn = cu; chNav(); }
+                const n = (count || 0), tot = n + cu, t = tot > 99 ? '99+' : String(tot);
                 const a = document.getElementById('ad-anec-badge'), m = document.getElementById('admin-tab-badge');
-                [a, m].forEach(b => { if (b) { b.textContent = t; b.classList.toggle('hidden', !n); } });
+                if (a) { a.textContent = n > 99 ? '99+' : String(n); a.classList.toggle('hidden', !n); }
+                if (m) { m.textContent = t; m.classList.toggle('hidden', !tot); }
             } catch (e) {}
         }
         setInterval(() => { anecBadgeRefresh(); if (currentUser) loadNotifs(); }, 30000);
@@ -3923,7 +3928,9 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             return null;
         }
         let chtTabV = 'red', chtLive = [], chtLiveLast = 0, chtLiveBusy = false, chtLiveN = 0, chtLiveErr = '';
-        let chtGuest = [], chtGuestBusy = false;
+        let chtGuest = [], chtGuestBusy = false, chtGuestAsk = '';
+        function chtGuestEmail() { try { return localStorage.getItem('mm_chat_guest_em') || ''; } catch (e) { return ''; } }
+        function chtGuestEmailOk() { const el = document.getElementById('cht-gem-in'); if (!el) return; const v = el.value.trim(); if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) { toast('Entrez un courriel valide.', 'error'); return; } try { localStorage.setItem('mm_chat_guest_em', v.toLowerCase()); } catch (e) {} const t = chtGuestAsk; chtGuestAsk = ''; chtSubmit(t); }
         function chtGuestTok(make) { try { let t = localStorage.getItem('mm_chat_guest'); if (!t && make) { t = (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); })); localStorage.setItem('mm_chat_guest', t); } return t || ''; } catch (e) { return ''; } }
         async function chtGuestLoad() {
             const t = chtGuestTok(false); if (!t) { chtGuest = []; return; }
@@ -3950,8 +3957,9 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             const list = currentUser ? chtMsgs : (av ? chtGuest : chtLocal);
             let h = '<div class="cht-sys">' + esc(av ? cfg.welcome : cfg.offline) + '</div>';
             if (chtErr) h += '<div class="cht-sys" style="border-color:#fca5a5;color:#b91c1c">' + esc(chtErr) + '</div>';
-            if (av && !currentUser && !list.length) h += '<div class="cht-sys">Pas besoin de compte : écrivez-nous directement. Gardez cette page ouverte pour voir la réponse, ou laissez votre courriel.</div>';
+            if (av && !currentUser && !list.length && !chtGuestAsk) h += '<div class="cht-sys">Pas besoin de compte : écrivez-nous directement. Nous vous demanderons votre courriel pour pouvoir vous répondre.</div>';
             h += list.map(chtBub).join('');
+            if (chtGuestAsk && av && !currentUser) h += '<div class="cht-m me"><div><div class="cht-bub">' + esc(chtGuestAsk) + '</div></div></div><div class="cht-sys">✉️ Dernière étape : indiquez votre courriel pour que la rédaction puisse vous répondre, même si vous quittez cette page.<input id="cht-gem-in" type="email" maxlength="120" placeholder="Votre courriel" autocomplete="email" style="display:block;width:100%;margin-top:8px;padding:9px 12px;border:2px solid #99f6e4;border-radius:12px;font-size:15px;color:#0f172a;background:#fff" onkeydown="if(event.key===\'Enter\'){event.preventDefault();chtGuestEmailOk()}"><button type="button" onclick="chtGuestEmailOk()" style="margin-top:8px;width:100%;padding:9px;border-radius:999px;background:linear-gradient(90deg,#0d9488,#c026d3);color:#fff;font-weight:800">Envoyer mon message</button></div>';
             box.innerHTML = h; box.scrollTop = box.scrollHeight;
             const chips = [];
             (cfg.autos || []).forEach((r, i) => { if (true) chips.push('<button type="button" onclick="chtTopic(' + i + ')">' + esc(r.t) + '</button>'); });
@@ -4059,9 +4067,10 @@ Cette politique peut évoluer ; la date de mise à jour figure en haut de cette 
             if (Date.now() - chtLast < 1500) { toast('Doucement : un instant entre deux messages.'); return; }
             const cfg = chtCfg(), av = cfg.available !== false;
             if (av && !currentUser) {
+                if (!chtGuestEmail() && !chtGuest.length) { chtGuestAsk = text; chtRender(); setTimeout(() => { const e = document.getElementById('cht-gem-in'); if (e) e.focus(); }, 50); return; }
                 if (chtGuestBusy) return; chtGuestBusy = true; chtLast = Date.now();
                 try {
-                    const r = await sb.rpc('chat_guest_send', { p_token: chtGuestTok(true), p_name: '', p_body: text });
+                    const r = await sb.rpc('chat_guest_send', { p_token: chtGuestTok(true), p_name: '', p_body: text, p_email: chtGuestEmail() });
                     if (r.error) { toast(/Doucement|trop/.test(r.error.message) ? r.error.message : 'Envoi impossible : ' + r.error.message, 'error'); return; }
                     await chtGuestLoad(); chtRender();
                 } finally { chtGuestBusy = false; }
